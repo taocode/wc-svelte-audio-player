@@ -46,12 +46,3 @@ Use the web standard audio tag: `<audio [title="Optional, fallback: ID3 title th
 ### `title` prop
 
 Title will fallback on ID3 data or the filename if the title isn't included in the ID3.
-
-### Links
-
-- [Official website (svelte.dev)](https://svelte.dev)
-- [Tutorials](https://svelte.dev/tutorial/basics)
-- [Docs](https://svelte.dev/docs)
-- [Chat](https://svelte.dev/chat)
-- [GitHub](https://github.com/sveltejs/svelte)
-- [Issues](https://github.com/sveltejs/svelte/issues)

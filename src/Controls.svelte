@@ -52,6 +52,7 @@
   // $: console.log({prevTrack},$currentTime)
   $: includeSkip = $skip > 0 && $skip < $trackDuration
   $: includeNext = $tracks.length > 1
+
 </script>
 
 
@@ -108,6 +109,7 @@
   #prev.prevTrack {
     --fill: none;
   }
+
   #btn-cont {
     display: flex;
     justify-content: space-between;
@@ -123,6 +125,7 @@
     margin: 0;
     background-color: transparent;
   }
+  
   .button-placeholder {
     width: 2ch;
   }
@@ -192,6 +195,5 @@
   .skip-time::after {
     content: 's';
   }
-
 
 </style>
