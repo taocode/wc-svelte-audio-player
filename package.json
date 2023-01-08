@@ -1,4 +1,14 @@
 {
- "name": "@wcd/mark jones.svelte-audio-player",
- "version": "0.0.0"
+  "name": "@wcd/mark jones.svelte-3bnzkfolce4rpf6",
+  "version": "0.0.0",
+  "description": "",
+  "license": "ISC",
+  "type": "module",
+  "homepage": "{{ homepage }}",
+  "scripts": {
+    "serve": "npx wcd-cli@latest serve wpsgjENLAcAH6CMeL78q --open"
+  },
+  "dependencies": {
+    "lit-html": "^1"
+  }
 }
