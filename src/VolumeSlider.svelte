@@ -1,22 +1,23 @@
 <script>
-  export let vol;
+  import { audioTag, volume } from "./stores"
+  export let step = 0.01
+  $: if ($audioTag) $audioTag.volume = $volume
 </script>
 
 <div class="slidecontainer">
   <label for="volume-slider">0</label>
 
-  <input id="myRange"
+  <input id="volume-slider"
 				 class="slider"
 				 type="range"
 				 min="0"
-				 max="100"
-				 step="1"
+				 max="1"
+				 {step}
 				 name="volume"
-				 bind:value={vol}
-				 on:input
+				 bind:value={$volume}
 				 >
 
-  <label for="volume-slider">{vol}</label>
+  <label for="volume-slider">{Math.floor($volume*100)}</label>
 </div>
 
 <style>
@@ -30,7 +31,7 @@
   }
 
   .slidecontainer label {
-    width: 20px;
+    width: 3ch;
     text-align: center
   }
 
@@ -39,14 +40,14 @@
     -webkit-appearance: none;
     /* Override default CSS styles */
     appearance: none;
-    width: 200px;
+    width: 100%;
     /* Full-width */
     height: 3px;
     /* Specified height */
     margin: 0 10px;
     padding: 0;
-    background: #d3d3d3;
-    /* Grey background */
+    background: var(--audio-player-volume-background,
+    linear-gradient(90deg, hsl(120, 86%, 30%) 10%, hsl(90, 95%, 40%) 60%, hsl(30, 95%, 75%) 70%, hsl(30, 95%, 70%) 80%, hsl(0, 95%, 50%) 95%));
     outline: none;
     /* Remove outline */
     opacity: 0.7;
@@ -72,7 +73,7 @@
     height: 15px;
     /* Slider handle height */
     border-radius: 50%;
-    background: #888;
+    background: var(--audio-player-volume-thumb-background,#777);
     /* Green background */
     cursor: pointer;
     /* Cursor on hover */
@@ -84,7 +85,7 @@
     /* Set a specific slider handle width */
     height: 15px;
     /* Slider handle height */
-    background: #4CAF50;
+    background: var(--audio-player-volume-thumb-background,#777);
     /* Green background */
     cursor: pointer;
     /* Cursor on hover */

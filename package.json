@@ -6,9 +6,13 @@
   "type": "module",
   "homepage": "{{ homepage }}",
   "scripts": {
+    "dev": "pnpx wcd-cli@latest serve wpsgjENLAcAH6CMeL78q --open",
     "serve": "npx wcd-cli@latest serve wpsgjENLAcAH6CMeL78q --open"
   },
   "dependencies": {
     "lit-html": "^1"
+  },
+  "devDependencies": {
+    "svelte": "^3.55.0"
   }
 }

@@ -1,0 +1,22 @@
+lockfileVersion: 5.4
+
+specifiers:
+  lit-html: ^1
+  svelte: ^3.55.0
+
+dependencies:
+  lit-html: 1.4.1
+
+devDependencies:
+  svelte: 3.55.0
+
+packages:
+
+  /lit-html/1.4.1:
+    resolution: {integrity: sha512-B9btcSgPYb1q4oSOb/PrOT6Z/H+r6xuNzfH4lFli/AWhYwdtrgQkQWBbIc6mdnf6E2IL3gDXdkkqNktpU0OZQA==}
+    dev: false
+
+  /svelte/3.55.0:
+    resolution: {integrity: sha512-uGu2FVMlOuey4JoKHKrpZFkoYyj0VLjJdz47zX5+gVK5odxHM40RVhar9/iK2YFRVxvfg9FkhfVlR0sjeIrOiA==}
+    engines: {node: '>= 8'}
+    dev: true
