@@ -1,6 +1,12 @@
 <script>
-  import { progress, currentTime, currentTrack, isPlaying, isReady } from './stores'
-  import { formatTime } from './lib'
+  import { getContext } from 'svelte';
+  import { formatTime, contextStores as CS } from './lib'
+
+  const progress = getContext(CS.PROGRESS)
+  const currentTime = getContext(CS.CURRENT_TIME)
+  const currentTrack = getContext(CS.CURRENT_TRACK)
+  const isPlaying = getContext(CS.IS_PLAYING)
+  const isReady  = getContext(CS.IS_READY)
   
 	let totalTimeDisplay = "Loading..."
 	let currTimeDisplay = "0:00:00"

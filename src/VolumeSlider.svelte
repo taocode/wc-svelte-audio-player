@@ -1,7 +1,10 @@
 <script>
-  import { audioTag, volume } from "./stores"
-  export let step = 0.01
-  $: if ($audioTag) $audioTag.volume = $volume
+  import { getContext } from "svelte"
+  import { contextStores as CS} from "./lib"
+  export let step = 1
+  const audioTag = getContext(CS.AUDIO_TAG)
+  const volume = getContext(CS.VOLUME)
+  $: if ($audioTag) $audioTag.volume = $volume / 100
 </script>
 
 <div class="slidecontainer">
@@ -11,13 +14,13 @@
 				 class="slider"
 				 type="range"
 				 min="0"
-				 max="1"
+				 max="100"
 				 {step}
 				 name="volume"
 				 bind:value={$volume}
 				 >
 
-  <label for="volume-slider">{Math.floor($volume*100)}</label>
+  <label for="volume-slider">{$volume}</label>
 </div>
 
 <style>
