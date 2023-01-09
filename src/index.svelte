@@ -1,7 +1,10 @@
 <svelte:options tag="taocode-audio-player" />
 
 <script>
-	import { onMount, getContext, setContext } from 'svelte'
+	console.log('shadowRoot?',document,document.shadowRoot)
+
+	import { onMount, getContext, hasContext, setContext } from 'svelte'
+	import { writable, derived } from 'svelte/store'
 	// TODO: use jsmediatags to load ID3
 	// https://github.com/aadsm/jsmediatags
 	import { 
@@ -20,13 +23,14 @@
         progress,
 	 } from './stores.js'
 
-	 import { contextStores as cs } from './lib.js'
+	 import { contextStores as CS } from './lib.js'
 
 	import TrackHeading from './TrackHeading.svelte'
 	import ProgressBarTime from './ProgressBarTime.svelte'
 	import Controls from './Controls.svelte'
 	import VolumeSlider from './VolumeSlider.svelte'
 	import PlayList from './PlayList.svelte'
+  import Track from './Track.svelte'
 
 	export let skip = 10
 	export let skiptime = 'hide'
@@ -44,10 +48,19 @@
 	showSkipTime.set(skiptime === "show")
 
 	audioPlayer.preload = "metadata"
-	setContext(cs.AUDIO_TAG,audioTag)
-	setContext(cs.CURRENT_INDEX,currentIndex)
-	setContext(cs.TRACKS,tracks)
-
+	setContext(CS.AUDIO_TAG,new Audio())
+	if (hasContext(CS.CURRENT_INDEX)) {
+		console.log('has CURRENT_INDEX', getContext(CS.CURRENT_INDEX))
+	} else {
+		setContext(CS.CURRENT_INDEX,writable(-1))
+	}
+	if (hasContext(CS.TRACKS)) {
+		console.log('has TRACKS', getContext(CS.TRACKS))
+	} else {
+		setContext(CS.TRACKS,writable([]))
+	}
+	console.log('CI',getContext(CS.CURRENT_INDEX),{$currentIndex})
+	// getContext, hasContext, setContext
 	onMount(() => {
 		if (document) {
 			audioPlayer.addEventListener('play', () => { 
@@ -138,17 +151,20 @@
 		if ($currentIndex > -1) loadCurrentTrack()
 	}
 
+//$: 
 </script>
 
 {#if audioTracks < 1} <div class="error-no-tracks">
-	<h2>No Audio Tracks!</h2>
+	<h2>No Tracks!</h2>
 	<p>You must include at least 1:</p>
-	<pre>&lt;taocode-audio src="url-to-audio"&gt;&lt;/taocode-audio&gt;</pre>
-	<p>Use the closing tag as shown above (&lt;taocode-audio .../&gt; will fail).</p>
+	<pre>&lt;taocode-track src="url-to-audio"&gt;&lt;/taocode-track&gt;</pre>
+	<p>Use the closing tag as shown above (&lt;taocode-track .../&gt; will fail).</p>
 	</div>
 	{:else}
 	<main class="audio-player" class:playlistAtTop>
 		<section id="player-cont">
+
+			<Track />
 
 			<TrackHeading />
 

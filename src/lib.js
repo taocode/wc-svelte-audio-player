@@ -3,6 +3,19 @@ export const contextStores = {
   CURRENT_INDEX: 'currentIndex',
   TRACKS: 'tracks',
 }
+export const getComponentContext = (key) => {
+  console.log('gCC:',typeof document, typeof document.componentContext)
+  if (typeof document.componentContext === 'undefined') document.componentContexts = {}
+  return document.componentContexts[key]
+}
+export const setComponentContext = (key,val) => {
+  if (typeof document.componentContext === 'undefined') document.componentContexts = {}
+  document.componentContexts[key] = val
+}
+export const hasComponentContext = (key) => {
+  if (typeof document.componentContext === 'undefined') document.componentContexts = {}
+  return document.componentContexts.hasOwnProperty(key)
+}
 export function formatTime(seconds) {
   if (isNaN(seconds)) return ''
   const h = Math.floor(seconds / 3600);
