@@ -1,20 +1,24 @@
 export const contextStores = {
   AUDIO_TAG: 'audioTag',
   CURRENT_INDEX: 'currentIndex',
+  CURRENT_TRACK: 'currentTrack',
+  CURRENT_TIME: 'currentTime',
   TRACKS: 'tracks',
+  VOLUME: 'volume',
+  SKIP: 'skip',
+  ADVANCE: 'advance',
+  SHOW_SKIP_TIME: 'showSkipTime',
+  TRACK_DURATION: 'trackDuration',
+  PLAY_WHEN_READY: 'playWhenReady',
+  IS_PLAYING: 'isPlaying',
+  IS_READY: 'isReady',
+  PROGRESS: 'progress',
 }
-export const getComponentContext = (key) => {
-  console.log('gCC:',typeof document, typeof document.componentContext)
-  if (typeof document.componentContext === 'undefined') document.componentContexts = {}
-  return document.componentContexts[key]
-}
-export const setComponentContext = (key,val) => {
-  if (typeof document.componentContext === 'undefined') document.componentContexts = {}
-  document.componentContexts[key] = val
-}
-export const hasComponentContext = (key) => {
-  if (typeof document.componentContext === 'undefined') document.componentContexts = {}
-  return document.componentContexts.hasOwnProperty(key)
+export const nameFromURL = (url) => {
+  if (!url) return 'Loading...'
+  const urlObj = new URL(url)
+  var filename = urlObj.pathname.split('/').pop().split('#')[0].split('?')[0]
+  return filename.split('.')[0].split('_').join(' ')
 }
 export function formatTime(seconds) {
   if (isNaN(seconds)) return ''

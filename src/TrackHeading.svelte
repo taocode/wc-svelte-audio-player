@@ -1,5 +1,9 @@
 <script>
-  import { currentIndex, currentTrack } from './stores'
+  import { getContext } from 'svelte'
+  import { contextStores as CS, nameFromURL} from './lib'
+  const currentIndex = getContext(CS.CURRENT_INDEX)
+  const currentTrack = getContext(CS.CURRENT_TRACK)
+
   let container = { offsetWidth: 100 }
   let title = "Loading..."
   let heading = { scrollWidth: 100 }
@@ -9,8 +13,8 @@
   let panPx = 100
   $: {
     const i = $currentIndex
-    const hasTitle = (i >= 0 && $currentTrack)
-    title = (hasTitle) ? $currentTrack.title : "Loading..."
+    const hasTitle = (i >= 0 && $currentTrack && 'title' in $currentTrack)
+    title = (hasTitle) ? $currentTrack.title : nameFromURL($currentTrack.src)
     if (hasTitle && heading) {
       panPx = heading.scrollWidth - container.offsetWidth
       animate = panPx > 0

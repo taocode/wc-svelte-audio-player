@@ -5,11 +5,15 @@ import './src/index.svelte'
 # Playlist Audio Player Web Component
 
 ```html preview-story
-<taocode-audio-player skip="15" skiptime="show" advance="loop" tracklist='[
+<taocode-audio-player skip="15" skiptime="show" advance="loop" playlistshow="show" 
+urlonlyplaylist='["https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3",
+"https://download.pariyatti.org/free/_moIbLs95/Dana_The_Practice_of_Giving_single.mp3",
+"https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3"]'
+playlist='[
     ["https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3","Lumbini"],
     ["https://download.pariyatti.org/free/_moIbLs95/Dana_The_Practice_of_Giving_single.mp3","The Practice of Giving"],
     ["https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3","Great Compassion"]
-]'>
+]'></taocode-audio-player>
 ```
 
 ## Advanced Usage

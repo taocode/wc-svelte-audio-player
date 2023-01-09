@@ -1,5 +1,4 @@
 import "../src/index.svelte"
-import "../src/Track.svelte"
 import { html } from "lit-html"
 
 export default {

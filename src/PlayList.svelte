@@ -1,9 +1,15 @@
 <script>
+  import { getContext, hasContext } from 'svelte'
   import { slide } from 'svelte/transition'
-  import { tracks, currentIndex, playWhenReady, audioTag } from './stores.js'
-  import { formatTime } from './lib.js'
+  // import { tracks, currentIndex, playWhenReady, audioTag } from './stores.js'
+  import { formatTime, contextStores as CS, nameFromURL } from './lib.js'
+  const tracks = getContext(CS.TRACKS)
+  const currentIndex = getContext(CS.CURRENT_INDEX)
+  const playWhenReady = getContext(CS.PLAY_WHEN_READY)
+  const audioTag = getContext(CS.AUDIO_TAG)
 	
   export let show = false
+  export let atTop = false
 	let showing = show === 'true' || show === 'show'
   let always = show === 'always'
   const chooseTrack = (i) => {
@@ -26,12 +32,12 @@
   {/if}
 
   {#if always || showing}
-  <ul transition:slide>
+  <ul transition:slide class:atTop>
     {#each $tracks as track,i}
     <li data-track-id={i} class:current={i===$currentIndex}>
       <button on:click={() => chooseTrack(i)}>
         {#if track.duration}<span class="duration">{formatTime(track.duration)}</span>{/if}
-        {track.title} 
+        {track.title || nameFromURL(track.src)} 
       </button></li>
     {/each}
   </ul>
@@ -54,6 +60,9 @@
     width: 100%;
     background: var(--audio-player-playlist-background,#dddc);
     text-align: left;
+  }
+  .atTop {
+    bottom: 1.75em;
   }
 
   /* Style the buttons that are used to open and close the accordion panel */

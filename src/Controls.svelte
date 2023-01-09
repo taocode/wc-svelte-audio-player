@@ -1,12 +1,26 @@
 <script>
+  import { getContext } from 'svelte'
+  import { contextStores as CS } from './lib' 
   import PlayIcon from './svg/play.svg.svelte'
   import PauseIcon from './svg/pause.svg.svelte'
   import FastForwardIcon from './svg/fast-forward.svg.svelte'
   import SkipForwardIcon from './svg/skip-forward.svg.svelte'
   import SkipBackIcon from './svg/skip-back.svg.svelte'
-	import { audioTag, currentIndex, currentTrack, currentTime, trackDuration, isPlaying, isReady, skip, showSkipTime, tracks, playWhenReady } from './stores'
+	// import {  } from './stores'
   import Loader from './svg/loader.svg.svelte'
 
+  const audioTag = getContext(CS.AUDIO_TAG)
+  const currentIndex = getContext(CS.CURRENT_INDEX)
+  const currentTrack = getContext(CS.CURRENT_TRACK)
+  const currentTime = getContext(CS.CURRENT_TIME)
+  const trackDuration = getContext(CS.TRACK_DURATION)
+  const isPlaying = getContext(CS.IS_PLAYING)
+  const isReady = getContext(CS.IS_READY)
+  const skip = getContext(CS.SKIP)
+  const showSkipTime = getContext(CS.SHOW_SKIP_TIME)
+  const tracks = getContext(CS.TRACKS)
+  const playWhenReady = getContext(CS.PLAY_WHEN_READY)
+  
   let audioPlayer = $audioTag
   
   const playPauseAudio = () => {
@@ -31,16 +45,16 @@
   const previousAudio = () => {
     playWhenReady.set(true)
     if ($tracks.length > 1 && audioPlayer.currentTime < 5) {
-      console.log('prev: near start, choosing prior track',audioPlayer.currentTime)
+      // console.log('prev: near start, choosing prior track',audioPlayer.currentTime)
       if ($currentIndex < 1) currentIndex.set($tracks.length-1)
       else currentIndex.update(n => n - 1)
     } else {
-      console.log('prev: resetting to start of track')
+      // console.log('prev: resetting to start of track')
       audioPlayer.currentTime = 0
     }
   }
   const nextAudio = () => {
-    console.log('nextAudio',{$currentIndex,$currentTrack})
+    // console.log('nextAudio',{$currentIndex,$currentTrack})
     playWhenReady.set(true)
     currentIndex.update(n => n + 1)
   }
