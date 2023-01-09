@@ -1,7 +1,7 @@
 <svelte:options tag="taocode-audio-player" />
 
 <script>
-	import { onMount } from 'svelte'
+	import { onMount, getContext, setContext } from 'svelte'
 	// TODO: use jsmediatags to load ID3
 	// https://github.com/aadsm/jsmediatags
 	import { 
@@ -20,6 +20,8 @@
         progress,
 	 } from './stores.js'
 
+	 import { contextStores as cs } from './lib.js'
+
 	import TrackHeading from './TrackHeading.svelte'
 	import ProgressBarTime from './ProgressBarTime.svelte'
 	import Controls from './Controls.svelte'
@@ -35,11 +37,16 @@
 	let playlistAtTop = playlistlocation === 'top'
 
 	const audioPlayer = $audioTag
-
+	
+	// lots of setup
 	skipStore.set(skip)
 	advanceStore.set(advance)
 	showSkipTime.set(skiptime === "show")
+
 	audioPlayer.preload = "metadata"
+	setContext(cs.AUDIO_TAG,audioTag)
+	setContext(cs.CURRENT_INDEX,currentIndex)
+	setContext(cs.TRACKS,tracks)
 
 	onMount(() => {
 		if (document) {
@@ -133,63 +140,67 @@
 
 </script>
 
-{#if audioTracks < 1}
-<div class="error-no-tracks">
+{#if audioTracks < 1} <div class="error-no-tracks">
 	<h2>No Audio Tracks!</h2>
 	<p>You must include at least 1:</p>
 	<pre>&lt;taocode-audio src="url-to-audio"&gt;&lt;/taocode-audio&gt;</pre>
 	<p>Use the closing tag as shown above (&lt;taocode-audio .../&gt; will fail).</p>
-</div>
-{:else}
-<main class="audio-player" class:playlistAtTop>
-	<section id="player-cont">
-		
-		<TrackHeading />
-		
-		<ProgressBarTime />
-		
-		<Controls />
-		
-		<VolumeSlider />
-		
-	</section>	
-	<PlayList show={playlistshow} />
-</main>
-{/if}
+	</div>
+	{:else}
+	<main class="audio-player" class:playlistAtTop>
+		<section id="player-cont">
 
-<style>
-	.error-no-tracks {
-		background-color: pink;
-		padding: 0.5em;
-		text-align: center;
-		color: #800E;
-	}
-	.error-no-tracks h2 {
-		margin-top: 0.1em;
-	}
-	audio {
-		display: block;
-		margin: 0.5em auto;
-	}
-	main {
-		display: flex;
-		margin: 0 auto;
-		max-width: 15em;
-		flex-direction: column;
-		align-items: center;
-		/* 		justify-content: center; */
-		width: fit-content;
-		border-radius: var(--audio-player-border-radius,0);
-	}
-	.playlistAtTop >:last-child {
-		order: -1;
-	}
-	#player-cont {
-		padding: 0.5rem 1rem;
-		box-shadow: var(--audio-player-shadow, none);
-		background: var(--audio-player-background,#EEE);
-		color: var(--audio-player-color,#333);
-		border-radius: var(--audio-player-border-radius,0);
-		width: 13em;
-	}
-</style>
+			<TrackHeading />
+
+			<ProgressBarTime />
+
+			<Controls />
+
+			<VolumeSlider />
+
+		</section>
+		<PlayList show={playlistshow} />
+	</main>
+	{/if}
+
+	<style>
+		.error-no-tracks {
+			background-color: pink;
+			padding: 0.5em;
+			text-align: center;
+			color: #800E;
+		}
+
+		.error-no-tracks h2 {
+			margin-top: 0.1em;
+		}
+
+		audio {
+			display: block;
+			margin: 0.5em auto;
+		}
+
+		main {
+			display: flex;
+			margin: 0 auto;
+			max-width: 15em;
+			flex-direction: column;
+			align-items: center;
+			/* 		justify-content: center; */
+			width: fit-content;
+			border-radius: var(--audio-player-border-radius, 0);
+		}
+
+		.playlistAtTop>:last-child {
+			order: -1;
+		}
+
+		#player-cont {
+			padding: 0.5rem 1rem;
+			box-shadow: var(--audio-player-shadow, none);
+			background: var(--audio-player-background, #EEE);
+			color: var(--audio-player-color, #333);
+			border-radius: var(--audio-player-border-radius, 0);
+			width: 13em;
+		}
+	</style>

@@ -1,4 +1,8 @@
-
+export const contextStores = {
+  AUDIO_TAG: 'audioTag',
+  CURRENT_INDEX: 'currentIndex',
+  TRACKS: 'tracks',
+}
 export function formatTime(seconds) {
   if (isNaN(seconds)) return ''
   const h = Math.floor(seconds / 3600);
