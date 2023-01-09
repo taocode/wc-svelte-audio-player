@@ -1,22 +1,22 @@
 ```js script
 import './src/index.svelte'
-import './src/Audio.svelte'
+import './src/Track.svelte'
 ```
 
 # Playlist Audio Player Web Component
 
 ```html preview-story
 <taocode-audio-player skip="15" skiptime="show" advance="loop">
-  <taocode-audio title="Blurble 1" src="https://www.zapsplat.com/wp-content/uploads/2015/sound-effects-46416/zapsplat_cartoon_bubble_001_46810.mp3"></taocode-audio>
-  <taocode-audio title="Ascend mallet 3" src="https://www.zapsplat.com/wp-content/uploads/2015/sound-effects-84577/zapsplat_cartoon_fast_climb_ascend_soft_synth_mallets_003_92028.mp3"></taocode-audio>
-  <taocode-audio title="Walking in Tall Grass" src="https://assets.mixkit.co/sfx/preview/mixkit-footsteps-on-tall-grass-532.mp3"></taocode-audio>
-  <taocode-audio title="AudioJungle Funk" src="https://audio-previews.elements.envatousercontent.com/files/285771709/preview.mp3?response-content-disposition=attachment%3B+filename%3D%22J6UNLJF-funk.mp3%22"></taocode-audio>
-  <taocode-audio title="Lumbini" src="https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3"></taocode-audio>
-  <taocode-audio title="Mixkit Mystwrious Keyboard Typing" src="https://assets.mixkit.co/sfx/preview/mixkit-keyboard-typing-1386.mp3"></taocode-audio> 
-  <taocode-audio title="Mixkit Mystwrious Bass Pulse" src="https://assets.mixkit.co/sfx/preview/mixkit-mystwrious-bass-pulse-2298.mp3"></taocode-audio>
-  <taocode-audio title="Mixkit Knobs" src="https://assets.mixkit.co/music/preview/mixkit-knobs-636.mp3"></taocode-audio>
-  <taocode-audio title="Practice of Giving" src="https://download.pariyatti.org/free/_moIbLs95/Dana_The_Practice_of_Giving_single.mp3"></taocode-audio>
-  <taocode-audio title="Lumbini" src="https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3"></taocode-audio>
+  <taocode-track title="Blurble 1" src="https://www.zapsplat.com/wp-content/uploads/2015/sound-effects-46416/zapsplat_cartoon_bubble_001_46810.mp3"></taocode-track>
+  <taocode-track title="Ascend mallet 3" src="https://www.zapsplat.com/wp-content/uploads/2015/sound-effects-84577/zapsplat_cartoon_fast_climb_ascend_soft_synth_mallets_003_92028.mp3"></taocode-track>
+  <taocode-track title="Walking in Tall Grass" src="https://assets.mixkit.co/sfx/preview/mixkit-footsteps-on-tall-grass-532.mp3"></taocode-track>
+  <taocode-track title="AudioJungle Funk" src="https://audio-previews.elements.envatousercontent.com/files/285771709/preview.mp3?response-content-disposition=attachment%3B+filename%3D%22J6UNLJF-funk.mp3%22"></taocode-track>
+  <taocode-track title="Lumbini" src="https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3"></taocode-track>
+  <taocode-track title="Mixkit Mystwrious Keyboard Typing" src="https://assets.mixkit.co/sfx/preview/mixkit-keyboard-typing-1386.mp3"></taocode-track> 
+  <taocode-track title="Mixkit Mystwrious Bass Pulse" src="https://assets.mixkit.co/sfx/preview/mixkit-mystwrious-bass-pulse-2298.mp3"></taocode-track>
+  <taocode-track title="Mixkit Knobs" src="https://assets.mixkit.co/music/preview/mixkit-knobs-636.mp3"></taocode-track>
+  <taocode-track title="Practice of Giving" src="https://download.pariyatti.org/free/_moIbLs95/Dana_The_Practice_of_Giving_single.mp3"></taocode-track>
+  <taocode-track title="Lumbini" src="https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3"></taocode-track>
 </taocode-audio-player>
 ```
 
