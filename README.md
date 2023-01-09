@@ -1,15 +1,15 @@
 ```js script
 import './src/index.svelte'
-import './src/Track.svelte'
 ```
 
 # Playlist Audio Player Web Component
 
 ```html preview-story
-<taocode-audio-player skip="15" skiptime="show" advance="loop">
-  <taocode-track title="Blurble 1" src="https://www.zapsplat.com/wp-content/uploads/2015/sound-effects-46416/zapsplat_cartoon_bubble_001_46810.mp3"></taocode-track>
-  <taocode-track title="Ascend mallet 3" src="https://www.zapsplat.com/wp-content/uploads/2015/sound-effects-84577/zapsplat_cartoon_fast_climb_ascend_soft_synth_mallets_003_92028.mp3"></taocode-track>
-</taocode-audio-player>
+<taocode-audio-player skip="15" skiptime="show" advance="loop" tracklist='[
+    ["https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3","Lumbini"],
+    ["https://download.pariyatti.org/free/_moIbLs95/Dana_The_Practice_of_Giving_single.mp3","The Practice of Giving"],
+    ["https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3","Great Compassion"]
+]'>
 ```
 
 ## Advanced Usage
