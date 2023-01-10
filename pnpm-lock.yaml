@@ -3,11 +3,9 @@ lockfileVersion: 5.4
 specifiers:
   lit-html: ^1
   svelte: ^3.55.0
-  wc-context: github:blikblum/wc-context
 
 dependencies:
   lit-html: 1.4.1
-  wc-context: github.com/blikblum/wc-context/6dc3f5f2c36e018073354dbd6a8e0e9f43f8a715
 
 devDependencies:
   svelte: 3.55.0
@@ -22,9 +20,3 @@ packages:
     resolution: {integrity: sha512-uGu2FVMlOuey4JoKHKrpZFkoYyj0VLjJdz47zX5+gVK5odxHM40RVhar9/iK2YFRVxvfg9FkhfVlR0sjeIrOiA==}
     engines: {node: '>= 8'}
     dev: true
-
-  github.com/blikblum/wc-context/6dc3f5f2c36e018073354dbd6a8e0e9f43f8a715:
-    resolution: {tarball: https://codeload.github.com/blikblum/wc-context/tar.gz/6dc3f5f2c36e018073354dbd6a8e0e9f43f8a715}
-    name: wc-context
-    version: 0.11.0
-    dev: false
