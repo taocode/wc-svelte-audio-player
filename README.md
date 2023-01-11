@@ -20,7 +20,9 @@ Playlist attribute is required. It can be 1 of 3 options:
 
 #### Playlist Option 1: Single URL
 
-`playlist="url-to-audio.mp3"`
+`playlist="url-to-audio.mp3"` - must be a full URL starting with https:// or http://
+
+You can use a relative URL if you include only 1 track in an array, options 2 and 3 don't have this restriction.
 
 #### Playlist Option 2: Array of URLs
 
