@@ -34,8 +34,8 @@
   {#if always || showing}
   <ul transition:slide class:atTop>
     {#each $tracks as track,i}
-    <li data-track-id={i} class:current={i===$currentIndex}>
-      <button on:click={() => chooseTrack(i)}>
+    <li data-track-id={i} class:current={i===$currentIndex} >
+      <button on:click={() => chooseTrack(i)} disabled={track.error} class:error={track.error}>
         {#if track.duration}<span class="duration">{formatTime(track.duration)}</span>{/if}
         {track.title || nameFromURL(track.src)} 
       </button></li>
@@ -60,9 +60,14 @@
     width: 100%;
     background: var(--audio-player-playlist-background,#dddc);
     text-align: left;
+    cursor: pointer;
   }
   .atTop {
     bottom: 1.75em;
+  }
+  .error {
+    color: var(--color-error,red);
+    cursor: not-allowed;
   }
 
   /* Style the buttons that are used to open and close the accordion panel */

@@ -13,6 +13,7 @@ export const contextStores = {
   IS_PLAYING: 'isPlaying',
   IS_READY: 'isReady',
   PROGRESS: 'progress',
+  IS_ERROR: 'isError',
 }
 export const nameFromURL = (url) => {
   if (!url) return 'Loading...'

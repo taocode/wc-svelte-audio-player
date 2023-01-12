@@ -65,6 +65,19 @@
 	const isPlaying = writable(false)
 	setContext(CS.IS_PLAYING,isPlaying)
 
+	const isError = writable(false)
+	setContext(CS.IS_ERROR,isError)
+
+	const updateCurrentTime = () => {
+		currentTime.set(audioPlayer.currentTime)
+	}
+
+	const updateTrackList = (index,track) => {
+		const newTracks = $tracks
+		newTracks[index] = track
+		tracks.set(newTracks)
+	}
+
 	const audioTag = writable(new Audio())
 	
 	const audioPlayer = $audioTag
@@ -82,6 +95,7 @@
 	audioPlayer.addEventListener('canplay', () => {
 		// console.log('canplay',{$currentIndex,$playWhenReady})
 		isReady.set(true)
+		isError.set(false)
 		updateCurrentTime()
 	})
 	audioPlayer.addEventListener('canplaythrough', () => {
@@ -99,6 +113,16 @@
 			if ($currentIndex >= $tracks.length-1) currentIndex.set(0)
 			else currentIndex.update(n => n+1)
 		}
+	})
+	audioPlayer.addEventListener('error', () => {
+		const t = $currentTrack
+		t.error = true
+		isError.set(true)
+		updateTrackList($currentIndex,t)
+		console.error(`Audio error with: ${$currentTrack.src}`,$currentTrack)
+		audioPlayer.currentTime = 0
+		audioPlayer.pause()
+		updateCurrentTime()
 	})
 	setContext(CS.AUDIO_TAG,audioTag)
 	
@@ -124,52 +148,50 @@
 			progressTracker = setInterval(updateCurrentTime, 100)
 		}
 	}
-	const updateCurrentTime = () => {
-		currentTime.set(audioPlayer.currentTime)
-	}
-
-	// auto-load track on every track change
-	$: if ($currentIndex <= $tracks.length-1 
-			&& $currentTrack !== false
-			&& typeof $currentTrack.loaded === 'undefined'
-			&& !$currentTrack.loading) loadCurrentTrack()
 	
+	const setAudioFrom = (track) => {
+		audioPlayer.title = track.title
+		audioPlayer.src = track.error ? 'about:blank' : track.src
+		audioPlayer.currentTime = 0
+		isError.set(track.error)
+		updateCurrentTime()
+	}
 	const loadCurrentTrack = () => {
-		// nope, return to this with first item (index 0) on update trigger
+		// nope, return to this with first item on update trigger
 		if ($currentIndex > $tracks.length-1) currentIndex.set(0)
 		else loadTrack($currentIndex,$currentTrack)
 	}
 	const loadTrack = (index, track) => {
 		// console.info(`loadTrack()`,{index,track})
 		if (!audioPlayer) {
-			console.warn('loadTrack() odd condition',{audioPlayer,$audioTag,$currentTrack})
+			console.warn('loadTrack() odd condition',{audioPlayer,$currentTrack})
 			return
 		}
-		audioPlayer.title = track.title
-		audioPlayer.src = track.src
+		setAudioFrom(track)
 		track.loading = true
 		isReady.set(false)
 		audioPlayer.load()
 		audioPlayer.onloadedmetadata = () => {
-			// console.log(`metadata loaded for ${track.title} `)
+			// console.log(`metadata loaded for ${$currentIndex}: ${track.title} `)
 			track.loaded = true
 			track.loading = false
 			track.duration = audioPlayer.duration
-			const newTracks = $tracks
-			newTracks[index] = track
-			tracks.set(newTracks)
+			updateTrackList(index,track)
 		}
 	}
-	
-	$: audioTracks =	$tracks
-	$: {
-		if ($currentIndex > -1) loadCurrentTrack()
-	}
+	// auto-load track on every track change
+	$: if ( ($currentIndex > -1 && $currentIndex <= $tracks.length-1) 
+			&& (! $currentTrack || ! $currentTrack.loaded)
+			&& ($currentTrack && ! $currentTrack.loading)) {
+			loadCurrentTrack()
+		} else if ($currentTrack && ! $currentTrack.error) {
+			setAudioFrom($currentTrack)
+		}
+
 	if ($currentIndex < 0) currentIndex.set(0)
-//$: 
 </script>
 
-{#if audioTracks < 1}
+{#if $tracks < 1}
 <div class="error-no-playlist">
 	<h2>No Playlist!</h2>
 	<p>You must provide a valid playlist attribute.</p>
@@ -179,7 +201,9 @@
 	</pre>
 	</div>
 	{:else}
-	<main class="audio-player" class:playlistAtTop>
+	<main class="audio-player" class:playlistAtTop
+	style="
+--color-error: hsl(0,75%,50%);">
 		<section id="player-cont">
 
 			<TrackHeading />

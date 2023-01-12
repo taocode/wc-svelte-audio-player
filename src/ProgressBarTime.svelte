@@ -7,18 +7,21 @@
   const currentTrack = getContext(CS.CURRENT_TRACK)
   const isPlaying = getContext(CS.IS_PLAYING)
   const isReady  = getContext(CS.IS_READY)
+  const isError = getContext(CS.IS_ERROR)
   
-	let totalTimeDisplay = "Loading..."
+	let totalTimeDisplay = 'Loading...'
 	let currTimeDisplay = "0:00:00"
 	
-  $: if ($isReady) updateTime()
+  $: if ($isReady || $isError) updateTime()
   $: timeUpdater($isPlaying)
 
 	function updateTime() {
     const ct = $currentTime
     const dt = $currentTrack.duration
 		currTimeDisplay = (isNaN(ct))?`0:00`:formatTime(ct);
-		totalTimeDisplay = (isNaN(dt)) ?'Loading...':formatTime(dt);
+		totalTimeDisplay = (isNaN(dt)) ?
+      $isError ? 'Error' : 'Loading...'
+      : formatTime(dt);
 	}
 	
 	let trackTimer;

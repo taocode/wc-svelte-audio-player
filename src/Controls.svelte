@@ -7,7 +7,8 @@
   import SkipForwardIcon from './svg/skip-forward.svg.svelte'
   import SkipBackIcon from './svg/skip-back.svg.svelte'
 	// import {  } from './stores'
-  import Loader from './svg/loader.svg.svelte'
+  import LoaderIcon from './svg/loader.svg.svelte'
+  import SlashIcon from './svg/slash.svg.svelte'
 
   const audioTag = getContext(CS.AUDIO_TAG)
   const currentIndex = getContext(CS.CURRENT_INDEX)
@@ -16,6 +17,7 @@
   const trackDuration = getContext(CS.TRACK_DURATION)
   const isPlaying = getContext(CS.IS_PLAYING)
   const isReady = getContext(CS.IS_READY)
+  const isError = getContext(CS.IS_ERROR)
   const skip = getContext(CS.SKIP)
   const showSkipTime = getContext(CS.SHOW_SKIP_TIME)
   const tracks = getContext(CS.TRACKS)
@@ -70,44 +72,58 @@
 </script>
 
 
-<div id="btn-cont">
+<div id="btn-cont" class:$isError>
   <button id="prev" class:prevTrack on:click={previousAudio}>
-    <SkipBackIcon {size} title="Skip Back" />
+    <span class="icon">
+      <SkipBackIcon title="Skip Back" />
+    </span>
 	</button>
+
   {#if includeSkip}
   <button id="rewind" title="Skip back {$skip}s" on:click={rewindAudio}>
-		<span class="invert-h">
-      <FastForwardIcon {size} />
+		<span class="icon invert-h">
+      <FastForwardIcon />
     </span>
     {#if $showSkipTime}<span class="skip-time">{$skip}</span>{/if}
 	</button>
   {/if}
-  {#if !$isReady}
-  <div class="loading">
-    <div class="loader add-animate-beacon animate-pulse">
-      <Loader {size} />
-    </div>
-  </div>
+
+  {#if $isError}
+    <span class="icon icon-error">
+      <SlashIcon />
+    </span>
   {:else}
-  <button id="play" on:click={playPauseAudio}>
-    {#if $isPlaying}
-    <PauseIcon {size} strokeWidth={strokeWidth*2/3}/>
+    {#if !$isReady}
+    <div class="loading">
+      <div class="loader add-animate-beacon animate-pulse">
+        <LoaderIcon />
+      </div>
+    </div>
     {:else}
-    <PlayIcon {size} {strokeWidth}/>
+    <button id="play" on:click={playPauseAudio}>
+      <span class="icon">
+        {#if $isPlaying}
+        <PauseIcon />
+        {:else}
+        <PlayIcon />
+        {/if}
+      </span>
+    </button>
     {/if}
-	</button>
   {/if}
+
   {#if includeSkip}
   <button id="forward" title="Skip forward {$skip}s" on:click={forwardAudio}>
-    <span>
-      <FastForwardIcon {size} />
+    <span class="icon">
+      <FastForwardIcon />
     </span>
     {#if $showSkipTime}<span class="skip-time">{$skip}</span>{/if}
 	</button>
   {/if}
+
   {#if includeNext}
   <button id="next" on:click={nextAudio}>
-    <span>
+    <span class="icon">
       <SkipForwardIcon {size} title="Next track" />
     </span>
 	</button>
@@ -128,6 +144,15 @@
     display: flex;
     justify-content: space-between;
   }
+  .icon {
+    display: inline-block;
+    /* position: absolute; */
+  }
+  /* button, */
+  .icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
   button {
     display: flex;
     justify-content: center;
@@ -139,7 +164,12 @@
     margin: 0;
     background-color: transparent;
   }
-  
+  .\$isError {
+    color: var(--color-error,red);
+  }
+  .\$isError .icon-error {
+    cursor: not-allowed;
+  }
   .button-placeholder {
     width: 2ch;
   }
@@ -152,16 +182,8 @@
   .loader {
     position: absolute;
   }
-  .beacon {
-    display: none;
-    font-size: 10px;
-    border-radius: 999em;
-    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
-    height: 1em;
-    width: 1em;
-    top: 0.5em;
-    left: 0.5em;
-  }
+
+
   .add-animate-beacon::after {
     content: '';
     position: absolute;

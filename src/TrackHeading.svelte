@@ -4,6 +4,8 @@
   const currentIndex = getContext(CS.CURRENT_INDEX)
   const currentTrack = getContext(CS.CURRENT_TRACK)
 
+  import AlertCircleIcon from './svg/alert-circle.svg.svelte'
+
   let container = { offsetWidth: 100 }
   let title = "Loading..."
   let heading = { scrollWidth: 100 }
@@ -11,16 +13,18 @@
   let centered = true
   let aniTime = 15
   let panPx = 100
+  let error = false
   $: {
     const i = $currentIndex
     const hasTitle = (i >= 0 && $currentTrack && 'title' in $currentTrack)
+    error = $currentTrack.error
     title = (hasTitle) ? $currentTrack.title : nameFromURL($currentTrack.src)
     if (hasTitle && heading) {
-      panPx = heading.scrollWidth - container.offsetWidth
+      panPx = heading.scrollWidth - container.offsetWidth + (error ? 24 : 0)
       animate = panPx > 0
       centered = !animate
       aniTime = panPx / 25
-      if (aniTime < 6) aniTime += 6
+      if (aniTime < 5) aniTime += 5
       if (heading.style) {
         heading.style.animationName = 'none'
         heading.offsetWidth // trigger reflow
@@ -30,12 +34,19 @@
   }
 </script>
 
-<div bind:this={container} 
+<div bind:this={container} class:error
  style="
 --marquee-width: {panPx}px;
 --marquee-time: {aniTime}s;
 ">
-  <h3 bind:this={heading} class:animate class:centered>{title}</h3>
+  <h3 bind:this={heading} class:animate class:centered>
+    {#if error}
+    <span class="error-icon">
+      <AlertCircleIcon />
+    </span>
+    {/if}
+    {title}
+  </h3>
 </div>
 
 <style>
@@ -47,7 +58,14 @@
     height: 2em;
     padding: 0.2em 0;
   }
-
+  .error {
+    color: var(--color-error, red);
+  }
+  .error-icon {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+  }
   h3 {
     white-space: nowrap;
     margin: 0;
