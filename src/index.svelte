@@ -68,6 +68,9 @@
 	const isError = writable(false)
 	setContext(CS.IS_ERROR,isError)
 
+	const playWhenReady = writable(false)
+	setContext(CS.PLAY_WHEN_READY,playWhenReady)
+
 	const updateCurrentTime = () => {
 		currentTime.set(audioPlayer.currentTime)
 	}
@@ -81,7 +84,7 @@
 	const audioTag = writable(new Audio())
 	
 	const audioPlayer = $audioTag
-	audioTag.preload = "metadata"
+	audioTag.preload = "none"
 	audioPlayer.addEventListener('play', () => { 
 		isPlaying.set(true)
 		// console.log('play!')
@@ -110,8 +113,7 @@
 		currentTime.set($trackDuration)
 		if (advance === 'loop' || (advance === 'auto' && $currentIndex < $tracks.length-1)) {
 			playWhenReady.set(true)
-			if ($currentIndex >= $tracks.length-1) currentIndex.set(0)
-			else currentIndex.update(n => n+1)
+			currentIndex.update(n => n+1)
 		}
 	})
 	audioPlayer.addEventListener('error', () => {
@@ -120,8 +122,8 @@
 		isError.set(true)
 		updateTrackList($currentIndex,t)
 		console.error(`Audio error with: ${$currentTrack.src}`,$currentTrack)
-		audioPlayer.currentTime = 0
 		audioPlayer.pause()
+		audioPlayer.currentTime = 0
 		updateCurrentTime()
 	})
 	setContext(CS.AUDIO_TAG,audioTag)
@@ -138,9 +140,6 @@
 	const volume = writable(80)
 	setContext(CS.VOLUME, volume)
 
-	const playWhenReady = writable(false)
-	setContext(CS.PLAY_WHEN_READY,playWhenReady)
-
 	let progressTracker
 	const trackProgress = (watch) => {
 		clearInterval(progressTracker)
@@ -150,45 +149,66 @@
 	}
 	
 	const setAudioFrom = (track) => {
+		console.log('setAudioFrom',track,typeof track.loaded === undefined)
+		if (! track ) return
+		audioPlayer.pause()
 		audioPlayer.title = track.title
-		audioPlayer.src = track.error ? 'about:blank' : track.src
 		audioPlayer.currentTime = 0
 		isError.set(track.error)
+		audioPlayer.src = track.error ? '' : track.src
+		console.log('about to load',audioPlayer.src,audioPlayer.title)
 		updateCurrentTime()
 	}
-	const loadCurrentTrack = () => {
-		// nope, return to this with first item on update trigger
-		if ($currentIndex > $tracks.length-1) currentIndex.set(0)
-		else loadTrack($currentIndex,$currentTrack)
-	}
 	const loadTrack = (index, track) => {
-		// console.info(`loadTrack()`,{index,track})
+		console.info(`loadTrack()`,index,track)
 		if (!audioPlayer) {
 			console.warn('loadTrack() odd condition',{audioPlayer,$currentTrack})
 			return
 		}
-		setAudioFrom(track)
 		track.loading = true
 		isReady.set(false)
-		audioPlayer.load()
 		audioPlayer.onloadedmetadata = () => {
-			// console.log(`metadata loaded for ${$currentIndex}: ${track.title} `)
+			console.log(`metadata loaded for ${$currentIndex}: ${track.title} `)
 			track.loaded = true
 			track.loading = false
 			track.duration = audioPlayer.duration
 			updateTrackList(index,track)
 		}
+		setAudioFrom(track)
+		audioPlayer.load()
+	}
+	const loadCurrentTrack = () => {
+		loadTrack($currentIndex,$currentTrack)
 	}
 	// auto-load track on every track change
-	$: if ( ($currentIndex > -1 && $currentIndex <= $tracks.length-1) 
-			&& (! $currentTrack || ! $currentTrack.loaded)
-			&& ($currentTrack && ! $currentTrack.loading)) {
-			loadCurrentTrack()
-		} else if ($currentTrack && ! $currentTrack.error) {
-			setAudioFrom($currentTrack)
+	function autoLoadPlay(index,track) {
+		if ( ! track || index < 0 && index >= $tracks.length-1 ) {
+			// illegal value, reset to 0 and trigger refresh
+			currentIndex.set(0)
+			console.warn('invalid autoPlayLoad track, reseting to 0',index,'/',$tracks.length,track)
+			return
 		}
+		if ( track.loaded || track.error) {
+			console.log('alp',track)
+			// setAudioFrom(track)
 
-	if ($currentIndex < 0) currentIndex.set(0)
+		} else if ( ! track.loaded && ! track.loading) {
+			loadCurrentTrack()
+			console.log('lct',index,track)
+		} else {
+			console.log('fell through')
+		}
+		// if (  
+		// 		&& (! ct || ! ct.loaded)
+		// 		&& (ct && ! ct.loading)) {
+		// 		loadCurrentTrack()
+		// 	} else if (ct && ! ct.error && ! ct.loading) {
+		// 		setAudioFrom($currentTrack)
+		// 		console.log('saf',$currentIndex)
+		// 	}
+	}
+	// currentIndex.set(2)
+	$: autoLoadPlay($currentIndex,$currentTrack)
 </script>
 
 {#if $tracks < 1}

@@ -124,7 +124,7 @@
   {#if includeNext}
   <button id="next" on:click={nextAudio}>
     <span class="icon">
-      <SkipForwardIcon {size} title="Next track" />
+      <SkipForwardIcon title="Next track" />
     </span>
 	</button>
   {:else}
@@ -182,7 +182,6 @@
   .loader {
     position: absolute;
   }
-
 
   .add-animate-beacon::after {
     content: '';

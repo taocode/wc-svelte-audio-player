@@ -14,7 +14,7 @@
   let always = show === 'always'
   const chooseTrack = (i) => {
     playWhenReady.set(true)
-    // console.log('chooseTrack',i,{$playWhenReady})
+    console.log('chooseTrack',i,{$playWhenReady,$audioTag})
     if (i === $currentIndex) $audioTag.play()
     else currentIndex.set(i)
   }
@@ -24,7 +24,8 @@
   {#if $tracks.length > 1}
   <button class="accordion"
       class:showing class:always
-      on:click={() => showing =! showing && !always}>
+      disabled={always}
+      on:click={() => showing = !showing && !always}>
       ☰ Playlist 
       <span class="track-count">{$tracks.length}</span>
       {#if showing && !always}<span class="close">✖</span>{/if}
