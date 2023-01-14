@@ -18,13 +18,13 @@
 	function updateTime() {
     const ct = $currentTime
     const dt = $currentTrack.duration
-		currTimeDisplay = (isNaN(ct))?`0:00`:formatTime(ct);
-		totalTimeDisplay = (isNaN(dt)) ?
-      $isError ? 'Error' : 'Loading...'
-      : formatTime(dt);
+		currTimeDisplay = isNaN(ct) ? `0:00` : formatTime(ct)
+		totalTimeDisplay = $isError ? 'Error' 
+      : isNaN(dt) ? 'Loading...'
+      : formatTime(dt)
 	}
 	
-	let trackTimer;
+	let trackTimer
   const timeUpdater = (run) => {
     clearInterval(trackTimer)
     if (run) trackTimer = setInterval(updateTime,100)
@@ -50,7 +50,7 @@
   }
   .progress-outer {
     width: 100%;
-    border: var(--audio-player-border, 1px solid #22222299);
+    border: var(--audio-player-border, 1px solid #2222);
   }
   
   #bar {

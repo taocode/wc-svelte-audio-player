@@ -12,7 +12,6 @@
 
   const audioTag = getContext(CS.AUDIO_TAG)
   const currentIndex = getContext(CS.CURRENT_INDEX)
-  const currentTrack = getContext(CS.CURRENT_TRACK)
   const currentTime = getContext(CS.CURRENT_TIME)
   const trackDuration = getContext(CS.TRACK_DURATION)
   const isPlaying = getContext(CS.IS_PLAYING)
@@ -22,6 +21,7 @@
   const showSkipTime = getContext(CS.SHOW_SKIP_TIME)
   const tracks = getContext(CS.TRACKS)
   const playWhenReady = getContext(CS.PLAY_WHEN_READY)
+  const reverseDirection = getContext(CS.REVERSE_DIRECTION)
   
   let audioPlayer = $audioTag
   
@@ -46,14 +46,8 @@
   }
   const previousAudio = () => {
     playWhenReady.set(true)
-    if ($tracks.length > 1 && audioPlayer.currentTime < 5) {
-      // console.log('prev: near start, choosing prior track',audioPlayer.currentTime)
-      if ($currentIndex < 1) currentIndex.set($tracks.length-1)
-      else currentIndex.update(n => n - 1)
-    } else {
-      // console.log('prev: resetting to start of track')
-      audioPlayer.currentTime = 0
-    }
+    reverseDirection.set(true)
+    currentIndex.update(n => n - 1)
   }
   const nextAudio = () => {
     // console.log('nextAudio',{$currentIndex,$currentTrack})

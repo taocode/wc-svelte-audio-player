@@ -14,8 +14,11 @@
   let always = show === 'always'
   const chooseTrack = (i) => {
     playWhenReady.set(true)
-    console.log('chooseTrack',i,{$playWhenReady,$audioTag})
-    if (i === $currentIndex) $audioTag.play()
+    // console.log('chooseTrack',i,{$playWhenReady,$audioTag})
+    if (i === $currentIndex) {
+      $audioTag.currentTime = 0
+      $audioTag.play()
+    }
     else currentIndex.set(i)
   }
 </script>
@@ -37,7 +40,8 @@
     {#each $tracks as track,i}
     <li data-track-id={i} class:current={i===$currentIndex} >
       <button on:click={() => chooseTrack(i)} disabled={track.error} class:error={track.error}>
-        {#if track.duration}<span class="duration">{formatTime(track.duration)}</span>{/if}
+        {#if 'duration' in track || track.error}<span class="duration">{
+          track.error ? '--:--' : formatTime(track.duration) }</span>{:else if track.error}{/if}
         {track.title || nameFromURL(track.src)} 
       </button></li>
     {/each}
@@ -96,6 +100,9 @@
     background: var(--audio-player-track-count-background,#333a);
     color: var(--audio-player-track-count-color,#FFF);
     padding: 0.1em 0.5em;
+  }
+  .error .duration {
+    background: var(--color-error,#d00c);
   }
   .duration {
     float: right;

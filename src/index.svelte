@@ -53,10 +53,10 @@
 	const currentTrack = derived([currentIndex, tracks], ([$i, $t]) => $i < $t.length && $i >= 0 ? $t[$i] : false)
 	setContext(CS.CURRENT_TRACK,currentTrack)
 	
-	const trackDuration = derived(currentTrack, ($t) => $t ? $t.duration : false)
+	const trackDuration = derived(currentTrack, ($t) => $t && 'duration' in $t ? $t.duration : false)
 	setContext(CS.TRACK_DURATION,trackDuration)
 	
-	const progress = derived([currentTime,trackDuration], ([$t,$d]) => $t * (100 / $d))
+	const progress = derived([currentTime,trackDuration], ([$t,$d]) => $t * 100 / ($d || 0.000001))
 	setContext(CS.PROGRESS,progress)
 	
 	const isReady = writable(false)
@@ -71,14 +71,29 @@
 	const playWhenReady = writable(false)
 	setContext(CS.PLAY_WHEN_READY,playWhenReady)
 
+	const skipStore = writable(skip)
+	setContext(CS.SKIP,skipStore)
+
+	const advanceStore = writable(advance)
+	setContext(CS.ADVANCE,advanceStore)
+
+	const showSkipTime = writable(skiptime === "show")
+	setContext(CS.SHOW_SKIP_TIME,showSkipTime)
+
+	const volume = writable(80)
+	setContext(CS.VOLUME, volume)
+
+	const reverseDirection = writable(false)
+	setContext(CS.REVERSE_DIRECTION, reverseDirection)
+
 	const updateCurrentTime = () => {
 		currentTime.set(audioPlayer.currentTime)
 	}
 
-	const updateTrackList = (index,track) => {
-		const newTracks = $tracks
-		newTracks[index] = track
-		tracks.set(newTracks)
+	// when track data changes onload or onerror,
+	// notify the store of the change
+	const updateTrackList = () => {
+		tracks.set($tracks)
 	}
 
 	const audioTag = writable(new Audio())
@@ -99,6 +114,7 @@
 		// console.log('canplay',{$currentIndex,$playWhenReady})
 		isReady.set(true)
 		isError.set(false)
+		reverseDirection.set(false)
 		updateCurrentTime()
 	})
 	audioPlayer.addEventListener('canplaythrough', () => {
@@ -108,38 +124,33 @@
 			audioPlayer.play()
 		}
 	})
+	const autoAdvance = () => {
+		if (advance === 'loop' || (advance === 'auto' && $currentIndex < $tracks.length-1)) {
+			playWhenReady.set(true)
+			currentIndex.update(n => n+($reverseDirection ? -1 : 1))
+		}
+	}
 	audioPlayer.addEventListener('ended', () => { 
 		// console.log('ended track ',$currentIndex,$tracks.length)
 		currentTime.set($trackDuration)
-		if (advance === 'loop' || (advance === 'auto' && $currentIndex < $tracks.length-1)) {
-			playWhenReady.set(true)
-			currentIndex.update(n => n+1)
-		}
+		updateCurrentTime()
+		autoAdvance()
 	})
 	audioPlayer.addEventListener('error', () => {
 		const t = $currentTrack
 		t.error = true
 		t.loading = false
+		// t.duration = 0
 		isError.set(true)
-		updateTrackList($currentIndex,t)
-		console.error(`Audio error with: ${$currentTrack.src}`,$currentTrack)
+		updateTrackList()
 		audioPlayer.pause()
 		audioPlayer.currentTime = 0
+		console.error(`Audio error track: ${$currentIndex} - ${$currentTrack.src}`,$currentTrack)
 		updateCurrentTime()
+		autoAdvance()
 	})
 	setContext(CS.AUDIO_TAG,audioTag)
 	
-	const skipStore = writable(skip)
-	setContext(CS.SKIP,skipStore)
-
-	const advanceStore = writable(advance)
-	setContext(CS.ADVANCE,advanceStore)
-
-	const showSkipTime = writable(skiptime === "show")
-	setContext(CS.SHOW_SKIP_TIME,showSkipTime)
-
-	const volume = writable(8)
-	setContext(CS.VOLUME, volume)
 
 	let progressTracker
 	const trackProgress = (watch) => {
@@ -150,30 +161,28 @@
 	}
 	
 	const setAudioFrom = (track) => {
-		console.log('setAudioFrom',track,typeof track.loaded === undefined)
+		// console.log('setAudioFrom',track,typeof track.loaded === undefined)
 		if (! track ) return
 		audioPlayer.pause()
-		audioPlayer.title = track.title
 		audioPlayer.currentTime = 0
-		isError.set(track.error)
-		audioPlayer.src = track.error ? '' : track.src
-		console.log('about to load',audioPlayer.src,audioPlayer.title)
+		audioPlayer.src = track.src
+		// console.log('setAudio',audioPlayer.src)
 		updateCurrentTime()
 	}
 	const loadTrack = (index, track) => {
-		console.info(`loadTrack()`,index,track)
+		// console.info(`loadTrack()`,index,track)
 		if (!audioPlayer) {
-			console.warn('loadTrack() odd condition',{audioPlayer,$currentTrack})
+			console.warn('loadTrack() odd condition: ',{index,audioPlayer,$currentTrack})
 			return
 		}
 		track.loading = true
 		isReady.set(false)
 		audioPlayer.onloadedmetadata = () => {
-			console.log(`metadata loaded for ${$currentIndex}: ${track.title} `)
+			// console.log(`metadata loaded for ${$currentIndex}: ${track.title} `)
 			track.loaded = true
 			track.loading = false
 			track.duration = audioPlayer.duration
-			updateTrackList(index,track)
+			updateTrackList()
 		}
 		setAudioFrom(track)
 		audioPlayer.load()
@@ -181,35 +190,26 @@
 	const loadCurrentTrack = () => {
 		loadTrack($currentIndex,$currentTrack)
 	}
-	// auto-load track on every track change
-	function autoLoadPlay(index,track) {
-		if ( ! track || index < 0 && index >= $tracks.length-1 ) {
-			// illegal value, reset to 0 and trigger refresh
-			console.warn('invalid autoPlayLoad track, reseting to 0',index,'/',$tracks.length,track)
-			currentIndex.set(0)
+	// auto-load track on every $currentIndex change
+	function autoLoad(index) {
+		const track = $currentTrack
+		const lastIndex = $tracks.length-1
+		if ( ! track || index < 0 || index > lastIndex ) {
+			// illegal value, reset to 0 or last track, try again with first or last
+			const newIndex = index < 0 ? lastIndex : 0
+			// console.log(`invalid autoLoad(${index}), reseting to ${newIndex}`,index,'/',$tracks.length,track)
+			currentIndex.set(newIndex)
+			autoLoad(newIndex) 
 			return
 		}
-		// if ( track.loaded || track.error) {
-		// 	console.log('alp',track)
-		// 	// setAudioFrom(track)
-		// } else 
 		if ( ! track.loading) {
-			// loadCurrentTrack()
-			console.log('lct',index,track)
+			loadCurrentTrack()
 		} else {
-			console.log('fell through')
+			console.log('Not loading')
 		}
-		// if (  
-		// 		&& (! ct || ! ct.loaded)
-		// 		&& (ct && ! ct.loading)) {
-		// 		loadCurrentTrack()
-		// 	} else if (ct && ! ct.error && ! ct.loading) {
-		// 		setAudioFrom($currentTrack)
-		// 		console.log('saf',$currentIndex)
-		// 	}
 	}
 	currentIndex.set(0)
-	$: autoLoadPlay($currentIndex,$currentTrack)
+	$: autoLoad($currentIndex)
 </script>
 
 {#if $tracks < 1}

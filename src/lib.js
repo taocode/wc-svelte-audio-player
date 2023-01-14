@@ -14,6 +14,7 @@ export const contextStores = {
   IS_READY: 'isReady',
   PROGRESS: 'progress',
   IS_ERROR: 'isError',
+  REVERSE_DIRECTION: 'reverseDirection',
 }
 export const nameFromURL = (url) => {
   if (!url) return 'Loading...'
