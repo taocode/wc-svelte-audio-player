@@ -7,9 +7,9 @@ import './src/index.svelte'
 ```html preview-story
 <taocode-audio-player skiptime="show" advance="loop" playlistshow="show" 
 playlist='[
-    ["bad.https://download.pariyatti.org/free/_moIbLs95/Dana_The_Practice_of_Giving_single.mp3","The Practice of Giving with a longer title"],
-    ["https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3","Lumbini with a very very long title"],
-    ["https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3","Great Compassion"]
+    ["https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3","Lumbini"],
+    ["fail-https://download.pariyatti.org/free/_moIbLs95/Dana_The_Practice_of_Giving_single.mp3","The Practice of Giving"],
+    ["https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3","Great Compassion with a very very long title"]
 ]'></taocode-audio-player>
 ```
 ## Attributes

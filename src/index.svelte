@@ -119,6 +119,7 @@
 	audioPlayer.addEventListener('error', () => {
 		const t = $currentTrack
 		t.error = true
+		t.loading = false
 		isError.set(true)
 		updateTrackList($currentIndex,t)
 		console.error(`Audio error with: ${$currentTrack.src}`,$currentTrack)
@@ -137,7 +138,7 @@
 	const showSkipTime = writable(skiptime === "show")
 	setContext(CS.SHOW_SKIP_TIME,showSkipTime)
 
-	const volume = writable(80)
+	const volume = writable(8)
 	setContext(CS.VOLUME, volume)
 
 	let progressTracker
@@ -184,16 +185,16 @@
 	function autoLoadPlay(index,track) {
 		if ( ! track || index < 0 && index >= $tracks.length-1 ) {
 			// illegal value, reset to 0 and trigger refresh
-			currentIndex.set(0)
 			console.warn('invalid autoPlayLoad track, reseting to 0',index,'/',$tracks.length,track)
+			currentIndex.set(0)
 			return
 		}
-		if ( track.loaded || track.error) {
-			console.log('alp',track)
-			// setAudioFrom(track)
-
-		} else if ( ! track.loaded && ! track.loading) {
-			loadCurrentTrack()
+		// if ( track.loaded || track.error) {
+		// 	console.log('alp',track)
+		// 	// setAudioFrom(track)
+		// } else 
+		if ( ! track.loading) {
+			// loadCurrentTrack()
 			console.log('lct',index,track)
 		} else {
 			console.log('fell through')
@@ -207,7 +208,7 @@
 		// 		console.log('saf',$currentIndex)
 		// 	}
 	}
-	// currentIndex.set(2)
+	currentIndex.set(0)
 	$: autoLoadPlay($currentIndex,$currentTrack)
 </script>
 
