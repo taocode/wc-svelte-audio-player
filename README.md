@@ -125,7 +125,3 @@ Add the style attribute with your custom styles
   --audio-player-shadow: none;
 ">...</div>
 ```
-
-## Feature Summary for v1.0.0 release
-
-Player now can show loading errors via the playlist and skips over bad tracks depending upon advance="auto" or "loop" in whatever direction you were going.
