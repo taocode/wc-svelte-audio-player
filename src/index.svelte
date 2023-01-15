@@ -125,7 +125,9 @@
 		}
 	})
 	const autoAdvance = () => {
-		if (advance === 'loop' || (advance === 'auto' && $currentIndex < $tracks.length-1)) {
+		if (advance === 'loop' 
+			|| (advance === 'auto' && $currentIndex < $tracks.length-1)
+			|| $reverseDirection) { // = previous track desired via button so ignore advance rules
 			playWhenReady.set(true)
 			currentIndex.update(n => n+($reverseDirection ? -1 : 1))
 		}

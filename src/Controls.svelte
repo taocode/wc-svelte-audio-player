@@ -3,10 +3,12 @@
   import { contextStores as CS } from './lib' 
   import PlayIcon from './svg/play.svg.svelte'
   import PauseIcon from './svg/pause.svg.svelte'
-  import FastForwardIcon from './svg/fast-forward.svg.svelte'
+  // import FastForwardIcon from './svg/fast-forward.svg.svelte'
   import SkipForwardIcon from './svg/skip-forward.svg.svelte'
   import SkipBackIcon from './svg/skip-back.svg.svelte'
-	// import {  } from './stores'
+	import RotateCWIcon from './svg/rotate-cw.svg.svelte'
+  // import Volume2Icon from './svg/volume-2.svg.svelte'
+  // import RepeatIcon from './svg/repeat.svg.svelte'
   import LoaderIcon from './svg/loader.svg.svelte'
   import SlashIcon from './svg/slash.svg.svelte'
 
@@ -45,9 +47,14 @@
     audioPlayer.currentTime += parseInt($skip)
   }
   const previousAudio = () => {
-    playWhenReady.set(true)
-    reverseDirection.set(true)
-    currentIndex.update(n => n - 1)
+    if (prevTrack) {
+      playWhenReady.set(true)
+      reverseDirection.set(true)
+      currentIndex.update(n => n - 1)
+    } else {
+      audioPlayer.currentTime = 0
+      audioPlayer.play()
+    }
   }
   const nextAudio = () => {
     // console.log('nextAudio',{$currentIndex,$currentTrack})
@@ -63,16 +70,16 @@
 </script>
 
 <div id="btn-cont" class:$isError>
-  <button id="prev" class:prevTrack on:click={previousAudio}>
+  <button id="prev" title="Previous Track" class:prevTrack on:click={previousAudio}>
     <span class="icon">
-      <SkipBackIcon title="Skip Back" />
+      <SkipBackIcon />
     </span>
 	</button>
 
   {#if includeSkip}
   <button id="rewind" title="Skip back {$skip}s" on:click={rewindAudio}>
 		<span class="icon invert-h">
-      <FastForwardIcon />
+      <RotateCWIcon />
     </span>
     {#if $showSkipTime}<span class="skip-time">{$skip}</span>{/if}
 	</button>
@@ -90,7 +97,7 @@
       </div>
     </div>
     {:else}
-    <button id="play" on:click={playPauseAudio}>
+    <button id="play" title={$isPlaying ? 'Pauste' : 'Play'} on:click={playPauseAudio}>
       <span class="icon">
         {#if $isPlaying}
         <PauseIcon />
@@ -105,16 +112,16 @@
   {#if includeSkip}
   <button id="forward" title="Skip forward {$skip}s" on:click={forwardAudio}>
     <span class="icon">
-      <FastForwardIcon />
+      <RotateCWIcon />
     </span>
     {#if $showSkipTime}<span class="skip-time">{$skip}</span>{/if}
 	</button>
   {/if}
 
   {#if includeNext}
-  <button id="next" on:click={nextAudio}>
+  <button id="next" title="Next Track" on:click={nextAudio}>
     <span class="icon">
-      <SkipForwardIcon title="Next track" />
+      <SkipForwardIcon />
     </span>
 	</button>
   {:else}
@@ -145,6 +152,7 @@
   }
   button {
     display: flex;
+    position: relative;
     justify-content: center;
     align-items: baseline;
     /* width: 1ch; */
@@ -152,6 +160,7 @@
     padding: 0;
     cursor: pointer;
     margin: 0;
+    height: 1.5rem;
     background-color: transparent;
   }
   .\$isError {
@@ -207,16 +216,14 @@
     scale: -1 1;
   }
   .skip-time {
-    font-size: 0.66em;
-    opacity: 0.7;
-    align-self: bottom;
+    position: absolute;
+    font-size: 0.5rem;
+    bottom: 0.4rem;
+    z-index: 1;
+    letter-spacing: -0.05em;
+    text-shadow: 0 0 1px #FFF, 0 0 2px #FFF, 0 0 3px #FFF,0 0 1.2em #FFF, 0 0 2em #FFF;
+    transform: scaleX(0.8);
   }
-  #forward .skip-time {
-    order: -1;
-  }
-  /* #forward .skip-time::after {
-    content:'s';
-  } */
   .skip-time::after {
     content: 's';
   }

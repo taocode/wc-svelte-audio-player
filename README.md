@@ -5,11 +5,11 @@ import './src/index.svelte'
 # Playlist Audio Player Web Component
 
 ```html preview-story
-<taocode-audio-player skiptime="show" skip="30" 
+<taocode-audio-player skiptime="show" skip="30" playlistshow="show"
 playlist='[
+    "https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3",
     "https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3",
-    ["fail-https://download.pariyatti.org/free/_moIbLs95/Dana_The_Practice_of_Giving_single.mp3","Fail: The Practice of Giving"],
-    "https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3"
+    ["fail-https://download.pariyatti.org/free/_moIbLs95/Dana_The_Practice_of_Giving_single.mp3","Fail: The Practice of Giving"]
 ]'></taocode-audio-player>
 ```
 ## Attributes
