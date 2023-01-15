@@ -6,6 +6,7 @@
   "type": "module",
   "homepage": "{{ homepage }}",
   "scripts": {
+    "build:readme": "node ./_readmecp.js",
     "dev": "pnpx wcd-cli@latest serve wpsgjENLAcAH6CMeL78q --open",
     "serve": "npx wcd-cli@latest serve wpsgjENLAcAH6CMeL78q --open"
   },

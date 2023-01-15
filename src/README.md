@@ -1,7 +1,3 @@
-```js script
-import './src/index.svelte'
-```
-
 # Playlist Audio Player Web Component
 
 ```html preview-story
