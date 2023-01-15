@@ -12,6 +12,7 @@
   export let atTop = false
 	let showing = show === 'true' || show === 'show'
   let always = show === 'always'
+  let never = show === 'never'
   const chooseTrack = (i) => {
     playWhenReady.set(true)
     // console.log('chooseTrack',i,{$playWhenReady,$audioTag})
@@ -23,6 +24,7 @@
   }
 </script>
 
+{#if !never}
 <section class="playlist-container" class:always>
   {#if $tracks.length > 1}
   <button class="accordion"
@@ -48,6 +50,7 @@
   </ul>
   {/if}
 </section>
+{/if}
 
 
 <style>
@@ -115,7 +118,7 @@
     padding: 0;
     width: 100%;
     overflow-y: auto;
-    max-height: 5.1rem;
+    max-height: 6rem;
     position: absolute;
   }
   ul::-webkit-scrollbar {
