@@ -16,12 +16,6 @@ export const contextStores = {
   IS_ERROR: 'isError',
   REVERSE_DIRECTION: 'reverseDirection',
 }
-export const nameFromURL = (url) => {
-  if (!url) return 'Loading...'
-  const urlObj = new URL(url)
-  var filename = urlObj.pathname.split('/').pop().split('#')[0].split('?')[0]
-  return filename.split('.')[0].split('_').join(' ')
-}
 export const formatTime = (seconds) => {
   if (isNaN(seconds)) return ''
   const h = Math.floor(seconds / 3600);
@@ -32,6 +26,12 @@ export const formatTime = (seconds) => {
     m > 9 ? m : (h ? '0' + m : m || '0'),
     s > 9 ? s : '0' + s
   ].filter(Boolean).join(':');
+}
+export const nameFromURL = (url) => {
+  if (!url) return 'Loading...'
+  const urlObj = new URL(url)
+  var filename = urlObj.pathname.split('/').pop().split('#')[0].split('?')[0]
+  return filename.split('.')[0].split(/_|-/).join(' ')
 }
 export const trackTitle = (track) => {
   return track.title || nameFromURL(track.src)

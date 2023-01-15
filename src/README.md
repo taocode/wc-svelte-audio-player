@@ -1,7 +1,7 @@
 # Playlist Audio Player Web Component
 
 ```html preview-story
-<taocode-audio-player skiptime="show" skip="30" playlistshow="show"
+<taocode-audio-player skiptime="show" skip="30"
 playlist='[
     "https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3",
     "https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3",
