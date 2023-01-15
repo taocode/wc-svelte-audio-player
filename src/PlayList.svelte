@@ -2,7 +2,7 @@
   import { getContext, hasContext } from 'svelte'
   import { slide } from 'svelte/transition'
   // import { tracks, currentIndex, playWhenReady, audioTag } from './stores.js'
-  import { formatTime, contextStores as CS, nameFromURL } from './lib.js'
+  import { formatTime, contextStores as CS, trackTitle } from './lib.js'
   const tracks = getContext(CS.TRACKS)
   const currentIndex = getContext(CS.CURRENT_INDEX)
   const playWhenReady = getContext(CS.PLAY_WHEN_READY)
@@ -22,12 +22,15 @@
     }
     else currentIndex.set(i)
   }
+  $: accordionTitle = (showing ? 'Close' : 'Show') + ' Playlist'
+  const playlistTitle = (track) => (track.error ? 'Cannot ' : '') + 'Play ' + trackTitle(track)
 </script>
 
 {#if !never}
 <section class="playlist-container" class:always>
   {#if $tracks.length > 1}
   <button class="accordion"
+    title={accordionTitle}
       class:showing class:always
       disabled={always}
       on:click={() => showing = !showing && !always}>
@@ -41,10 +44,10 @@
   <ul transition:slide class:atTop>
     {#each $tracks as track,i}
     <li data-track-id={i} class:current={i===$currentIndex} >
-      <button on:click={() => chooseTrack(i)} disabled={track.error} class:error={track.error}>
+      <button title={playlistTitle(track)} on:click={() => chooseTrack(i)} disabled={track.error} class:error={track.error}>
         {#if 'duration' in track || track.error}<span class="duration">{
           track.error ? '--:--' : formatTime(track.duration) }</span>{:else if track.error}{/if}
-        {track.title || nameFromURL(track.src)} 
+        {trackTitle(track)} 
       </button></li>
     {/each}
   </ul>
@@ -109,6 +112,7 @@
   }
   .duration {
     float: right;
+    margin: -0.15em -0.75em 0 0.2em;
   }
   ul {
     list-style-type: none;

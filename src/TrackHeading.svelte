@@ -1,25 +1,25 @@
 <script>
   import { getContext } from 'svelte'
-  import { contextStores as CS, nameFromURL} from './lib'
+  import { contextStores as CS, trackTitle } from './lib'
   const currentTrack = getContext(CS.CURRENT_TRACK)
+  const isError = getContext(CS.IS_ERROR)
 
   import AlertCircleIcon from './svg/alert-circle.svg.svelte'
 
   let container = { offsetWidth: 100 }
   let title = "Loading..."
-  let heading = { scrollWidth: 100 }
+  let heading = false
   let animate = false
   let centered = true
   let aniTime = 15
   let panPx = 100
   let error = false
   $: {
-    const hasTitle = ($currentTrack && 'title' in $currentTrack)
-    error = $currentTrack.error
-    title = (hasTitle) ? $currentTrack.title : nameFromURL($currentTrack.src)
+    error = $isError
+    title = trackTitle($currentTrack)
     // console.log('title-in:','title' in $currentTrack, {$currentTrack}, $currentTrack.title ,{hasTitle,heading,container})
     if (heading) {
-      panPx = heading.scrollWidth - container.offsetWidth
+      panPx = heading.scrollWidth - container.offsetWidth + (error ? 20 : 0)
       animate = panPx > 0
       centered = !animate
       aniTime = panPx / 25

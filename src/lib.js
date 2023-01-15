@@ -22,7 +22,7 @@ export const nameFromURL = (url) => {
   var filename = urlObj.pathname.split('/').pop().split('#')[0].split('?')[0]
   return filename.split('.')[0].split('_').join(' ')
 }
-export function formatTime(seconds) {
+export const formatTime = (seconds) => {
   if (isNaN(seconds)) return ''
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
@@ -32,4 +32,7 @@ export function formatTime(seconds) {
     m > 9 ? m : (h ? '0' + m : m || '0'),
     s > 9 ? s : '0' + s
   ].filter(Boolean).join(':');
+}
+export const trackTitle = (track) => {
+  return track.title || nameFromURL(track.src)
 }
