@@ -62,7 +62,7 @@ Next release: ID3 data will be considered the best source for track title.
 
 Options on how to advance at the end of a track. `auto` | `loop` | `none`
 
-default: 'auto'
+default: `auto`
 
 ```html
 <taocode-audio-player advance="loop"
@@ -71,6 +71,35 @@ default: 'auto'
     "./path/to/track2"
   ]'></taocode-audio-player>
 ```
+
+### `playlistlocation`
+
+Playlist location has 2 options: `top` | `bottom`
+
+default: `bottom`
+
+### `playlistshow`
+
+Playlistshow location has 3 options: `false` | (`show` | `true`) | `always` | `never`
+
+- `false` - start with playlist closed, user can expand the list
+- (`show` | `true`) - start with playlist expanded, user can close it
+- `always` - always show playlist, takes up space
+- `never` - hide the playlist forever
+
+default: `false`
+
+### `skip`
+
+The number of seconds to skip ahead (fastforward) and skip back (rewind).
+
+default: 10
+
+### `skiptime`
+
+Show or hide the amount of time next to the skip buttons. Options: ``
+
+default: `hide`
 
 ## Theming via CSS Vars
 
@@ -86,3 +115,7 @@ Add the style attribute with your custom styles
   --audio-player-shadow: none;
 ">...</div>
 ```
+
+## Feature Summary for v1.0.0 release
+
+Player now can show loading errors via the playlist and skips over bad tracks depending upon advance="auto" or "loop" in whatever direction you were going.

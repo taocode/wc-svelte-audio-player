@@ -18,9 +18,9 @@
 	export let skip = 10
 	export let skiptime = 'hide'
 	export let advance = 'auto'
+	export let playlist
 	export let playlistlocation = 'bottom'
 	export let playlistshow = false
-	export let playlist
 	let playlistAtTop = playlistlocation === 'top'
 
 	// lots of setup

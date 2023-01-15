@@ -54,9 +54,6 @@
     playWhenReady.set(true)
     currentIndex.update(n => n + 1)
   }
-	
-	let strokeWidth = 3
-  let size = "1.75x"
 
   $: prevTrack = $tracks.length > 1 && $currentTime < 5
   // $: console.log({prevTrack},$currentTime)
@@ -64,7 +61,6 @@
   $: includeNext = $tracks.length > 1
 
 </script>
-
 
 <div id="btn-cont" class:$isError>
   <button id="prev" class:prevTrack on:click={previousAudio}>
