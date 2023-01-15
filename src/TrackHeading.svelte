@@ -1,7 +1,6 @@
 <script>
   import { getContext } from 'svelte'
   import { contextStores as CS, nameFromURL} from './lib'
-  const currentIndex = getContext(CS.CURRENT_INDEX)
   const currentTrack = getContext(CS.CURRENT_TRACK)
 
   import AlertCircleIcon from './svg/alert-circle.svg.svelte'
@@ -15,12 +14,12 @@
   let panPx = 100
   let error = false
   $: {
-    const i = $currentIndex
-    const hasTitle = (i >= 0 && $currentTrack && 'title' in $currentTrack)
+    const hasTitle = ($currentTrack && 'title' in $currentTrack)
     error = $currentTrack.error
     title = (hasTitle) ? $currentTrack.title : nameFromURL($currentTrack.src)
-    if (hasTitle && heading) {
-      panPx = heading.scrollWidth - container.offsetWidth + (error ? 24 : 0)
+    // console.log('title-in:','title' in $currentTrack, {$currentTrack}, $currentTrack.title ,{hasTitle,heading,container})
+    if (heading) {
+      panPx = heading.scrollWidth - container.offsetWidth
       animate = panPx > 0
       centered = !animate
       aniTime = panPx / 25
