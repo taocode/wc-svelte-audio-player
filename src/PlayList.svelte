@@ -2,17 +2,17 @@
   import { getContext, hasContext } from 'svelte'
   import { slide } from 'svelte/transition'
   // import { tracks, currentIndex, playWhenReady, audioTag } from './stores.js'
-  import { formatTime, contextStores as CS, trackTitle } from './lib.js'
+  import { formatTime, contextStores as CS, trackTitle, showOptions } from './lib.js'
   const tracks = getContext(CS.TRACKS)
   const currentIndex = getContext(CS.CURRENT_INDEX)
   const playWhenReady = getContext(CS.PLAY_WHEN_READY)
   const audioTag = getContext(CS.AUDIO_TAG)
 	
-  export let show = false
+  export let expand = 'false'
   export let atTop = false
-	let showing = show === 'true' || show === 'show'
-  let always = show === 'always'
-  let never = show === 'never'
+	let expanded = showOptions.includes(expand)
+  let always = expand === 'always'
+  let never = expand === 'never'
   const chooseTrack = (i) => {
     playWhenReady.set(true)
     // console.log('chooseTrack',i,{$playWhenReady,$audioTag})
@@ -22,7 +22,7 @@
     }
     else currentIndex.set(i)
   }
-  $: accordionTitle = (showing ? 'Close' : 'Show') + ' Playlist'
+  $: accordionTitle = (expanded ? 'Close' : 'Show') + ' Playlist'
   const playlistTitle = (track) => (track.error ? 'Cannot ' : '') + 'Play ' + trackTitle(track)
 </script>
 
@@ -31,16 +31,16 @@
   {#if $tracks.length > 1}
   <button class="accordion"
     title={accordionTitle}
-      class:showing class:always
+      class:expanded class:always
       disabled={always}
-      on:click={() => showing = !showing && !always}>
+      on:click={() => expanded = !expanded && !always}>
       ☰ Playlist 
       <span class="track-count">{$tracks.length}</span>
-      {#if showing && !always}<span class="close">✖</span>{/if}
+      {#if expanded && !always}<span class="close">✖</span>{/if}
   </button>
   {/if}
 
-  {#if always || showing}
+  {#if always || expanded}
   <ul transition:slide class:atTop>
     {#each $tracks as track,i}
     <li data-track-id={i} class:current={i===$currentIndex} >
@@ -83,7 +83,7 @@
 
   /* Style the buttons that are used to open and close the accordion panel */
   button.accordion {
-    background: var(--audio-player-playlist-show-button-background,var(--audio-player-background,#EEE));
+    background: var(--audio-player-playlist-expand-button-background,var(--audio-player-background,#EEE));
     color: var(--audio-player-color, #333);
     margin: 0;
     text-align: center;
@@ -93,10 +93,10 @@
     transition: 0.4s;
   }
 
-  /* Add a background color to the button if it is clicked on (add the .showing class with JS), and when you move the mouse over it (hover) */
-  button.showing {
-    background: var(--audio-player-playlist-show-button-showing-background,#0003);
-    color: var(--audio-player-playlist-show-button-showing-color,#333);
+  /* Add a background color to the button if it is clicked on (add the .expanded class with JS), and when you move the mouse over it (hover) */
+  button.expanded {
+    background: var(--audio-player-playlist-expand-button-expanded-background,#0003);
+    color: var(--audio-player-playlist-expand-button-expanded-color,#333);
   }
   button.always {
     cursor: default;

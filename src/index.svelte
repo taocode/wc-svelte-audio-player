@@ -8,7 +8,7 @@
 	// TODO: use jsmediatags to load ID3
 	// https://github.com/aadsm/jsmediatags
 
-	import { contextStores as CS, advanceOptions } from './lib.js'
+	import { contextStores as CS, advanceOptions, hideOptions, showOptions } from './lib.js'
   	
 	import TrackHeading from './TrackHeading.svelte'
 	import ProgressBarTime from './ProgressBarTime.svelte'
@@ -16,18 +16,20 @@
 	import PlayList from './PlayList.svelte'
   import VolumeSlider from './VolumeSlider.svelte'
   import VolumeIcon from './svg/volume.svg.svelte'
-  import XSquareIcon from './svg/x-square.svg.svelte'
-  import RepeatLoopIcon from './svg/repeat-loop.svg.svelte'
-  import RepeatAutoIcon from './svg/repeat-auto.svg.svelte'
-  import RepeatNoneIcon from './svg/repeat-none.svg.svelte'
+  import XIcon from './svg/x.svg.svelte'
+  import RepeatIcon from './svg/repeat.svg.svelte'
+  import PlayControl from './PlayControl.svelte';
 
-	export let skip = 10
-	export let skiptime = 'hide'
-	export let advance = 'auto'
 	export let playlist
+	export let skiptime = 10
+	export let showskiptime = 'hide'
+	export let showskip = 'hide'
+	export let advance = 'auto'
 	export let playlistlocation = 'bottom'
-	export let playlistshow = false
-	export let advancecontrol = false
+	export let expandplaylist = 'false'
+	export let showplaylist = 'show'
+	export let showadvance = 'hide'
+	export let showcontrols = 'show'
 	let playlistAtTop = playlistlocation === 'top'
 
 	// lots of setup
@@ -78,13 +80,13 @@
 	const playWhenReady = writable(false)
 	setContext(CS.PLAY_WHEN_READY,playWhenReady)
 
-	const skipStore = writable(skip)
-	setContext(CS.SKIP,skipStore)
+	const skipTimeStore = writable(skiptime)
+	setContext(CS.SKIP_TIME,skipTimeStore)
 
 	const advanceStore = writable(advance)
 	setContext(CS.ADVANCE,advanceStore)
 
-	const showSkipTime = writable(skiptime === "show")
+	const showSkipTime = writable(showOptions.includes(showskiptime))
 	setContext(CS.SHOW_SKIP_TIME,showSkipTime)
 
 	const volume = writable(80)
@@ -132,7 +134,9 @@
 		}
 	})
 	const autoAdvance = () => {
-		if ($advanceStore === 'loop' 
+		if ($advanceStore === 'repeat') {
+			audioPlayer.currentTime = 0
+		} else if ($advanceStore === 'loop' 
 			|| ($advanceStore === 'auto' && $currentIndex < $tracks.length-1)
 			|| $reverseDirection) { // = previous track desired via button so ignore advance rules
 			playWhenReady.set(true)
@@ -223,20 +227,21 @@
 	let showVolume = false
 	let showAdvance = true
 
-	$: showAdvance = advancecontrol === 'show' || advancecontrol === 'true'
-
+	$: showAdvance = showOptions.includes(showadvance)
+	
 	const advanceNext = () => {
-    advanceStore.set(advanceOptions[nextStateIndex])
+    advanceStore.set(advanceOptions[nextAdvanceOptionIndex])
   }
 
-  let stateIndex = advanceOptions.indexOf($advanceStore)
-  let nextStateIndex = 0 
+  let advanceOptionIndex = advanceOptions.indexOf($advanceStore)
+  let nextAdvanceOptionIndex = 0 
   $: {
-    stateIndex = advanceOptions.indexOf($advanceStore)
-    nextStateIndex = (stateIndex+1 >= advanceOptions.length) ? 0
-    : stateIndex + 1
+    advanceOptionIndex = advanceOptions.indexOf($advanceStore)
+    nextAdvanceOptionIndex = (advanceOptionIndex+1 >= advanceOptions.length) ? 0
+    : advanceOptionIndex + 1
   }
 
+	$: adjustVolumeTitle = (showVolume ? 'Close' : 'Open') + ' Volume Adjustment'
 </script>
 
 {#if $tracks < 1}
@@ -257,7 +262,10 @@
 			<TrackHeading />
 
 			<div class="vol-prog-rep">
-				<button title="Adjust volume" on:click={()=>showVolume = !showVolume}>
+				{#if hideOptions.includes( showcontrols )}
+				 <PlayControl />
+				{/if}
+				<button title={adjustVolumeTitle} on:click={()=>showVolume = !showVolume}>
 					<span class="icon">
 						<VolumeIcon volume={$volume} />
 					</span>
@@ -265,32 +273,30 @@
 				<ProgressBarTime />
 				{#if showVolume}
 				<div transition:fly={{ y: 20, duration: 300}} class="show-volume">
-					<button on:click={()=>showVolume = false}><span class="icon">
-						<XSquareIcon />
-					</span></button>
+					<button on:click={()=>showVolume = false} title={adjustVolumeTitle}>
+						<span class="icon">
+							<XIcon />
+						</span>
+					</button>
 					<VolumeSlider />
 				</div>
 				{/if}
 				{#if showAdvance}
-				<button title={`Change auto advance to ${advanceOptions[nextStateIndex]}`} on:click={advanceNext}>
+				<button title={`Advance is: ${advanceOptions[advanceOptionIndex]}.\nChange Advance to: ${advanceOptions[nextAdvanceOptionIndex]}?`} on:click={advanceNext}>
 					<span class="icon">
-						{#if $advanceStore === 'loop'}
-						<RepeatLoopIcon />
-						{:else if $advanceStore === 'auto'}
-						<RepeatAutoIcon />
-						{:else}
-						<RepeatNoneIcon />
-						{/if}
+						<RepeatIcon variant={$advanceStore} />
 					</span>
 				</button>
 				{/if}
 			
 			</div>
 
-			<Controls />
-
+			{#if ! hideOptions.includes( showcontrols )}
+			<Controls {showskip} />
+			{/if}
 		</section>
-		<PlayList show={playlistshow} atTop={playlistAtTop} />
+		{#if ! hideOptions.includes(showplaylist)}
+		<PlayList expand={expandplaylist} atTop={playlistAtTop} />{/if}
 	</main>
 	{/if}
 

@@ -1,1 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-repeat"><polyline points="15 1 19 5 15 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h12"></path><line x1="22" y1="1" x2="22" y2="9"></line></svg>

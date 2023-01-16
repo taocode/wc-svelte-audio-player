@@ -5,7 +5,8 @@ import './src/index.svelte'
 # Playlist Audio Player Web Component
 
 ```html preview-story
-<taocode-audio-player skiptime="show" skip="30"
+<taocode-audio-player skiptime="30"
+ showcontrols="ok" showadvance="show" showplaylist="ok" showskip="show"
 playlist='[
     "https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3",
     "https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3",
@@ -92,32 +93,45 @@ default: `show`
 
 ### `playlistlocation`
 
-Playlist location has 2 options: `top` | `bottom`
+2 options: `top` | `bottom`
 
 default: `bottom`
 
-### `playlistshow`
+### `expandplaylist`
 
-Playlistshow location has 3 options: `false` | (`show` | `true`) | `always` | `never`
+3 options: `false` | (`show` | `true`) | `always`
 
 - `false` - start with playlist closed, user can expand the list
 - (`show` | `true`) - start with playlist expanded, user can close it
 - `always` - always show playlist, takes up space
-- `never` - hide the playlist forever
 
 default: `false`
 
-### `skip`
+### `skiptime`
 
 The number of seconds to skip ahead (fastforward) and skip back (rewind).
 
 default: 10
 
-### `skiptime`
+### `showskiptime`
 
 Show or hide the amount of time next to the skip buttons. Options: ``
 
 default: `hide`
+
+## Show Attributes
+
+The show attributes all accept any of these expressions that override their default:
+
+### Show - Start Showing/Expanded
+
+- ['1','true','show','yes','please']
+
+### Hide - Start Hidden 
+
+- ['0','false','hide','no','none']
+
+*Note that invalid values will fallback on their default.
 
 ## Theming via CSS Vars
 

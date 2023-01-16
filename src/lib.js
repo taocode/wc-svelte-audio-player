@@ -5,7 +5,7 @@ export const contextStores = {
   CURRENT_TIME: 'currentTime',
   TRACKS: 'tracks',
   VOLUME: 'volume',
-  SKIP: 'skip',
+  SKIP_TIME: 'skipTime',
   ADVANCE: 'advance',
   SHOW_SKIP_TIME: 'showSkipTime',
   TRACK_DURATION: 'trackDuration',
@@ -37,4 +37,7 @@ export const trackTitle = (track) => {
   return track.title || nameFromURL(track.src)
 }
 
-export const advanceOptions = ['none','auto','loop'] //,'repeat']
+export const advanceOptions = ['auto','loop','repeat','none']
+
+export const hideOptions = ['0','false','hide','no','none']
+export const showOptions = ['1','true','show','yes','please']
