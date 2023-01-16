@@ -12,7 +12,6 @@
 	import TrackHeading from './TrackHeading.svelte'
 	import ProgressBarTime from './ProgressBarTime.svelte'
 	import Controls from './Controls.svelte'
-	import VolumeSlider from './VolumeSlider.svelte'
 	import PlayList from './PlayList.svelte'
 
 	export let skip = 10
@@ -234,8 +233,6 @@
 			<ProgressBarTime />
 
 			<Controls />
-
-			<VolumeSlider />
 
 		</section>
 		<PlayList show={playlistshow} atTop={playlistAtTop} />

@@ -36,3 +36,5 @@ export const nameFromURL = (url) => {
 export const trackTitle = (track) => {
   return track.title || nameFromURL(track.src)
 }
+
+export const advanceOptions = ['none','auto','loop'] //,'repeat']

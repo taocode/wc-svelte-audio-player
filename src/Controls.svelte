@@ -1,17 +1,9 @@
 <script>
   import { getContext } from 'svelte'
-  import { contextStores as CS } from './lib' 
-  import PlayIcon from './svg/play.svg.svelte'
-  import PauseIcon from './svg/pause.svg.svelte'
-  // import FastForwardIcon from './svg/fast-forward.svg.svelte'
-  import SkipForwardIcon from './svg/skip-forward.svg.svelte'
-  import SkipBackIcon from './svg/skip-back.svg.svelte'
-	import RotateCWIcon from './svg/rotate-cw.svg.svelte'
-  // import Volume2Icon from './svg/volume-2.svg.svelte'
-  // import RepeatIcon from './svg/repeat.svg.svelte'
-  import LoaderIcon from './svg/loader.svg.svelte'
-  import SlashIcon from './svg/slash.svg.svelte'
+  
+  import VolumeSlider from './VolumeSlider.svelte'
 
+  import { contextStores as CS, advanceOptions } from './lib' 
   const audioTag = getContext(CS.AUDIO_TAG)
   const currentIndex = getContext(CS.CURRENT_INDEX)
   const currentTime = getContext(CS.CURRENT_TIME)
@@ -19,12 +11,26 @@
   const isPlaying = getContext(CS.IS_PLAYING)
   const isReady = getContext(CS.IS_READY)
   const isError = getContext(CS.IS_ERROR)
+  const advance = getContext(CS.ADVANCE)
   const skip = getContext(CS.SKIP)
   const showSkipTime = getContext(CS.SHOW_SKIP_TIME)
   const tracks = getContext(CS.TRACKS)
   const playWhenReady = getContext(CS.PLAY_WHEN_READY)
   const reverseDirection = getContext(CS.REVERSE_DIRECTION)
-  
+
+  import PlayIcon from './svg/play.svg.svelte'
+  import PauseIcon from './svg/pause.svg.svelte'
+  // import FastForwardIcon from './svg/fast-forward.svg.svelte'
+  import SkipForwardIcon from './svg/skip-forward.svg.svelte'
+  import SkipBackIcon from './svg/skip-back.svg.svelte'
+	import RotateCWIcon from './svg/rotate-cw.svg.svelte'
+  import Volume2Icon from './svg/volume-2.svg.svelte'
+  import RepeatLoopIcon from './svg/repeat-loop.svg.svelte'
+  import RepeatAutoIcon from './svg/repeat-auto.svg.svelte'
+  import RepeatNoneIcon from './svg/repeat-none.svg.svelte'
+  import LoaderIcon from './svg/loader.svg.svelte'
+  import SlashIcon from './svg/slash.svg.svelte'
+
   let audioPlayer = $audioTag
   
   const playPauseAudio = () => {
@@ -62,6 +68,20 @@
     currentIndex.update(n => n + 1)
   }
 
+  const advanceNext = () => {
+    advance.set(advanceOptions[nextStateIndex])
+  }
+
+  let stateIndex = advanceOptions.indexOf($advance)
+  let nextStateIndex = 0 
+  $: {
+    stateIndex = advanceOptions.indexOf($advance)
+    nextStateIndex = (stateIndex+1 >= advanceOptions.length) ? 0
+    : stateIndex + 1
+  }
+
+  let showVolume = false
+
   $: prevTrack = $tracks.length > 1 && $currentTime < 5
   // $: console.log({prevTrack},$currentTime)
   $: includeSkip = $skip > 0 && $skip < $trackDuration
@@ -70,6 +90,13 @@
 </script>
 
 <div id="btn-cont" class:$isError>
+
+  <button title="Adjust volume">
+    <span class="icon">
+      <Volume2Icon />
+    </span>
+  </button>
+
   <button id="prev" title="Previous Track" class:prevTrack on:click={previousAudio}>
     <span class="icon">
       <SkipBackIcon />
@@ -127,7 +154,24 @@
   {:else}
   <div class="button-placeholder"></div>
   {/if}
+
+  <button title={`Change auto advance to ${advanceOptions[nextStateIndex]}`} on:click={advanceNext}>
+    <span class="icon">
+      {#if $advance === 'loop'}
+      <RepeatLoopIcon />
+      {:else if $advance === 'auto'}
+      <RepeatAutoIcon />
+      {:else}
+      <RepeatNoneIcon />
+      {/if}
+    </span>
+  </button>
 </div>
+{#if showVolume}
+<div class="show-volume">
+  <VolumeSlider />
+</div>
+{/if}
 
 <style>
   #prev {
@@ -228,4 +272,7 @@
     content: 's';
   }
 
+  .show-volume {
+    position: relative;
+  }
 </style>
