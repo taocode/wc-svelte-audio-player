@@ -20,7 +20,7 @@
 				 bind:value={$volume}
 				 >
 
-  <label for="volume-slider">{$volume}</label>
+  <label class="current-volume" for="volume-slider">{$volume}</label>
 </div>
 
 <style>
@@ -34,7 +34,11 @@
   }
 
   .slidecontainer label {
-    width: 3ch;
+    width: 1.5ch;
+    text-align: center
+  }
+  .slidecontainer .current-volume {
+    width: 4ch;
     text-align: center
   }
 

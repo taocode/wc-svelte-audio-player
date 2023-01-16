@@ -2,17 +2,24 @@
 
 <script>
 
-	import { onMount, getContext, hasContext, setContext } from 'svelte'
+	import { setContext } from 'svelte'
 	import { writable, derived } from 'svelte/store'
+  import { fly } from 'svelte/transition'
 	// TODO: use jsmediatags to load ID3
 	// https://github.com/aadsm/jsmediatags
 
-	 import { contextStores as CS } from './lib.js'
-
+	import { contextStores as CS, advanceOptions } from './lib.js'
+  	
 	import TrackHeading from './TrackHeading.svelte'
 	import ProgressBarTime from './ProgressBarTime.svelte'
 	import Controls from './Controls.svelte'
 	import PlayList from './PlayList.svelte'
+  import VolumeSlider from './VolumeSlider.svelte'
+  import VolumeIcon from './svg/volume.svg.svelte'
+  import XSquareIcon from './svg/x-square.svg.svelte'
+  import RepeatLoopIcon from './svg/repeat-loop.svg.svelte'
+  import RepeatAutoIcon from './svg/repeat-auto.svg.svelte'
+  import RepeatNoneIcon from './svg/repeat-none.svg.svelte'
 
 	export let skip = 10
 	export let skiptime = 'hide'
@@ -20,6 +27,7 @@
 	export let playlist
 	export let playlistlocation = 'bottom'
 	export let playlistshow = false
+	export let advancecontrol = false
 	let playlistAtTop = playlistlocation === 'top'
 
 	// lots of setup
@@ -124,8 +132,8 @@
 		}
 	})
 	const autoAdvance = () => {
-		if (advance === 'loop' 
-			|| (advance === 'auto' && $currentIndex < $tracks.length-1)
+		if ($advanceStore === 'loop' 
+			|| ($advanceStore === 'auto' && $currentIndex < $tracks.length-1)
 			|| $reverseDirection) { // = previous track desired via button so ignore advance rules
 			playWhenReady.set(true)
 			currentIndex.update(n => n+($reverseDirection ? -1 : 1))
@@ -211,6 +219,24 @@
 	}
 	currentIndex.set(0)
 	$: autoLoad($currentIndex)
+
+	let showVolume = false
+	let showAdvance = true
+
+	$: showAdvance = advancecontrol === 'show' || advancecontrol === 'true'
+
+	const advanceNext = () => {
+    advanceStore.set(advanceOptions[nextStateIndex])
+  }
+
+  let stateIndex = advanceOptions.indexOf($advanceStore)
+  let nextStateIndex = 0 
+  $: {
+    stateIndex = advanceOptions.indexOf($advanceStore)
+    nextStateIndex = (stateIndex+1 >= advanceOptions.length) ? 0
+    : stateIndex + 1
+  }
+
 </script>
 
 {#if $tracks < 1}
@@ -230,7 +256,36 @@
 
 			<TrackHeading />
 
-			<ProgressBarTime />
+			<div class="vol-prog-rep">
+				<button title="Adjust volume" on:click={()=>showVolume = !showVolume}>
+					<span class="icon">
+						<VolumeIcon volume={$volume} />
+					</span>
+				</button>
+				<ProgressBarTime />
+				{#if showVolume}
+				<div transition:fly={{ y: 20, duration: 300}} class="show-volume">
+					<button on:click={()=>showVolume = false}><span class="icon">
+						<XSquareIcon />
+					</span></button>
+					<VolumeSlider />
+				</div>
+				{/if}
+				{#if showAdvance}
+				<button title={`Change auto advance to ${advanceOptions[nextStateIndex]}`} on:click={advanceNext}>
+					<span class="icon">
+						{#if $advanceStore === 'loop'}
+						<RepeatLoopIcon />
+						{:else if $advanceStore === 'auto'}
+						<RepeatAutoIcon />
+						{:else}
+						<RepeatNoneIcon />
+						{/if}
+					</span>
+				</button>
+				{/if}
+			
+			</div>
 
 			<Controls />
 
@@ -239,44 +294,80 @@
 	</main>
 	{/if}
 
-	<style>
-		.error-no-playlist {
-			background-color: pink;
-			padding: 0.5em;
-			text-align: center;
-			color: #800E;
-		}
+<style>
+	.error-no-playlist {
+		background-color: pink;
+		padding: 0.5em;
+		text-align: center;
+		color: #800E;
+	}
 
-		.error-no-playlist h2 {
-			margin-top: 0.1em;
-		}
+	.error-no-playlist h2 {
+		margin-top: 0.1em;
+	}
 
-		audio {
-			display: block;
-			margin: 0.5em auto;
-		}
+	main {
+		display: flex;
+		margin: 0 auto;
+		max-width: 15em;
+		flex-direction: column;
+		align-items: center;
+		/* 		justify-content: center; */
+		width: fit-content;
+		border-radius: var(--audio-player-border-radius, 0);
+	}
+	
+	#player-cont {
+		padding: 0.25rem 0.5rem;
+		box-shadow: var(--audio-player-shadow, none);
+		background: var(--audio-player-background, #EEE);
+		color: var(--audio-player-color, #333);
+		border-radius: var(--audio-player-border-radius, 0);
+		width: 13em;
+	}
 
-		main {
-			display: flex;
-			margin: 0 auto;
-			max-width: 15em;
-			flex-direction: column;
-			align-items: center;
-			/* 		justify-content: center; */
-			width: fit-content;
-			border-radius: var(--audio-player-border-radius, 0);
-		}
+	.vol-prog-rep {
+		display: flex;
+		position: relative;
+	}
+	.vol-prog-rep button {
+		border: none;
+		padding: 0.1em 0.25em;
+		display: flex;
+		align-items: center;
+		cursor: pointer;
+	}
+	button:first-child {
+		padding-right: 0.5em;
+	}
+	button:last-child {
+		padding-left: 0.5em;
+		padding-right: 0;
+	}
+	.vol-prog-rep .icon {
+		display: inline-block;
+		height: 1.5em;
+		width: 1.5em;
+	}
+	.show-volume button {
+		margin-right: 0.5em;
+	}
 
-		.playlistAtTop>:last-child {
-			order: -1;
-		}
+	.playlistAtTop>:last-child {
+		order: -1;
+	}
 
-		#player-cont {
-			padding: 0.5rem 1rem;
-			box-shadow: var(--audio-player-shadow, none);
-			background: var(--audio-player-background, #EEE);
-			color: var(--audio-player-color, #333);
-			border-radius: var(--audio-player-border-radius, 0);
-			width: 13em;
-		}
-	</style>
+	.show-volume {
+    display: flex;
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    top: -1em;
+    left: 0em;
+    right: -1.5em;
+    background-color: #FFFa;
+    padding: 0 0.25ch;
+    box-shadow: 0 0 5px #0003;
+  }
+
+</style>

@@ -1,9 +1,7 @@
 <script>
   import { getContext } from 'svelte'
-  
-  import VolumeSlider from './VolumeSlider.svelte'
 
-  import { contextStores as CS, advanceOptions } from './lib' 
+  import { contextStores as CS } from './lib' 
   const audioTag = getContext(CS.AUDIO_TAG)
   const currentIndex = getContext(CS.CURRENT_INDEX)
   const currentTime = getContext(CS.CURRENT_TIME)
@@ -11,7 +9,6 @@
   const isPlaying = getContext(CS.IS_PLAYING)
   const isReady = getContext(CS.IS_READY)
   const isError = getContext(CS.IS_ERROR)
-  const advance = getContext(CS.ADVANCE)
   const skip = getContext(CS.SKIP)
   const showSkipTime = getContext(CS.SHOW_SKIP_TIME)
   const tracks = getContext(CS.TRACKS)
@@ -24,15 +21,11 @@
   import SkipForwardIcon from './svg/skip-forward.svg.svelte'
   import SkipBackIcon from './svg/skip-back.svg.svelte'
 	import RotateCWIcon from './svg/rotate-cw.svg.svelte'
-  import Volume2Icon from './svg/volume-2.svg.svelte'
-  import RepeatLoopIcon from './svg/repeat-loop.svg.svelte'
-  import RepeatAutoIcon from './svg/repeat-auto.svg.svelte'
-  import RepeatNoneIcon from './svg/repeat-none.svg.svelte'
   import LoaderIcon from './svg/loader.svg.svelte'
   import SlashIcon from './svg/slash.svg.svelte'
 
   let audioPlayer = $audioTag
-  
+
   const playPauseAudio = () => {
 		try {
 			if (audioPlayer.paused) {
@@ -68,20 +61,6 @@
     currentIndex.update(n => n + 1)
   }
 
-  const advanceNext = () => {
-    advance.set(advanceOptions[nextStateIndex])
-  }
-
-  let stateIndex = advanceOptions.indexOf($advance)
-  let nextStateIndex = 0 
-  $: {
-    stateIndex = advanceOptions.indexOf($advance)
-    nextStateIndex = (stateIndex+1 >= advanceOptions.length) ? 0
-    : stateIndex + 1
-  }
-
-  let showVolume = false
-
   $: prevTrack = $tracks.length > 1 && $currentTime < 5
   // $: console.log({prevTrack},$currentTime)
   $: includeSkip = $skip > 0 && $skip < $trackDuration
@@ -90,12 +69,6 @@
 </script>
 
 <div id="btn-cont" class:$isError>
-
-  <button title="Adjust volume">
-    <span class="icon">
-      <Volume2Icon />
-    </span>
-  </button>
 
   <button id="prev" title="Previous Track" class:prevTrack on:click={previousAudio}>
     <span class="icon">
@@ -155,23 +128,8 @@
   <div class="button-placeholder"></div>
   {/if}
 
-  <button title={`Change auto advance to ${advanceOptions[nextStateIndex]}`} on:click={advanceNext}>
-    <span class="icon">
-      {#if $advance === 'loop'}
-      <RepeatLoopIcon />
-      {:else if $advance === 'auto'}
-      <RepeatAutoIcon />
-      {:else}
-      <RepeatNoneIcon />
-      {/if}
-    </span>
-  </button>
+
 </div>
-{#if showVolume}
-<div class="show-volume">
-  <VolumeSlider />
-</div>
-{/if}
 
 <style>
   #prev {
@@ -184,6 +142,8 @@
   #btn-cont {
     display: flex;
     justify-content: space-between;
+    position: relative;
+    z-index: 10;
   }
   .icon {
     display: inline-block;
@@ -272,7 +232,4 @@
     content: 's';
   }
 
-  .show-volume {
-    position: relative;
-  }
 </style>
