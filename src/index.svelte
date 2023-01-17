@@ -1,86 +1,170 @@
 <svelte:options tag="taocode-audio-player" />
 
 <script>
-	import { onMount } from 'svelte'
+
+	import { setContext } from 'svelte'
+	import { writable, derived } from 'svelte/store'
+  import { fly } from 'svelte/transition'
 	// TODO: use jsmediatags to load ID3
 	// https://github.com/aadsm/jsmediatags
-	import { 
-		audioTag, 
-		currentIndex,
-		currentTime,
-		trackDuration,
-		currentTrack,
-		isPlaying, 
-		isReady,
-		playWhenReady,
-		showSkipTime,
-		tracks,
-		advance as advanceStore, 
-		skip as skipStore,
-        progress,
-	 } from './stores.js'
 
+	import { contextStores as CS, advanceOptions, hideOptions, showOptions } from './lib.js'
+  	
 	import TrackHeading from './TrackHeading.svelte'
 	import ProgressBarTime from './ProgressBarTime.svelte'
 	import Controls from './Controls.svelte'
-	import VolumeSlider from './VolumeSlider.svelte'
 	import PlayList from './PlayList.svelte'
+  import VolumeSlider from './VolumeSlider.svelte'
+  import VolumeIcon from './svg/volume.svg.svelte'
+  import XIcon from './svg/x.svg.svelte'
+  import RepeatIcon from './svg/repeat.svg.svelte'
+  import PlayControl from './PlayControl.svelte';
 
-	export let skip = 10
-	export let skiptime = 'hide'
+	export let playlist
+	export let skiptime = 10
+	export let showskiptime = 'hide'
+	export let showskip = 'hide'
 	export let advance = 'auto'
 	export let playlistlocation = 'bottom'
-	export let playlistshow = false
-
+	export let expandplaylist = 'false'
+	export let showplaylist = 'show'
+	export let showplaylistbutton = 'true'
+	export let showadvance = 'hide'
+	export let showcontrols = 'show'
 	let playlistAtTop = playlistlocation === 'top'
 
+	// lots of setup
+	const tracks = writable([])
+	let parsedTracks = []
+	try {
+		parsedTracks = JSON.parse(playlist)
+	} catch (err) {
+		console.warn(`Playlist isn't JSON, will try single URL: ${playlist}`,err.message)
+	}
+	if (!parsedTracks.length) {
+		try {
+			const checkURL = new URL(playlist) // throws error if malformed
+			// console.log({checkURL})
+			if (checkURL.host && /^https?:/.test(checkURL.protocol)) parsedTracks.push(playlist)
+			else console.warn(`Playlist URL: "${playlist}" is malformed, it must be a full URL that starts with https:// or http:// and is otherwise properly shaped`)
+		} catch (err) {
+			console.warn(`Playlist URL: "${playlist}" is malformed, see docs`,err.message)
+		}
+	}
+	tracks.set(parsedTracks.map(c => Array.isArray(c) ? ({ src: c[0], title: c[1] }) : ({ src: c })))
+	setContext(CS.TRACKS,tracks)
+	
+	const currentIndex = writable(-1)
+	setContext(CS.CURRENT_INDEX,currentIndex)
+
+	const currentTime = writable(0)
+	setContext(CS.CURRENT_TIME,currentTime)
+	
+	const currentTrack = derived([currentIndex, tracks], ([$i, $t]) => $i < $t.length && $i >= 0 ? $t[$i] : false)
+	setContext(CS.CURRENT_TRACK,currentTrack)
+	
+	const trackDuration = derived(currentTrack, ($t) => $t && 'duration' in $t ? $t.duration : false)
+	setContext(CS.TRACK_DURATION,trackDuration)
+	
+	const progress = derived([currentTime,trackDuration], ([$t,$d]) => $t * 100 / ($d || 0.000001))
+	setContext(CS.PROGRESS,progress)
+	
+	const isReady = writable(false)
+	setContext(CS.IS_READY,isReady)
+
+	const isPlaying = writable(false)
+	setContext(CS.IS_PLAYING,isPlaying)
+
+	const isError = writable(false)
+	setContext(CS.IS_ERROR,isError)
+
+	const playWhenReady = writable(false)
+	setContext(CS.PLAY_WHEN_READY,playWhenReady)
+
+	const skipTimeStore = writable(skiptime)
+	setContext(CS.SKIP_TIME,skipTimeStore)
+
+	const advanceStore = writable(advance)
+	setContext(CS.ADVANCE,advanceStore)
+
+	const showSkipTime = writable(showOptions.includes(showskiptime))
+	setContext(CS.SHOW_SKIP_TIME,showSkipTime)
+
+	const volume = writable(80)
+	setContext(CS.VOLUME, volume)
+
+	const reverseDirection = writable(false)
+	setContext(CS.REVERSE_DIRECTION, reverseDirection)
+
+	const updateCurrentTime = () => {
+		currentTime.set(audioPlayer.currentTime)
+	}
+
+	// when track data changes onload or onerror,
+	// notify the store of the change
+	const updateTrackList = () => {
+		tracks.set($tracks)
+	}
+
+	const audioTag = writable(new Audio())
+	
 	const audioPlayer = $audioTag
-
-	skipStore.set(skip)
-	advanceStore.set(advance)
-	showSkipTime.set(skiptime === "show")
-	audioPlayer.preload = "metadata"
-
-	onMount(() => {
-		if (document) {
-			audioPlayer.addEventListener('play', () => { 
-				isPlaying.set(true)
-				// console.log('play!')
-				trackProgress(true)
-			})
-			audioPlayer.addEventListener('pause', () => {
-				// console.log("pause!!")
-				isPlaying.set(false)
-				trackProgress(false)
-			})
-			audioPlayer.addEventListener('canplay', () => {
-				// console.log('canplay',{$currentIndex,$playWhenReady})
-				isReady.set(true)
-				updateCurrentTime()
-			})
-			audioPlayer.addEventListener('canplaythrough', () => {
-				updateCurrentTime()
-				// console.log('canplaythrough',{$currentIndex,$playWhenReady})
-				if ($playWhenReady) {
-					audioPlayer.play()
-				}
-			})
-			audioPlayer.addEventListener('ended', () => { 
-				console.log('ended track ',$currentIndex,$tracks.length)
-				currentTime.set($trackDuration)
-				if (advance === 'loop' || (advance === 'auto' && $currentIndex < $tracks.length-1)) {
-					playWhenReady.set(true)
-					if ($currentIndex >= $tracks.length-1) currentIndex.set(0)
-					else currentIndex.update(n => n+1)
-				}
-			})
-
-			// console.log('/onMount()', {skip, skiptime, advance, $skipStore, $showSkipTime, $advanceStore})
-			// setTimeout(function() {
-			// 	console.log('timeout:', {skip, skiptime, advance, $skipStore, $showSkipTime, $advanceStore})
-			// },50)
+	audioTag.preload = "none"
+	audioPlayer.addEventListener('play', () => { 
+		isPlaying.set(true)
+		// console.log('play!')
+		trackProgress(true)
+	})
+	audioPlayer.addEventListener('pause', () => {
+		// console.log("pause!!")
+		isPlaying.set(false)
+		trackProgress(false)
+	})
+	audioPlayer.addEventListener('canplay', () => {
+		// console.log('canplay',{$currentIndex,$playWhenReady})
+		isReady.set(true)
+		isError.set(false)
+		reverseDirection.set(false)
+		updateCurrentTime()
+	})
+	audioPlayer.addEventListener('canplaythrough', () => {
+		updateCurrentTime()
+		// console.log('canplaythrough',{$currentIndex,$playWhenReady})
+		if ($playWhenReady) {
+			audioPlayer.play()
 		}
 	})
+	const autoAdvance = () => {
+		if ($advanceStore === 'repeat') {
+			audioPlayer.currentTime = 0
+		} else if ($advanceStore === 'loop' 
+			|| ($advanceStore === 'auto' && $currentIndex < $tracks.length-1)
+			|| $reverseDirection) { // = previous track desired via button so ignore advance rules
+			playWhenReady.set(true)
+			currentIndex.update(n => n+($reverseDirection ? -1 : 1))
+		}
+	}
+	audioPlayer.addEventListener('ended', () => { 
+		// console.log('ended track ',$currentIndex,$tracks.length)
+		currentTime.set($trackDuration)
+		updateCurrentTime()
+		autoAdvance()
+	})
+	audioPlayer.addEventListener('error', () => {
+		const t = $currentTrack
+		t.error = true
+		t.loading = false
+		// t.duration = 0
+		isError.set(true)
+		updateTrackList()
+		audioPlayer.pause()
+		audioPlayer.currentTime = 0
+		console.error(`Audio error track: ${$currentIndex} - ${$currentTrack.src}`,$currentTrack)
+		updateCurrentTime()
+		autoAdvance()
+	})
+	setContext(CS.AUDIO_TAG,audioTag)
+	
 
 	let progressTracker
 	const trackProgress = (watch) => {
@@ -89,88 +173,146 @@
 			progressTracker = setInterval(updateCurrentTime, 100)
 		}
 	}
-	const updateCurrentTime = () => {
-		currentTime.set(audioPlayer.currentTime)
-	}
-
-	// auto-load track on every track change
-	$: if ($currentIndex <= $tracks.length-1 
-			&& $currentTrack !== false
-			&& typeof $currentTrack.loaded === 'undefined'
-			&& !$currentTrack.loading) loadCurrentTrack()
 	
-	const loadCurrentTrack = () => {
-		// nope, return to this with first item (index 0) on update trigger
-		if ($currentIndex > $tracks.length-1) currentIndex.set(0)
-		else loadTrack($currentIndex,$currentTrack)
+	const setAudioFrom = (track) => {
+		// console.log('setAudioFrom',track,typeof track.loaded === undefined)
+		if (! track ) return
+		audioPlayer.pause()
+		audioPlayer.currentTime = 0
+		audioPlayer.src = track.src
+		// console.log('setAudio',audioPlayer.src)
+		updateCurrentTime()
 	}
 	const loadTrack = (index, track) => {
-		// console.info(`loadTrack()`,{index,track})
+		// console.info(`loadTrack()`,index,track)
 		if (!audioPlayer) {
-			console.warn('loadTrack() odd condition',{audioPlayer,$audioTag,$currentTrack})
+			console.warn('loadTrack() odd condition: ',{index,audioPlayer,$currentTrack})
 			return
 		}
-		audioPlayer.title = track.title
-		audioPlayer.src = track.src
 		track.loading = true
 		isReady.set(false)
-		audioPlayer.load()
 		audioPlayer.onloadedmetadata = () => {
-			// console.log(`metadata loaded for ${track.title} `)
+			// console.log(`metadata loaded for ${$currentIndex}: ${track.title} `)
 			track.loaded = true
 			track.loading = false
 			track.duration = audioPlayer.duration
-			const newTracks = $tracks
-			newTracks[index] = track
-			tracks.set(newTracks)
+			updateTrackList()
+		}
+		setAudioFrom(track)
+		audioPlayer.load()
+	}
+	const loadCurrentTrack = () => {
+		loadTrack($currentIndex,$currentTrack)
+	}
+	// auto-load track on every $currentIndex change
+	function autoLoad(index) {
+		const track = $currentTrack
+		const lastIndex = $tracks.length-1
+		if ( ! track || index < 0 || index > lastIndex ) {
+			// illegal value, reset to 0 or last track, try again with first or last
+			const newIndex = index < 0 ? lastIndex : 0
+			// console.log(`invalid autoLoad(${index}), reseting to ${newIndex}`,index,'/',$tracks.length,track)
+			currentIndex.set(newIndex)
+			autoLoad(newIndex) 
+			return
+		}
+		if ( ! track.loading) {
+			loadCurrentTrack()
+		} else {
+			console.log('Not loading')
 		}
 	}
-	
-	$: audioTracks =	$tracks
-	$: {
-		if ($currentIndex > -1) loadCurrentTrack()
-	}
+	currentIndex.set(0)
+	$: autoLoad($currentIndex)
 
+	let showVolume = false
+	let showAdvance = true
+
+	$: showAdvance = showOptions.includes(showadvance)
+	
+	const advanceNext = () => {
+    advanceStore.set(advanceOptions[nextAdvanceOptionIndex])
+  }
+
+  let advanceOptionIndex = advanceOptions.indexOf($advanceStore)
+  let nextAdvanceOptionIndex = 0 
+  $: {
+    advanceOptionIndex = advanceOptions.indexOf($advanceStore)
+    nextAdvanceOptionIndex = (advanceOptionIndex+1 >= advanceOptions.length) ? 0
+    : advanceOptionIndex + 1
+  }
+
+	$: adjustVolumeTitle = (showVolume ? 'Close' : 'Open') + ' Volume Adjustment'
 </script>
 
-{#if audioTracks < 1}
-<div class="error-no-tracks">
-	<h2>No Audio Tracks!</h2>
-	<p>You must include at least 1:</p>
-	<pre>&lt;taocode-audio src="url-to-audio"&gt;&lt;/taocode-audio&gt;</pre>
-	<p>Use the closing tag as shown above (&lt;taocode-audio .../&gt; will fail).</p>
-</div>
-{:else}
-<main class="audio-player" class:playlistAtTop>
-	<section id="player-cont">
-		
-		<TrackHeading />
-		
-		<ProgressBarTime />
-		
-		<Controls />
-		
-		<VolumeSlider />
-		
-	</section>	
-	<PlayList show={playlistshow} />
-</main>
-{/if}
+{#if $tracks < 1}
+<div class="error-no-playlist">
+	<h2>No Playlist!</h2>
+	<p>You must provide a valid playlist attribute.</p>
+	<pre>
+		&lt;taocode-audio-player playlist='["url-to-audio","second-url"]'&gt;&lt;/taocode-audio-player&gt;
+		&lt;taocode-audio-player playlist='[["url-to-audio","title 1"],["second-url","title 2"]]'&gt;&lt;/taocode-audio-player&gt;
+	</pre>
+	</div>
+	{:else}
+	<main class="audio-player" class:playlistAtTop
+	style="
+--color-error: hsl(0,75%,50%);">
+		<section id="player-cont">
+
+			<TrackHeading />
+
+			<div class="vol-prog-rep">
+				{#if hideOptions.includes( showcontrols )}
+				 <PlayControl />
+				{/if}
+				<button title={adjustVolumeTitle} on:click={()=>showVolume = !showVolume}>
+					<span class="icon">
+						<VolumeIcon volume={$volume} />
+					</span>
+				</button>
+				<ProgressBarTime />
+				{#if showVolume}
+				<div transition:fly={{ y: 20, duration: 300}} class="show-volume">
+					<button on:click={()=>showVolume = false} title={adjustVolumeTitle}>
+						<span class="icon">
+							<XIcon />
+						</span>
+					</button>
+					<VolumeSlider />
+				</div>
+				{/if}
+				{#if showAdvance}
+				<button title={`Advance is: ${advanceOptions[advanceOptionIndex]}.\nChange Advance to: ${advanceOptions[nextAdvanceOptionIndex]}?`} on:click={advanceNext}>
+					<span class="icon">
+						<RepeatIcon variant={$advanceStore} />
+					</span>
+				</button>
+				{/if}
+			
+			</div>
+
+			{#if ! hideOptions.includes( showcontrols )}
+			<Controls {showskip} />
+			{/if}
+		</section>
+		{#if ! hideOptions.includes(showplaylist)}
+		<PlayList expand={expandplaylist} showbutton={showplaylistbutton} atTop={playlistAtTop} />{/if}
+	</main>
+	{/if}
 
 <style>
-	.error-no-tracks {
+	.error-no-playlist {
 		background-color: pink;
 		padding: 0.5em;
 		text-align: center;
 		color: #800E;
 	}
-	.error-no-tracks h2 {
+
+	.error-no-playlist h2 {
 		margin-top: 0.1em;
 	}
-	audio {
-		display: block;
-		margin: 0.5em auto;
-	}
+
 	main {
 		display: flex;
 		margin: 0 auto;
@@ -179,17 +321,60 @@
 		align-items: center;
 		/* 		justify-content: center; */
 		width: fit-content;
-		border-radius: var(--audio-player-border-radius,0);
+		border-radius: var(--audio-player-border-radius, 0);
 	}
-	.playlistAtTop >:last-child {
-		order: -1;
-	}
+	
 	#player-cont {
-		padding: 0.5rem 1rem;
+		padding: 0.25rem 0.5rem;
 		box-shadow: var(--audio-player-shadow, none);
-		background: var(--audio-player-background,#EEE);
-		color: var(--audio-player-color,#333);
-		border-radius: var(--audio-player-border-radius,0);
+		background: var(--audio-player-background, #EEE);
+		color: var(--audio-player-color, #333);
+		border-radius: var(--audio-player-border-radius, 0);
 		width: 13em;
 	}
+
+	.vol-prog-rep {
+		display: flex;
+		position: relative;
+	}
+	.vol-prog-rep button {
+		border: none;
+		padding: 0.1em 0.25em;
+		display: flex;
+		align-items: center;
+		cursor: pointer;
+	}
+	button:first-child {
+		padding-right: 0.5em;
+	}
+	button:last-child {
+		padding-left: 0.5em;
+		padding-right: 0;
+	}
+	.vol-prog-rep .icon {
+		display: inline-block;
+		height: 1.5em;
+		width: 1.5em;
+	}
+	.show-volume button {
+		margin-right: 0.5em;
+	}
+
+	.playlistAtTop>:last-child {
+		order: -1;
+	}
+
+	.show-volume {
+    display: flex;
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    top: -1em;
+    left: 0em;
+    right: -1.5em;
+    background-color: #FFFa;
+    padding: 0 0.25ch;
+    box-shadow: 0 0 5px #0003;
+  }
+
 </style>

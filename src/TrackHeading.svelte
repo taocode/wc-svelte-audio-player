@@ -1,22 +1,29 @@
 <script>
-  import { currentIndex, currentTrack } from './stores'
+  import { getContext } from 'svelte'
+  import { contextStores as CS, trackTitle } from './lib'
+  const currentTrack = getContext(CS.CURRENT_TRACK)
+  const isError = getContext(CS.IS_ERROR)
+
+  import AlertCircleIcon from './svg/alert-circle.svg.svelte'
+
   let container = { offsetWidth: 100 }
   let title = "Loading..."
-  let heading = { scrollWidth: 100 }
+  let heading = false
   let animate = false
   let centered = true
   let aniTime = 15
   let panPx = 100
+  let error = false
   $: {
-    const i = $currentIndex
-    const hasTitle = (i >= 0 && $currentTrack)
-    title = (hasTitle) ? $currentTrack.title : "Loading..."
-    if (hasTitle && heading) {
-      panPx = heading.scrollWidth - container.offsetWidth
+    error = $isError
+    title = trackTitle($currentTrack)
+    // console.log('title-in:','title' in $currentTrack, {$currentTrack}, $currentTrack.title ,{hasTitle,heading,container})
+    if (heading) {
+      panPx = heading.scrollWidth - container.offsetWidth + (error ? 20 : 0)
       animate = panPx > 0
       centered = !animate
       aniTime = panPx / 25
-      if (aniTime < 6) aniTime += 6
+      if (aniTime < 5) aniTime += 5
       if (heading.style) {
         heading.style.animationName = 'none'
         heading.offsetWidth // trigger reflow
@@ -26,12 +33,19 @@
   }
 </script>
 
-<div bind:this={container} 
+<div bind:this={container} class:error
  style="
 --marquee-width: {panPx}px;
 --marquee-time: {aniTime}s;
 ">
-  <h3 bind:this={heading} class:animate class:centered>{title}</h3>
+  <h3 bind:this={heading} class:animate class:centered>
+    {#if error}
+    <span class="error-icon">
+      <AlertCircleIcon />
+    </span>
+    {/if}
+    {title}
+  </h3>
 </div>
 
 <style>
@@ -43,7 +57,14 @@
     height: 2em;
     padding: 0.2em 0;
   }
-
+  .error {
+    color: var(--color-error, red);
+  }
+  .error-icon {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+  }
   h3 {
     white-space: nowrap;
     margin: 0;

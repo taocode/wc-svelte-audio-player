@@ -1,42 +1,60 @@
 <script>
+  import { getContext, hasContext } from 'svelte'
   import { slide } from 'svelte/transition'
-  import { tracks, currentIndex, playWhenReady, audioTag } from './stores.js'
-  import { formatTime } from './lib.js'
+  // import { tracks, currentIndex, playWhenReady, audioTag } from './stores.js'
+  import { formatTime, contextStores as CS, trackTitle, showOptions, hideOptions } from './lib.js'
+  const tracks = getContext(CS.TRACKS)
+  const currentIndex = getContext(CS.CURRENT_INDEX)
+  const playWhenReady = getContext(CS.PLAY_WHEN_READY)
+  const audioTag = getContext(CS.AUDIO_TAG)
 	
-  export let show = false
-	let showing = show === 'true' || show === 'show'
-  let always = show === 'always'
+  export let expand = 'false'
+  export let atTop = false
+  export let showbutton = 'true'
+	let expanded = showOptions.includes(expand)
+  let always = expand === 'always'
+  let never = expand === 'never'
   const chooseTrack = (i) => {
     playWhenReady.set(true)
-    // console.log('chooseTrack',i,{$playWhenReady})
-    if (i === $currentIndex) $audioTag.play()
+    // console.log('chooseTrack',i,{$playWhenReady,$audioTag})
+    if (i === $currentIndex) {
+      $audioTag.currentTime = 0
+      $audioTag.play()
+    }
     else currentIndex.set(i)
   }
+  $: accordionTitle = (expanded ? 'Close' : 'Show') + ' Playlist'
+  const playlistTitle = (track) => (track.error ? 'Cannot ' : '') + 'Play ' + trackTitle(track)
 </script>
 
+{#if !never}
 <section class="playlist-container" class:always>
-  {#if $tracks.length > 1}
+  {#if ! hideOptions.includes(showbutton) && $tracks.length > 1}
   <button class="accordion"
-      class:showing class:always
-      on:click={() => showing =! showing && !always}>
+    title={accordionTitle}
+      class:expanded class:always
+      disabled={always}
+      on:click={() => expanded = !expanded && !always}>
       ☰ Playlist 
       <span class="track-count">{$tracks.length}</span>
-      {#if showing && !always}<span class="close">✖</span>{/if}
+      {#if expanded && !always}<span class="close">✖</span>{/if}
   </button>
   {/if}
 
-  {#if always || showing}
-  <ul transition:slide>
+  {#if always || expanded}
+  <ul transition:slide class:atTop>
     {#each $tracks as track,i}
-    <li data-track-id={i} class:current={i===$currentIndex}>
-      <button on:click={() => chooseTrack(i)}>
-        {#if track.duration}<span class="duration">{formatTime(track.duration)}</span>{/if}
-        {track.title} 
+    <li data-track-id={i} class:current={i===$currentIndex} >
+      <button title={playlistTitle(track)} on:click={() => chooseTrack(i)} disabled={track.error} class:error={track.error}>
+        {#if 'duration' in track || track.error}<span class="duration">{
+          track.error ? '--:--' : formatTime(track.duration) }</span>{:else if track.error}{/if}
+        {trackTitle(track)} 
       </button></li>
     {/each}
   </ul>
   {/if}
 </section>
+{/if}
 
 
 <style>
@@ -54,11 +72,19 @@
     width: 100%;
     background: var(--audio-player-playlist-background,#dddc);
     text-align: left;
+    cursor: pointer;
+  }
+  .atTop {
+    bottom: 1.75em;
+  }
+  .error {
+    color: var(--color-error,red);
+    cursor: not-allowed;
   }
 
   /* Style the buttons that are used to open and close the accordion panel */
   button.accordion {
-    background: var(--audio-player-playlist-show-button-background,var(--audio-player-background,#EEE));
+    background: var(--audio-player-playlist-expand-button-background,var(--audio-player-background,#EEE));
     color: var(--audio-player-color, #333);
     margin: 0;
     text-align: center;
@@ -68,10 +94,10 @@
     transition: 0.4s;
   }
 
-  /* Add a background color to the button if it is clicked on (add the .showing class with JS), and when you move the mouse over it (hover) */
-  button.showing {
-    background: var(--audio-player-playlist-show-button-showing-background,#0003);
-    color: var(--audio-player-playlist-show-button-showing-color,#333);
+  /* Add a background color to the button if it is clicked on (add the .expanded class with JS), and when you move the mouse over it (hover) */
+  button.expanded {
+    background: var(--audio-player-playlist-expand-button-expanded-background,#0003);
+    color: var(--audio-player-playlist-expand-button-expanded-color,#333);
   }
   button.always {
     cursor: default;
@@ -82,8 +108,12 @@
     color: var(--audio-player-track-count-color,#FFF);
     padding: 0.1em 0.5em;
   }
+  .error .duration {
+    background: var(--color-error,#d00c);
+  }
   .duration {
     float: right;
+    margin: -0.15em -0.75em 0 0.2em;
   }
   ul {
     list-style-type: none;
@@ -93,7 +123,7 @@
     padding: 0;
     width: 100%;
     overflow-y: auto;
-    max-height: 5.1rem;
+    max-height: 6rem;
     position: absolute;
   }
   ul::-webkit-scrollbar {

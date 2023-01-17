@@ -1,12 +1,7 @@
-```js script
-import './src/index.svelte'
-```
-
 # Playlist Audio Player Web Component
 
 ```html preview-story
-<taocode-audio-player skiptime="30"
- showcontrols="hide" showadvance="hide" showplaylistbutton="hide" expandplaylist="always"
+<taocode-audio-player skiptime="show" skip="30"
 playlist='[
     "https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3",
     "https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3",
@@ -71,9 +66,7 @@ Next release: ID3 data will be considered the best source for track title.
 
 ### `advance`
 
-How to advance at the end of a track. `auto` | `loop` | `none`
-
-User can change if advancecontrol is showing.
+Options on how to advance at the end of a track. `auto` | `loop` | `none`
 
 default: `auto`
 
@@ -85,53 +78,34 @@ default: `auto`
   ]'></taocode-audio-player>
 ```
 
-### `advancecontrol`
-
-Show or hide the advance control. Options: (`show` | `true`) | `hide`
-
-default: `show`
-
 ### `playlistlocation`
 
-2 options: `top` | `bottom`
+Playlist location has 2 options: `top` | `bottom`
 
 default: `bottom`
 
-### `expandplaylist`
+### `playlistshow`
 
-3 options: `false` | (`show` | `true`) | `always`
+Playlistshow location has 3 options: `false` | (`show` | `true`) | `always` | `never`
 
 - `false` - start with playlist closed, user can expand the list
 - (`show` | `true`) - start with playlist expanded, user can close it
 - `always` - always show playlist, takes up space
+- `never` - hide the playlist forever
 
 default: `false`
 
-### `skiptime`
+### `skip`
 
 The number of seconds to skip ahead (fastforward) and skip back (rewind).
 
 default: 10
 
-### `showskiptime`
+### `skiptime`
 
 Show or hide the amount of time next to the skip buttons. Options: ``
 
 default: `hide`
-
-## Show Attributes
-
-The show attributes all accept any of these expressions that override their default:
-
-### Show - Start Showing/Expanded
-
-- ['1','true','show','yes','please']
-
-### Hide - Start Hidden 
-
-- ['0','false','hide','no','none']
-
-*Note that invalid values will fallback on their default.
 
 ## Theming via CSS Vars
 
@@ -147,3 +121,7 @@ Add the style attribute with your custom styles
   --audio-player-shadow: none;
 ">...</div>
 ```
+
+## Feature Summary for v1.0.0 release
+
+Player now can show loading errors via the playlist and skips over bad tracks depending upon advance="auto" or "loop" in whatever direction you were going.

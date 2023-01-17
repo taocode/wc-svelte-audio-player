@@ -1,105 +1,98 @@
 <script>
-  import PlayIcon from './svg/play.svg.svelte'
-  import PauseIcon from './svg/pause.svg.svelte'
-  import FastForwardIcon from './svg/fast-forward.svg.svelte'
+  import { getContext } from 'svelte'
+
+  import { contextStores as CS, showOptions } from './lib' 
+  const audioTag = getContext(CS.AUDIO_TAG)
+  const currentIndex = getContext(CS.CURRENT_INDEX)
+  const currentTime = getContext(CS.CURRENT_TIME)
+  const trackDuration = getContext(CS.TRACK_DURATION)
+  const isError = getContext(CS.IS_ERROR)
+  const skipTime = getContext(CS.SKIP_TIME)
+  const showSkipTime = getContext(CS.SHOW_SKIP_TIME)
+  const tracks = getContext(CS.TRACKS)
+  const playWhenReady = getContext(CS.PLAY_WHEN_READY)
+  const reverseDirection = getContext(CS.REVERSE_DIRECTION)
+
   import SkipForwardIcon from './svg/skip-forward.svg.svelte'
   import SkipBackIcon from './svg/skip-back.svg.svelte'
-	import { audioTag, currentIndex, currentTrack, currentTime, trackDuration, isPlaying, isReady, skip, showSkipTime, tracks, playWhenReady } from './stores'
-  import Loader from './svg/loader.svg.svelte'
+	import RotateCWIcon from './svg/rotate-cw.svg.svelte'
+
+  import PlayControl from './PlayControl.svelte'
 
   let audioPlayer = $audioTag
-  
-  const playPauseAudio = () => {
-		try {
-			if (audioPlayer.paused) {
-				if ($isReady) audioPlayer.play()
-        else playWhenReady.set(true)
-			} else {
-				audioPlayer.pause();
-			}
-		}	catch(err) {
-			audioPlayer.error = true
-			console.error('playPause',err)
-		}
-	}
+
   const rewindAudio = () => {
-    audioPlayer.currentTime -= parseInt($skip)
+    audioPlayer.currentTime -= parseInt($skipTime)
   }
   const forwardAudio = () => {
-    audioPlayer.currentTime += parseInt($skip)
+    audioPlayer.currentTime += parseInt($skipTime)
   }
   const previousAudio = () => {
-    playWhenReady.set(true)
-    if ($tracks.length > 1 && audioPlayer.currentTime < 5) {
-      console.log('prev: near start, choosing prior track',audioPlayer.currentTime)
-      if ($currentIndex < 1) currentIndex.set($tracks.length-1)
-      else currentIndex.update(n => n - 1)
+    if (prevTrack) {
+      playWhenReady.set(true)
+      reverseDirection.set(true)
+      currentIndex.update(n => n - 1)
     } else {
-      console.log('prev: resetting to start of track')
       audioPlayer.currentTime = 0
+      audioPlayer.play()
     }
   }
   const nextAudio = () => {
-    console.log('nextAudio',{$currentIndex,$currentTrack})
+    // console.log('nextAudio',{$currentIndex,$currentTrack})
     playWhenReady.set(true)
     currentIndex.update(n => n + 1)
   }
-	
-	let strokeWidth = 3
-  let size = "1.75x"
+
+  export let showskip = 'false'
 
   $: prevTrack = $tracks.length > 1 && $currentTime < 5
   // $: console.log({prevTrack},$currentTime)
-  $: includeSkip = $skip > 0 && $skip < $trackDuration
+  $: includeSkip = showOptions.includes(showskip) && $skipTime > 0 && $skipTime < $trackDuration
   $: includeNext = $tracks.length > 1
 
 </script>
 
+<div id="btn-cont" class:$isError>
 
-<div id="btn-cont">
-  <button id="prev" class:prevTrack on:click={previousAudio}>
-    <SkipBackIcon {size} title="Skip Back" />
-	</button>
-  {#if includeSkip}
-  <button id="rewind" title="Skip back {$skip}s" on:click={rewindAudio}>
-		<span class="invert-h">
-      <FastForwardIcon {size} />
+  <button id="prev" title="Previous Track" class:prevTrack on:click={previousAudio}>
+    <span class="icon">
+      <SkipBackIcon />
     </span>
-    {#if $showSkipTime}<span class="skip-time">{$skip}</span>{/if}
+	</button>
+
+  {#if includeSkip}
+  <button id="rewind" title="Skip back {$skipTime}s" on:click={rewindAudio}>
+		<span class="icon invert-h">
+      <RotateCWIcon />
+    </span>
+    {#if $showSkipTime}<span class="skip-time">{$skipTime}</span>{/if}
 	</button>
   {/if}
-  {#if !$isReady}
-  <div class="loading">
-    <div class="loader add-animate-beacon animate-pulse">
-      <Loader {size} />
-    </div>
+
+  <div class="play-control">
+    <PlayControl />
   </div>
-  {:else}
-  <button id="play" on:click={playPauseAudio}>
-    {#if $isPlaying}
-    <PauseIcon {size} strokeWidth={strokeWidth*2/3}/>
-    {:else}
-    <PlayIcon {size} {strokeWidth}/>
-    {/if}
-	</button>
-  {/if}
+
   {#if includeSkip}
-  <button id="forward" title="Skip forward {$skip}s" on:click={forwardAudio}>
-    <span>
-      <FastForwardIcon {size} />
+  <button id="forward" title="Skip forward {$skipTime}s" on:click={forwardAudio}>
+    <span class="icon">
+      <RotateCWIcon />
     </span>
-    {#if $showSkipTime}<span class="skip-time">{$skip}</span>{/if}
+    {#if $showSkipTime}<span class="skip-time">{$skipTime}</span>{/if}
 	</button>
   {/if}
+
   {#if includeNext}
-  <button id="next" on:click={nextAudio}>
-    <span>
-      <SkipForwardIcon {size} title="Next track" />
+  <button id="next" title="Next Track" on:click={nextAudio}>
+    <span class="icon">
+      <SkipForwardIcon />
     </span>
 	</button>
   {:else}
   <div class="button-placeholder"></div>
   {/if}
+
+
 </div>
 
 <style>
@@ -113,9 +106,17 @@
   #btn-cont {
     display: flex;
     justify-content: space-between;
+    position: relative;
+    z-index: 10;
+  }
+  .icon {
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
   }
   button {
     display: flex;
+    position: relative;
     justify-content: center;
     align-items: baseline;
     /* width: 1ch; */
@@ -123,44 +124,17 @@
     padding: 0;
     cursor: pointer;
     margin: 0;
+    height: 1.5rem;
     background-color: transparent;
   }
-  
+  .\$isError {
+    color: var(--color-error,red);
+  }
   .button-placeholder {
     width: 2ch;
   }
-  .loading {
-    position: relative;
-    width: 1.5rem;
-    --animate-seconds: 2s;
-    --animate-function: cubic-bezier(.4,0,.6,1);
-  }
-  .loader {
-    position: absolute;
-  }
-  .beacon {
-    display: none;
-    font-size: 10px;
-    border-radius: 999em;
-    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
-    height: 1em;
-    width: 1em;
-    top: 0.5em;
-    left: 0.5em;
-  }
-  .add-animate-beacon::after {
-    content: '';
-    position: absolute;
-    font-size: 8px;
-    top: 1em;
-    left: 1em;
-    border-radius: 999em;
-    height: 1em;
-    width: 1em;
-    animation: beacon var(--animate-seconds,2s) var(--animate-function, ease-in-out) infinite;
-  }
-  .animate-pulse {
-    animation: pulse var(--animate-seconds,2s) var(--animate-function, ease-in-out) infinite;
+  .play-control {
+    margin-top: -0.25rem;
   }
   @keyframes pulse {
     50% {
@@ -182,16 +156,14 @@
     scale: -1 1;
   }
   .skip-time {
-    font-size: 0.66em;
-    opacity: 0.7;
-    align-self: bottom;
+    position: absolute;
+    font-size: 0.5rem;
+    bottom: 0.4rem;
+    z-index: 1;
+    letter-spacing: -0.05em;
+    text-shadow: 0 0 1px #FFF, 0 0 2px #FFF, 0 0 3px #FFF,0 0 1.2em #FFF, 0 0 2em #FFF;
+    transform: scaleX(0.8);
   }
-  #forward .skip-time {
-    order: -1;
-  }
-  /* #forward .skip-time::after {
-    content:'s';
-  } */
   .skip-time::after {
     content: 's';
   }

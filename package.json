@@ -1,11 +1,12 @@
 {
-  "name": "@wcd/svelte-audio-player",
-  "version": "0.1.0",
+  "name": "@wcd/taocode.svelte-audio-player",
+  "version": "0.3.1",
   "description": "",
   "license": "ISC",
   "type": "module",
   "homepage": "{{ homepage }}",
   "scripts": {
+    "build:readme": "node ./_readmecp.js",
     "dev": "pnpx wcd-cli@latest serve wpsgjENLAcAH6CMeL78q --open",
     "serve": "npx wcd-cli@latest serve wpsgjENLAcAH6CMeL78q --open"
   },

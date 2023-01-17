@@ -1,21 +1,30 @@
 <script>
-  import { progress, currentTime, currentTrack, isPlaying, isReady } from './stores'
-  import { formatTime } from './lib'
+  import { getContext } from 'svelte';
+  import { formatTime, contextStores as CS } from './lib'
+
+  const progress = getContext(CS.PROGRESS)
+  const currentTime = getContext(CS.CURRENT_TIME)
+  const currentTrack = getContext(CS.CURRENT_TRACK)
+  const isPlaying = getContext(CS.IS_PLAYING)
+  const isReady  = getContext(CS.IS_READY)
+  const isError = getContext(CS.IS_ERROR)
   
-	let totalTimeDisplay = "Loading..."
+	let totalTimeDisplay = 'Loading...'
 	let currTimeDisplay = "0:00:00"
 	
-  $: if ($isReady) updateTime()
+  $: if ($isReady || $isError) updateTime()
   $: timeUpdater($isPlaying)
 
 	function updateTime() {
     const ct = $currentTime
     const dt = $currentTrack.duration
-		currTimeDisplay = (isNaN(ct))?`0:00`:formatTime(ct);
-		totalTimeDisplay = (isNaN(dt)) ?'Loading...':formatTime(dt);
+		currTimeDisplay = isNaN(ct) ? `0:00` : formatTime(ct)
+		totalTimeDisplay = $isError ? 'Error' 
+      : isNaN(dt) ? 'Loading...'
+      : formatTime(dt)
 	}
 	
-	let trackTimer;
+	let trackTimer
   const timeUpdater = (run) => {
     clearInterval(trackTimer)
     if (run) trackTimer = setInterval(updateTime,100)
@@ -41,7 +50,7 @@
   }
   .progress-outer {
     width: 100%;
-    border: var(--audio-player-border, 1px solid #22222299);
+    border: var(--audio-player-border, 1px solid #2222);
   }
   
   #bar {
