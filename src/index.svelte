@@ -1,7 +1,6 @@
 <svelte:options tag="taocode-audio-player" />
 
 <script>
-
 	import { setContext } from 'svelte'
 	import { writable, derived } from 'svelte/store'
   import { fly } from 'svelte/transition'
@@ -245,8 +244,7 @@
 	$: adjustVolumeTitle = (showVolume ? 'Close' : 'Open') + ' Volume Adjustment'
 </script>
 
-{#if $tracks < 1}
-<div class="error-no-playlist">
+{#if $tracks < 1} <div class="error-no-playlist">
 	<h2>No Playlist!</h2>
 	<p>You must provide a valid playlist attribute.</p>
 	<pre>
@@ -255,16 +253,15 @@
 	</pre>
 	</div>
 	{:else}
-	<main class="audio-player" class:playlistAtTop
-	style="
+	<main class="audio-player" class:playlistAtTop style="
 --color-error: hsl(0,75%,50%);">
-		<section id="player-cont">
+		<section id="player-cont" class="container">
 
 			<TrackHeading />
 
 			<div class="vol-prog-rep">
 				{#if hideOptions.includes( showcontrols )}
-				 <PlayControl />
+				<PlayControl />
 				{/if}
 				<button title={adjustVolumeTitle} on:click={()=>showVolume = !showVolume}>
 					<span class="icon">
@@ -289,7 +286,7 @@
 					</span>
 				</button>
 				{/if}
-			
+
 			</div>
 
 			{#if ! hideOptions.includes( showcontrols )}
@@ -297,84 +294,98 @@
 			{/if}
 		</section>
 		{#if ! hideOptions.includes(showplaylist)}
-		<PlayList expand={expandplaylist} showbutton={showplaylistbutton} atTop={playlistAtTop} />{/if}
+		<section class="container">
+			<PlayList expand={expandplaylist} showbutton={showplaylistbutton} atTop={playlistAtTop} />
+		</section>
+		{/if}
 	</main>
 	{/if}
 
-<style>
-	.error-no-playlist {
-		background-color: pink;
-		padding: 0.5em;
-		text-align: center;
-		color: #800E;
-	}
+	<style>
+		.error-no-playlist {
+			background-color: pink;
+			padding: 0.5em;
+			text-align: center;
+			color: #800E;
+		}
 
-	.error-no-playlist h2 {
-		margin-top: 0.1em;
-	}
+		.error-no-playlist h2 {
+			margin-top: 0.1em;
+		}
 
-	main {
-		display: flex;
-		margin: 0 auto;
-		max-width: 15em;
-		flex-direction: column;
-		align-items: center;
-		/* 		justify-content: center; */
-		width: fit-content;
-		border-radius: var(--audio-player-border-radius, 0);
-	}
-	
-	#player-cont {
-		padding: 0.25rem 0.5rem;
-		box-shadow: var(--audio-player-shadow, none);
-		background: var(--audio-player-background, #EEE);
-		color: var(--audio-player-color, #333);
-		border-radius: var(--audio-player-border-radius, 0);
-		width: 13em;
-	}
+		* {
+			box-sizing: border-box;
+		}
 
-	.vol-prog-rep {
-		display: flex;
-		position: relative;
-	}
-	.vol-prog-rep button {
-		border: none;
-		padding: 0.1em 0.25em;
-		display: flex;
-		align-items: center;
-		cursor: pointer;
-	}
-	button:first-child {
-		padding-right: 0.5em;
-	}
-	button:last-child {
-		padding-left: 0.5em;
-		padding-right: 0;
-	}
-	.vol-prog-rep .icon {
-		display: inline-block;
-		height: 1.5em;
-		width: 1.5em;
-	}
-	.show-volume button {
-		margin-right: 0.5em;
-	}
+		main {
+			display: flex;
+			margin: 0 auto;
+			min-width: 15em;
+			flex-direction: column;
+			align-items: center;
+			width: fit-content;
+			border-radius: var(--audio-player-border-radius, 0);
+			box-sizing: border-box;
+		}
 
-	.playlistAtTop>:last-child {
-		order: -1;
-	}
+		.container {
+			box-shadow: var(--audio-player-shadow, none);
+			background: var(--audio-player-background, #EEE);
+			color: var(--audio-player-color, #333);
+			border-radius: var(--audio-player-border-radius, 0);
+			width: 100%;
+		}
 
-	.show-volume {
-    display: flex;
-    position: absolute;
-    z-index: 10;
-    width: 100%;
-    top: -1em;
-    left: 0em;
-    right: -1.5em;
-    background-color: #FFFa;
-    padding: 0 0.25ch;
-    box-shadow: 0 0 5px #0003;
-  }
+		#player-cont {
+			padding: 0.25rem 0.5rem;
+		}
 
-</style>
+		.vol-prog-rep {
+			display: flex;
+			position: relative;
+		}
+
+		.vol-prog-rep button {
+			border: none;
+			padding: 0.1em 0.25em;
+			display: flex;
+			align-items: center;
+			cursor: pointer;
+		}
+
+		button:first-child {
+			padding-right: 0.5em;
+		}
+
+		button:last-child {
+			padding-left: 0.5em;
+			padding-right: 0;
+		}
+
+		.vol-prog-rep .icon {
+			display: inline-block;
+			height: 1.5em;
+			width: 1.5em;
+		}
+
+		.show-volume button {
+			margin-right: 0.5em;
+		}
+
+		.playlistAtTop>:last-child {
+			order: -1;
+		}
+
+		.show-volume {
+			display: flex;
+			position: absolute;
+			z-index: 10;
+			width: 100%;
+			top: -1em;
+			left: 0em;
+			right: -1.5em;
+			background-color: #FFFa;
+			padding: 0 0.25ch;
+			box-shadow: 0 0 5px #0003;
+		}
+	</style>

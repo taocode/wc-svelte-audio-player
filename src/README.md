@@ -1,7 +1,8 @@
 # Playlist Audio Player Web Component
 
 ```html preview-story
-<taocode-audio-player skiptime="show" skip="30"
+<taocode-audio-player skiptime="30"
+ showcontrols="hide" showadvance="hide" showplaylistbutton="hide" expandplaylist="always"
 playlist='[
     "https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3",
     "https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3",
@@ -66,7 +67,12 @@ Next release: ID3 data will be considered the best source for track title.
 
 ### `advance`
 
-Options on how to advance at the end of a track. `auto` | `loop` | `none`
+Options on how to advance at the end of a track. `auto` | `loop` | `repeat` | `none`
+
+- `auto` - advance to the end of the playlist and stop
+- `loop` - advance to the end of the playlist and restart with first track
+- `repeat` - repeat the current track
+- `none` - do not automatically advance
 
 default: `auto`
 
@@ -78,34 +84,59 @@ default: `auto`
   ]'></taocode-audio-player>
 ```
 
+### `showadvance`
+
+Show or hide the advance control. Options: `show` | `hide`
+
+default: `hide`
+
 ### `playlistlocation`
 
-Playlist location has 2 options: `top` | `bottom`
+2 options: `top` | `bottom`
 
 default: `bottom`
 
-### `playlistshow`
+### `expandplaylist`
 
-Playlistshow location has 3 options: `false` | (`show` | `true`) | `always` | `never`
+3 options: `false` | `true` | `always`
 
 - `false` - start with playlist closed, user can expand the list
-- (`show` | `true`) - start with playlist expanded, user can close it
-- `always` - always show playlist, takes up space
-- `never` - hide the playlist forever
+- `true` - start with playlist expanded, user can close it
+- `always` - always show playlist, takes up space vertical space, it isn't an absolute positioned fly-out
 
 default: `false`
 
-### `skip`
+### `skiptime`
 
 The number of seconds to skip ahead (fastforward) and skip back (rewind).
 
 default: 10
 
-### `skiptime`
+### `showskip`
 
-Show or hide the amount of time next to the skip buttons. Options: ``
+Show the skip controls? Options: `show` | `hide`
 
 default: `hide`
+
+### `showskiptime`
+
+Show or hide the amount of time next to the skip buttons. Options: `show` | `hide`
+
+default: `hide`
+
+## Show Attributes
+
+The show attributes all accept any of these expressions that override their default:
+
+### Show - Start Showing/Expanded
+
+- ['1','true','show','yes','please']
+
+### Hide - Start Hidden 
+
+- ['0','false','hide','no','none']
+
+*Note that invalid values will fallback on their default.
 
 ## Theming via CSS Vars
 
@@ -121,7 +152,3 @@ Add the style attribute with your custom styles
   --audio-player-shadow: none;
 ">...</div>
 ```
-
-## Feature Summary for v1.0.0 release
-
-Player now can show loading errors via the playlist and skips over bad tracks depending upon advance="auto" or "loop" in whatever direction you were going.

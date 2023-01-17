@@ -71,9 +71,12 @@ Next release: ID3 data will be considered the best source for track title.
 
 ### `advance`
 
-How to advance at the end of a track. `auto` | `loop` | `none`
+Options on how to advance at the end of a track. `auto` | `loop` | `repeat` | `none`
 
-User can change if advancecontrol is showing.
+- `auto` - advance to the end of the playlist and stop
+- `loop` - advance to the end of the playlist and restart with first track
+- `repeat` - repeat the current track
+- `none` - do not automatically advance
 
 default: `auto`
 
@@ -85,11 +88,11 @@ default: `auto`
   ]'></taocode-audio-player>
 ```
 
-### `advancecontrol`
+### `showadvance`
 
-Show or hide the advance control. Options: (`show` | `true`) | `hide`
+Show or hide the advance control. Options: `show` | `hide`
 
-default: `show`
+default: `hide`
 
 ### `playlistlocation`
 
@@ -99,11 +102,11 @@ default: `bottom`
 
 ### `expandplaylist`
 
-3 options: `false` | (`show` | `true`) | `always`
+3 options: `false` | `true` | `always`
 
 - `false` - start with playlist closed, user can expand the list
-- (`show` | `true`) - start with playlist expanded, user can close it
-- `always` - always show playlist, takes up space
+- `true` - start with playlist expanded, user can close it
+- `always` - always show playlist, takes up space vertical space, it isn't an absolute positioned fly-out
 
 default: `false`
 
@@ -113,9 +116,15 @@ The number of seconds to skip ahead (fastforward) and skip back (rewind).
 
 default: 10
 
+### `showskip`
+
+Show the skip controls? Options: `show` | `hide`
+
+default: `hide`
+
 ### `showskiptime`
 
-Show or hide the amount of time next to the skip buttons. Options: ``
+Show or hide the amount of time next to the skip buttons. Options: `show` | `hide`
 
 default: `hide`
 
