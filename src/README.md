@@ -3,25 +3,28 @@
 ```html preview-story
 <taocode-audio-player skiptime="30"
  showcontrols="hide" showadvance="hide" showplaylistbutton="hide" expandplaylist="always"
-playlist='[
-    "https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3",
-    "https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3",
-    ["fail-https://download.pariyatti.org/free/_moIbLs95/Dana_The_Practice_of_Giving_single.mp3","Fail: The Practice of Giving"]
-]'></taocode-audio-player>
+playlist='[{"src":"https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3","title":"Lumbini"},{"src":"https://www.jqueryscript.net/dummy/1.mp3","title":"Dummy 1"}]'
+  ></taocode-audio-player>
 ```
 ## Attributes
 
 ### `playlist`
 
-Playlist attribute is required. It can be 1 of 3 options:
+Playlist attribute is required. It can be 1 of 4 options:
 
 #### Playlist Option 1: Single URL
 
 `playlist="url-to-audio.mp3"` - must be a full URL starting with https:// or http://
 
-You can use a relative URL if you include only 1 track in an array, options 2 and 3 don't have this restriction.
+You can use a relative URL if you include only 1 track in an array, options 2, 3 and 4 don't have this restriction.
 
-#### Playlist Option 2: Array of URLs
+#### Playlist Option 2: Array of JSON Objects
+
+`playlist='[{"src":"https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3","title":"Lumbini"},{"src":"https://www.jqueryscript.net/dummy/1.mp3","title":"Dummy 1"}]'`
+
+This can be handiest from Hugo, use `jsonify objPlaylist` if you have matching keys `src` and `title` on each entry in that array/slice of objects.
+
+#### Playlist Option 3: Array of URLs
 
 The playlist attribute should be a JSON formatted array. 
 
@@ -36,7 +39,7 @@ playlist='[
 ]'
 ```
 
-#### Playlist Option 3: Array of Arrays
+#### Playlist Option 4: Array of Arrays
 
 JSON formatted `[url,title]` entries.
 
@@ -48,15 +51,17 @@ playlist='[
 ]'
 ```
 
-You can also mix & match Options 2 & 3 like:
+You can also mix & match Options 2, 3 & 4 like:
 
 ```json
 playlist='[
   "https://.../file.mp3",
   ["https://.../file2.mp3","Title 2"],
-  ["https://.../file3.mp3","Title 3"]
+  [{"src":"https://.../file3.mp3","title":"Title 3"}]
 ]'
 ```
+
+I'm not really sure how handy this would be but hey, it can be done.
 
 ### Title of Tracks
 
