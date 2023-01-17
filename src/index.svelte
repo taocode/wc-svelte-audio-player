@@ -28,6 +28,7 @@
 	export let playlistlocation = 'bottom'
 	export let expandplaylist = 'false'
 	export let showplaylist = 'show'
+	export let showplaylistbutton = 'true'
 	export let showadvance = 'hide'
 	export let showcontrols = 'show'
 	let playlistAtTop = playlistlocation === 'top'
@@ -296,7 +297,7 @@
 			{/if}
 		</section>
 		{#if ! hideOptions.includes(showplaylist)}
-		<PlayList expand={expandplaylist} atTop={playlistAtTop} />{/if}
+		<PlayList expand={expandplaylist} showbutton={showplaylistbutton} atTop={playlistAtTop} />{/if}
 	</main>
 	{/if}
 

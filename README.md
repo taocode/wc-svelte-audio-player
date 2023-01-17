@@ -6,7 +6,7 @@ import './src/index.svelte'
 
 ```html preview-story
 <taocode-audio-player skiptime="30"
- showcontrols="ok" showadvance="show" showplaylist="ok" showskip="show"
+ showcontrols="hide" showadvance="hide" showplaylistbutton="hide" expandplaylist="always"
 playlist='[
     "https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3",
     "https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3",

@@ -2,7 +2,7 @@
   import { getContext, hasContext } from 'svelte'
   import { slide } from 'svelte/transition'
   // import { tracks, currentIndex, playWhenReady, audioTag } from './stores.js'
-  import { formatTime, contextStores as CS, trackTitle, showOptions } from './lib.js'
+  import { formatTime, contextStores as CS, trackTitle, showOptions, hideOptions } from './lib.js'
   const tracks = getContext(CS.TRACKS)
   const currentIndex = getContext(CS.CURRENT_INDEX)
   const playWhenReady = getContext(CS.PLAY_WHEN_READY)
@@ -10,6 +10,7 @@
 	
   export let expand = 'false'
   export let atTop = false
+  export let showbutton = 'true'
 	let expanded = showOptions.includes(expand)
   let always = expand === 'always'
   let never = expand === 'never'
@@ -28,7 +29,7 @@
 
 {#if !never}
 <section class="playlist-container" class:always>
-  {#if $tracks.length > 1}
+  {#if ! hideOptions.includes(showbutton) && $tracks.length > 1}
   <button class="accordion"
     title={accordionTitle}
       class:expanded class:always
