@@ -43,14 +43,16 @@
 	if (!parsedTracks.length) {
 		try {
 			const checkURL = new URL(playlist) // throws error if malformed
-			// console.log({checkURL})
 			if (checkURL.host && /^https?:/.test(checkURL.protocol)) parsedTracks.push(playlist)
 			else console.warn(`Playlist URL: "${playlist}" is malformed, it must be a full URL that starts with https:// or http:// and is otherwise properly shaped`)
 		} catch (err) {
 			console.warn(`Playlist URL: "${playlist}" is malformed, see docs`,err.message)
 		}
 	}
-	tracks.set(parsedTracks.map(c => Array.isArray(c) ? ({ src: c[0], title: c[1] }) : ({ src: c })))
+	tracks.set(parsedTracks.map(c => c.src ? c 
+															: Array.isArray(c) 
+																? ({ src: c[0], title: c[1] }) 
+																	: ({ src: c })))
 	setContext(CS.TRACKS,tracks)
 	
 	const currentIndex = writable(-1)
