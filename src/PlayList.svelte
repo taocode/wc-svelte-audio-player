@@ -71,6 +71,7 @@
     padding: 5px 15px;
     width: 100%;
     background: var(--audio-player-playlist-background,#dddc);
+    color: var(--audio-player-color,#222);
     text-align: left;
     cursor: pointer;
   }
@@ -96,16 +97,16 @@
 
   /* Add a background color to the button if it is clicked on (add the .expanded class with JS), and when you move the mouse over it (hover) */
   button.expanded {
-    background: var(--audio-player-playlist-expand-button-expanded-background,#0003);
-    color: var(--audio-player-playlist-expand-button-expanded-color,#333);
+    background: var(--audio-player-background-semi,#0001);
+    /* background: var(--audio-player-playlist-expand-button-expanded-background,#0001);
+    color: var(--audio-player-playlist-expand-button-expanded-color,#333); */
   }
   button.always {
     cursor: default;
   }
   .duration,
   .track-count {
-    background: var(--audio-player-track-count-background,#333a);
-    color: var(--audio-player-track-count-color,#FFF);
+    background: var(--audio-player-background-semi,#FFF4);
     padding: 0.1em 0.5em;
   }
   .error .duration {
@@ -123,7 +124,7 @@
     padding: 0;
     width: 100%;
     overflow-y: auto;
-    max-height: 6rem;
+    max-height: var(--audio-player-playlist-max-h,6rem);
     position: absolute;
   }
   ul::-webkit-scrollbar {
@@ -145,7 +146,7 @@
   li {
     line-height: 125%;
     padding: 0;
-    border-bottom: 1px solid var(--audio-player-color,#ddd);
+    border-bottom: 1px solid var(--audio-player-color,#222);
     /* cursor: pointer; */
   }
 

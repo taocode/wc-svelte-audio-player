@@ -59,6 +59,7 @@
     display: inline-block;
     width: 2rem;
     height: 2rem;
+    color: var(--audio-player-color,#222);
   }
   button {
     display: flex;

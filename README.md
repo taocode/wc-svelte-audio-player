@@ -5,8 +5,15 @@ import './src/index.svelte'
 # Playlist Audio Player Web Component
 
 ```html preview-story
-<taocode-audio-player skiptime="30"
- showcontrols="hide" showadvance="hide" showplaylistbutton="hide" expandplaylist="always"
+<taocode-audio-player skiptime="5" showskip="show" expandplaylist="always"
+ showcontrols="hide" showplaylistbutton="hide"
+ showheading="hide"
+ style="
+ --audio-player-primary-hue: 120;
+ --audio-player-background: transparent;
+ --audio-player-color: #0d650d;
+ --audio-player-background-semi: #0d650d22;
+ "
 playlist='[{"src":"https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3","title":"Lumbini"},{"src":"https://www.jqueryscript.net/dummy/1.mp3","title":"Dummy 1"}]'
   ></taocode-audio-player>
 ```

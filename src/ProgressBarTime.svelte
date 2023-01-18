@@ -50,13 +50,13 @@
   }
   .progress-outer {
     width: 100%;
-    border: var(--audio-player-border, 1px solid #2222);
+    box-shadow: 0 0 1px 1px var(--audio-player-background-semi, #2222);
   }
   
   #bar {
     width: 0%;
     display: block;
-    background: var(--audio-player-progress-background, 
+    background: var(--audio-player-background-semi, 
     rgba(0, 0, 0, 0.1));
     background-attachment: fixed;
   }
