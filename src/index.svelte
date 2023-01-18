@@ -30,6 +30,7 @@
 	export let showplaylistbutton = 'true'
 	export let showadvance = 'hide'
 	export let showcontrols = 'show'
+	export let showheading = 'show'
 	let playlistAtTop = playlistlocation === 'top'
 
 	// lots of setup
@@ -258,9 +259,9 @@
 	<main class="audio-player" class:playlistAtTop style="
 --color-error: hsl(0,75%,50%);">
 		<section id="player-cont" class="container">
-
+			{#if ! hideOptions.includes(showheading)}
 			<TrackHeading />
-
+			{/if}
 			<div class="vol-prog-rep">
 				{#if hideOptions.includes( showcontrols )}
 				<PlayControl />
@@ -349,6 +350,7 @@
 
 		.vol-prog-rep button {
 			border: none;
+			background: var(--audio-player-background,#EEE);
 			padding: 0.1em 0.25em;
 			display: flex;
 			align-items: center;
@@ -386,8 +388,11 @@
 			top: -1em;
 			left: 0em;
 			right: -1.5em;
-			background-color: #FFFa;
+			background-color: #FFF8;
 			padding: 0 0.25ch;
-			box-shadow: 0 0 5px #0003;
+			box-shadow: 0 0 5px #0002;
 		}
-	</style>
+		.icon {
+	    color: var(--audio-player-color,#222);
+		}
+</style>
