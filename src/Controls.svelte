@@ -2,11 +2,11 @@
   import { getContext } from 'svelte'
 
   import { contextStores as CS, showOptions } from './lib' 
-  const audioTag = getContext(CS.AUDIO_TAG)
+  const paused = getContext(CS.PAUSED)
   const currentIndex = getContext(CS.CURRENT_INDEX)
   const currentTime = getContext(CS.CURRENT_TIME)
   const trackDuration = getContext(CS.TRACK_DURATION)
-  const isError = getContext(CS.IS_ERROR)
+  const isError = getContext(CS.ERROR)
   const skipTime = getContext(CS.SKIP_TIME)
   const showSkipTime = getContext(CS.SHOW_SKIP_TIME)
   const tracks = getContext(CS.TRACKS)
@@ -19,13 +19,11 @@
 
   import PlayControl from './PlayControl.svelte'
 
-  let audioPlayer = $audioTag
-
   const rewindAudio = () => {
-    audioPlayer.currentTime -= parseInt($skipTime)
+    currentTime.set( $currentTime - parseInt($skipTime) )
   }
   const forwardAudio = () => {
-    audioPlayer.currentTime += parseInt($skipTime)
+    currentTime.set( $currentTime + parseInt($skipTime) )
   }
   const previousAudio = () => {
     if (prevTrack) {
@@ -33,8 +31,8 @@
       reverseDirection.set(true)
       currentIndex.update(n => n - 1)
     } else {
-      audioPlayer.currentTime = 0
-      audioPlayer.play()
+      currentTime.set(0)
+      paused.set(false)
     }
   }
   const nextAudio = () => {

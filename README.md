@@ -5,7 +5,7 @@ import './src/index.svelte'
 # Playlist Audio Player Web Component
 
 ```html preview-story
-<taocode-audio-player skiptime="5" showskip="show" expandplaylist="always"
+<taocode-audio-player skiptime="5" showskip="show" showadvance="show" expandplaylist="always"
  showcontrols="hide" showplaylistbutton="hide"
  showheading="hide"
  style="

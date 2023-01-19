@@ -2,27 +2,21 @@
   import { getContext } from 'svelte'
 
   import { contextStores as CS } from './lib' 
-  const audioTag = getContext(CS.AUDIO_TAG)
-  const isPlaying = getContext(CS.IS_PLAYING)
-  const isReady = getContext(CS.IS_READY)
-  const isError = getContext(CS.IS_ERROR)
+  const paused = getContext(CS.PAUSED)
+  const isReady = getContext(CS.READY)
+  const isError = getContext(CS.ERROR)
+  const playWhenReady = getContext(CS.PLAY_WHEN_READY)
 
   import PlayIcon from './svg/play.svg.svelte'
   import PauseIcon from './svg/pause.svg.svelte'
   import LoaderIcon from './svg/loader.svg.svelte'
   import SlashIcon from './svg/slash.svg.svelte'
 
-  const audioPlayer = $audioTag
   const playPauseAudio = () => {
 		try {
-			if (audioPlayer.paused) {
-				if ($isReady) audioPlayer.play()
-        else playWhenReady.set(true)
-			} else {
-				audioPlayer.pause();
-			}
+      playWhenReady.set($paused)
+      paused.set(!$paused)
 		}	catch(err) {
-			audioPlayer.error = true
 			console.error('playPause',err)
 		}
 	}
@@ -41,12 +35,12 @@
       </div>
     </div>
     {:else}
-    <button id="play" title={$isPlaying ? 'Pauste' : 'Play'} on:click={playPauseAudio}>
+    <button id="play" title={$paused ? 'Play' : 'Pause' } on:click={playPauseAudio}>
       <span class="icon">
-        {#if $isPlaying}
-        <PauseIcon />
-        {:else}
+        {#if $paused}
         <PlayIcon />
+        {:else}
+        <PauseIcon />
         {/if}
       </span>
     </button>

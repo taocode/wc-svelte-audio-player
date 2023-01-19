@@ -1,10 +1,8 @@
 <script>
   import { getContext } from "svelte"
   import { contextStores as CS} from "./lib"
-  export let step = 1
-  const audioTag = getContext(CS.AUDIO_TAG)
+  export let step = 0.01
   const volume = getContext(CS.VOLUME)
-  $: if ($audioTag) $audioTag.volume = $volume / 100
 </script>
 
 <div class="slidecontainer">
@@ -14,13 +12,13 @@
 				 class="slider"
 				 type="range"
 				 min="0"
-				 max="100"
+				 max="1"
 				 {step}
 				 name="volume"
 				 bind:value={$volume}
 				 >
 
-  <label class="current-volume" for="volume-slider">{$volume}</label>
+  <label class="current-volume" for="volume-slider">{parseInt($volume*100)}</label>
 </div>
 
 <style>

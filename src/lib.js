@@ -1,5 +1,4 @@
 export const contextStores = {
-  AUDIO_TAG: 'audioTag',
   CURRENT_INDEX: 'currentIndex',
   CURRENT_TRACK: 'currentTrack',
   CURRENT_TIME: 'currentTime',
@@ -10,10 +9,10 @@ export const contextStores = {
   SHOW_SKIP_TIME: 'showSkipTime',
   TRACK_DURATION: 'trackDuration',
   PLAY_WHEN_READY: 'playWhenReady',
-  IS_PLAYING: 'isPlaying',
-  IS_READY: 'isReady',
+  PAUSED: 'paused',
+  READY: 'ready',
   PROGRESS: 'progress',
-  IS_ERROR: 'isError',
+  ERROR: 'error',
   REVERSE_DIRECTION: 'reverseDirection',
 }
 export const formatTime = (seconds) => {
