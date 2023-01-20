@@ -72,6 +72,9 @@
 	progress.set = (val) => currentTime.set(val * $trackDuration) 
 	setContext(CS.PROGRESS,progress)
 	
+	const buffered = writable([])
+	setContext(CS.BUFFERED,buffered)
+
 	const isReady = writable(false)
 	setContext(CS.READY,isReady)
 
@@ -98,10 +101,6 @@
 
 	const reverseDirection = writable(false)
 	setContext(CS.REVERSE_DIRECTION, reverseDirection)
-
-	const updateCurrentTime = () => {
-		currentTime.set(audioPlayer.currentTime)
-	}
 
 	// when track data changes onload or onerror,
 	// notify the store of the change
@@ -244,7 +243,8 @@
 		bind:currentTime={$currentTime} 
 		bind:duration={$trackDuration}
 		bind:paused={$paused}
-		bind:volume={$volume}></audio>
+		bind:volume={$volume}
+		bind:buffered={$buffered}></audio>
 		<section id="player-cont" class="container">
 			{#if ! hideOptions.includes(showheading)}
 			<TrackHeading />
@@ -333,12 +333,13 @@
 		.vol-prog-rep {
 			display: flex;
 			position: relative;
+			align-items: center;
 		}
 
 		.vol-prog-rep button {
 			border: none;
 			background: var(--audio-player-background,#EEE);
-			padding: 0.1em 0.25em;
+			padding: 0.5em 0.25em;
 			display: flex;
 			align-items: center;
 			cursor: pointer;

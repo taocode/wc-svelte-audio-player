@@ -2,6 +2,7 @@ export const contextStores = {
   CURRENT_INDEX: 'currentIndex',
   CURRENT_TRACK: 'currentTrack',
   CURRENT_TIME: 'currentTime',
+  BUFFERED: 'buffered',
   TRACKS: 'tracks',
   VOLUME: 'volume',
   SKIP_TIME: 'skipTime',

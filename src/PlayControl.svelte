@@ -59,13 +59,13 @@
     display: flex;
     position: relative;
     justify-content: center;
-    align-items: baseline;
+    align-items: center;
     /* width: 1ch; */
     border: none;
     padding: 0;
     cursor: pointer;
     margin: 0;
-    height: 1.5rem;
+    height: 2rem;
     background-color: transparent;
   }
   .\$isError {
