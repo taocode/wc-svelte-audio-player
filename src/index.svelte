@@ -1,7 +1,7 @@
 <svelte:options tag="taocode-audio-player" />
 
 <script>
-	import { setContext } from 'svelte'
+	import { onMount, setContext } from 'svelte'
 	import { writable, derived } from 'svelte/store'
   import { fly } from 'svelte/transition'
 	// TODO: use jsmediatags to load ID3
@@ -56,7 +56,7 @@
 																	: ({ src: c })))
 	setContext(CS.TRACKS,tracks)
 	
-	const currentIndex = writable(-1)
+	const currentIndex = writable(-2)
 	setContext(CS.CURRENT_INDEX,currentIndex)
 
 	const currentTime = writable(0)
@@ -65,20 +65,24 @@
 	const currentTrack = derived([currentIndex, tracks], ([$i, $t]) => $i < $t.length && $i >= 0 ? $t[$i] : false)
 	setContext(CS.CURRENT_TRACK,currentTrack)
 	
-	const trackDuration = derived(currentTrack, ($t) => $t && 'duration' in $t ? $t.duration : false)
+	const trackDuration = writable(0.0000001)
 	setContext(CS.TRACK_DURATION,trackDuration)
 	
-	const progress = derived([currentTime,trackDuration], ([$t,$d]) => $t * 100 / ($d || 0.000001))
+	const progress = derived([currentTime,trackDuration], ([$t,$d]) => $t / ($d || 0.000001))
+	progress.set = (val) => currentTime.set(val * $trackDuration) 
 	setContext(CS.PROGRESS,progress)
 	
-	const isReady = writable(false)
-	setContext(CS.IS_READY,isReady)
+	const buffered = writable([])
+	setContext(CS.BUFFERED,buffered)
 
-	const isPlaying = writable(false)
-	setContext(CS.IS_PLAYING,isPlaying)
+	const isReady = writable(false)
+	setContext(CS.READY,isReady)
+
+	const paused = writable(true)
+	setContext(CS.PAUSED,paused)
 
 	const isError = writable(false)
-	setContext(CS.IS_ERROR,isError)
+	setContext(CS.ERROR,isError)
 
 	const playWhenReady = writable(false)
 	setContext(CS.PLAY_WHEN_READY,playWhenReady)
@@ -92,15 +96,11 @@
 	const showSkipTime = writable(showOptions.includes(showskiptime))
 	setContext(CS.SHOW_SKIP_TIME,showSkipTime)
 
-	const volume = writable(80)
+	const volume = writable(0.8)
 	setContext(CS.VOLUME, volume)
 
 	const reverseDirection = writable(false)
 	setContext(CS.REVERSE_DIRECTION, reverseDirection)
-
-	const updateCurrentTime = () => {
-		currentTime.set(audioPlayer.currentTime)
-	}
 
 	// when track data changes onload or onerror,
 	// notify the store of the change
@@ -108,82 +108,17 @@
 		tracks.set($tracks)
 	}
 
-	const audioTag = writable(new Audio())
+	// const audioTag = writable(new Audio())
 	
-	const audioPlayer = $audioTag
-	audioTag.preload = "none"
-	audioPlayer.addEventListener('play', () => { 
-		isPlaying.set(true)
-		// console.log('play!')
-		trackProgress(true)
-	})
-	audioPlayer.addEventListener('pause', () => {
-		// console.log("pause!!")
-		isPlaying.set(false)
-		trackProgress(false)
-	})
-	audioPlayer.addEventListener('canplay', () => {
-		// console.log('canplay',{$currentIndex,$playWhenReady})
-		isReady.set(true)
-		isError.set(false)
-		reverseDirection.set(false)
-		updateCurrentTime()
-	})
-	audioPlayer.addEventListener('canplaythrough', () => {
-		updateCurrentTime()
-		// console.log('canplaythrough',{$currentIndex,$playWhenReady})
-		if ($playWhenReady) {
-			audioPlayer.play()
-		}
-	})
-	const autoAdvance = () => {
-		if ($advanceStore === 'repeat') {
-			audioPlayer.currentTime = 0
-		} else if ($advanceStore === 'loop' 
-			|| ($advanceStore === 'auto' && $currentIndex < $tracks.length-1)
-			|| $reverseDirection) { // = previous track desired via button so ignore advance rules
-			playWhenReady.set(true)
-			currentIndex.update(n => n+($reverseDirection ? -1 : 1))
-		}
-	}
-	audioPlayer.addEventListener('ended', () => { 
-		// console.log('ended track ',$currentIndex,$tracks.length)
-		currentTime.set($trackDuration)
-		updateCurrentTime()
-		autoAdvance()
-	})
-	audioPlayer.addEventListener('error', () => {
-		const t = $currentTrack
-		t.error = true
-		t.loading = false
-		// t.duration = 0
-		isError.set(true)
-		updateTrackList()
-		audioPlayer.pause()
-		audioPlayer.currentTime = 0
-		console.error(`Audio error track: ${$currentIndex} - ${$currentTrack.src}`,$currentTrack)
-		updateCurrentTime()
-		autoAdvance()
-	})
-	setContext(CS.AUDIO_TAG,audioTag)
-	
-
-	let progressTracker
-	const trackProgress = (watch) => {
-		clearInterval(progressTracker)
-		if (watch) {
-			progressTracker = setInterval(updateCurrentTime, 100)
-		}
-	}
+	let audioPlayer
 	
 	const setAudioFrom = (track) => {
 		// console.log('setAudioFrom',track,typeof track.loaded === undefined)
 		if (! track ) return
-		audioPlayer.pause()
-		audioPlayer.currentTime = 0
+		paused.set(true)
+		currentTime.set(0)
 		audioPlayer.src = track.src
 		// console.log('setAudio',audioPlayer.src)
-		updateCurrentTime()
 	}
 	const loadTrack = (index, track) => {
 		// console.info(`loadTrack()`,index,track)
@@ -212,8 +147,9 @@
 		const lastIndex = $tracks.length-1
 		if ( ! track || index < 0 || index > lastIndex ) {
 			// illegal value, reset to 0 or last track, try again with first or last
+			if (index < -1) return // -2 indicates 1st load, ignore
 			const newIndex = index < 0 ? lastIndex : 0
-			// console.log(`invalid autoLoad(${index}), reseting to ${newIndex}`,index,'/',$tracks.length,track)
+			console.log(`invalid autoLoad(${index}), reseting to ${newIndex}`,index,'/',$tracks.length,track)
 			currentIndex.set(newIndex)
 			autoLoad(newIndex) 
 			return
@@ -224,7 +160,53 @@
 			console.log('Not loading')
 		}
 	}
-	currentIndex.set(0)
+	
+	onMount(() => {
+		audioPlayer.preload = "metadata"
+
+		audioPlayer.addEventListener('canplay', () => {
+			// console.log('canplay',{$currentIndex,$playWhenReady})
+			isReady.set(true)
+			isError.set(false)
+			reverseDirection.set(false)
+		})
+		audioPlayer.addEventListener('canplaythrough', () => {
+			// console.log('canplaythrough',{$currentIndex,$playWhenReady})
+			if ($playWhenReady) {
+				paused.set(false)
+			}
+		})
+		const autoAdvance = () => {
+			if ($advanceStore === 'repeat') {
+				currentTime.set(0)
+			} else if ($advanceStore === 'loop' 
+				|| ($advanceStore === 'auto' && $currentIndex < $tracks.length-1)
+				|| $reverseDirection) { // = previous track desired via button so ignore advance rules
+				playWhenReady.set(true)
+				currentIndex.update(n => n+($reverseDirection ? -1 : 1))
+			}
+		}
+		audioPlayer.addEventListener('ended', () => { 
+			// console.log('ended track ',$currentIndex,$tracks.length)
+			currentTime.set($trackDuration)
+			autoAdvance()
+		})
+		audioPlayer.addEventListener('error', () => {
+			const t = $currentTrack
+			t.error = true
+			t.loading = false
+			// t.duration = 0
+			isError.set(true)
+			updateTrackList()
+			// audioPlayer.pause()
+			paused.set(true)
+			currentTime.set( 0 )
+			console.error(`Audio error track: ${$currentIndex} - ${$currentTrack.src}`,$currentTrack)
+			autoAdvance()
+		})
+		currentIndex.set(0)
+	})
+
 	$: autoLoad($currentIndex)
 
 	let showVolume = false
@@ -257,7 +239,14 @@
 	</div>
 	{:else}
 	<main class="audio-player" class:playlistAtTop style="
---color-error: hsl(0,75%,50%);">
+--color-error: hsl(0,75%,50%);
+--audio-player-hue: 120;">
+	<audio bind:this={audioPlayer} 
+		bind:currentTime={$currentTime} 
+		bind:duration={$trackDuration}
+		bind:paused={$paused}
+		bind:volume={$volume}
+		bind:buffered={$buffered}></audio>
 		<section id="player-cont" class="container">
 			{#if ! hideOptions.includes(showheading)}
 			<TrackHeading />
@@ -346,12 +335,13 @@
 		.vol-prog-rep {
 			display: flex;
 			position: relative;
+			align-items: center;
 		}
 
 		.vol-prog-rep button {
 			border: none;
 			background: var(--audio-player-background,#EEE);
-			padding: 0.1em 0.25em;
+			padding: 0.5em 0.25em;
 			display: flex;
 			align-items: center;
 			cursor: pointer;

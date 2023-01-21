@@ -1,12 +1,12 @@
 <script>
   import { getContext, hasContext } from 'svelte'
   import { slide } from 'svelte/transition'
-  // import { tracks, currentIndex, playWhenReady, audioTag } from './stores.js'
   import { formatTime, contextStores as CS, trackTitle, showOptions, hideOptions } from './lib.js'
   const tracks = getContext(CS.TRACKS)
   const currentIndex = getContext(CS.CURRENT_INDEX)
+  const currentTime = getContext(CS.CURRENT_TIME)
+  const paused = getContext(CS.PAUSED)
   const playWhenReady = getContext(CS.PLAY_WHEN_READY)
-  const audioTag = getContext(CS.AUDIO_TAG)
 	
   export let expand = 'false'
   export let atTop = false
@@ -16,10 +16,10 @@
   let never = expand === 'never'
   const chooseTrack = (i) => {
     playWhenReady.set(true)
-    // console.log('chooseTrack',i,{$playWhenReady,$audioTag})
+    // console.log('chooseTrack',i,{$playWhenReady})
     if (i === $currentIndex) {
-      $audioTag.currentTime = 0
-      $audioTag.play()
+      currentTime.set(0)
+      paused.set(false)
     }
     else currentIndex.set(i)
   }

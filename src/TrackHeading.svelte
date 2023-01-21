@@ -2,7 +2,7 @@
   import { getContext } from 'svelte'
   import { contextStores as CS, trackTitle } from './lib'
   const currentTrack = getContext(CS.CURRENT_TRACK)
-  const isError = getContext(CS.IS_ERROR)
+  const isError = getContext(CS.ERROR)
 
   import AlertCircleIcon from './svg/alert-circle.svg.svelte'
 
