@@ -90,7 +90,6 @@
   <div class="button-placeholder"></div>
   {/if}
 
-
 </div>
 
 <style>
