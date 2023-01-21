@@ -64,11 +64,8 @@
     background-attachment: fixed;
   }
   #bar-buffered {
-    --background-buffered: hsla( var(--ap-theme-h, 220), var(--ap-theme-s, 75%), var(--ap-theme-l, 35%), 0.3 );
     width: 0%;
-    display: block;
-    background: var(--background-buffered);
-    /* background: red; */
+    background: var(--audio-player-background-semi);
     background-attachment: fixed;
   }
   .time-display {
