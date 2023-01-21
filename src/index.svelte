@@ -227,6 +227,7 @@
   }
 
 	$: adjustVolumeTitle = (showVolume ? 'Close' : 'Open') + ' Volume Adjustment'
+	const showPlay = hideOptions.includes( showcontrols )
 </script>
 
 {#if $tracks < 1} <div class="error-no-playlist">
@@ -250,8 +251,8 @@
 			{#if ! hideOptions.includes(showheading)}
 			<TrackHeading />
 			{/if}
-			<div class="vol-prog-rep">
-				{#if hideOptions.includes( showcontrols )}
+			<div class="vol-prog-rep" class:showPlay>
+				{#if showPlay}
 				<PlayControl />
 				{/if}
 				<button title={adjustVolumeTitle} on:click={()=>showVolume = !showVolume}>
@@ -319,6 +320,7 @@
 	}
 	.container {
 		--audio-player-color: hsl( var(--ap-theme-h, 220), var(--ap-theme-s, 75%), var(--ap-theme-l, 25%) );
+		--audio-player-background-semi: hsla( var(--ap-theme-h, 220), var(--ap-theme-s, 75%), var(--ap-theme-l, 25%), 0.12 );
 		box-shadow: var(--audio-player-shadow, none);
 		background: var(--audio-player-background, transparent);
 		color: var(--audio-player-color);
@@ -330,6 +332,10 @@
 		display: flex;
 		position: relative;
 		align-items: center;
+		height: 2.5em;
+	}
+
+	.vol-prog-rep.showPlay {
 		margin-bottom: 0.5em;
 	}
 

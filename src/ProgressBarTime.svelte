@@ -39,7 +39,7 @@
   .container {
     width: 100%;
     position: relative;
-    height: 1.75em;
+    height: 1.66em;
   }
   .progress-outer, #bar-progress, #bar-buffered {
     height: 0.2em;
@@ -64,18 +64,15 @@
     background-attachment: fixed;
   }
   #bar-buffered {
-    --background-buffered: hsla( var(--ap-theme-h, 220), var(--ap-theme-s, 75%), var(--ap-theme-l, 35%), 0.3 );
     width: 0%;
-    display: block;
-    background: var(--background-buffered);
-    /* background: red; */
+    background: var(--audio-player-background-semi);
     background-attachment: fixed;
   }
   .time-display {
     position: absolute;
     bottom: auto;
-    top: 1.65em;
-    opacity: 0.8;
+    top: 1.5em;
+    opacity: 0.7;
     font-size: 0.8rem;
     display: flex;
     align-items: center;
@@ -83,6 +80,10 @@
     z-index: 12;
     text-shadow: 0 0 1px #FFF, 0 0 2px #FFF, 0 0 3px #FFF, 0 0 2px #FFF, 0 0 2px #FFF;
     /* background-color: #FFF9; */
+    transition: opacity 0.2s ease-out;
+  }
+  .container:hover .time-display {
+    opacity: 1;
   }
   #progress-time {
     left: 0;

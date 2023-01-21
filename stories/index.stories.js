@@ -1,5 +1,5 @@
 import "../src/index.svelte"
-import { html } from "lit-html"
+import { html } from "lit"
 
 export default {
   parameters: {
@@ -11,7 +11,9 @@ export default {
 export const singleMinimal = () => html` 
 <div>
 <h2>Minimal Single Track Example:</h2>
-<taocode-audio-player showcontrols="hide" playlist="https://assets.mixkit.co/sfx/preview/mixkit-mystwrious-bass-pulse-2298.mp3">
+<taocode-audio-player showcontrols="hide" 
+playlist="https://assets.mixkit.co/sfx/preview/mixkit-mystwrious-bass-pulse-2298.mp3"
+>
 </taocode-audio-player>
 <p>This minimal player uses showcontrols="hide".</p>
 </div> `;

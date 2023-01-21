@@ -86,7 +86,7 @@
 
   /* Style the buttons that are used to open and close the accordion panel */
   button.accordion {
-    background: var(--audio-player-playlist-expand-button-background,var(--audio-player-background,#EEE));
+    background: var(--audio-player-background);
     color: var(--audio-player-color, #333);
     margin: 0;
     text-align: center;
@@ -119,7 +119,7 @@
   }
   ul {
     list-style-type: none;
-    background: var(--audio-player-background,transparent);
+    background: var(--audio-player-background,#FFFe);
     color: var(--audio-player-color,#ddd);
     margin: 0;
     padding: 0;

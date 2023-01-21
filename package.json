@@ -11,7 +11,7 @@
     "serve": "npx wcd-cli@latest serve wpsgjENLAcAH6CMeL78q --open"
   },
   "dependencies": {
-    "lit-html": "^1"
+    "lit-html": "^2"
   },
   "devDependencies": {
     "svelte": "^3.55.0"
