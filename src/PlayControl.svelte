@@ -22,7 +22,7 @@
 	}
 </script>
 
-<div class:$isError>
+<div class:$isError class="play-control">
 {#if $isError}
     <span class="icon icon-error">
       <SlashIcon />
@@ -30,7 +30,7 @@
   {:else}
     {#if !$isReady}
     <div class="loading">
-      <div class="loader add-animate-beacon animate-pulse">
+      <div class="icon loader add-animate-beacon animate-pulse">
         <LoaderIcon />
       </div>
     </div>
@@ -49,6 +49,11 @@
 </div>
 
 <style>
+  .play-control {
+    width: 2rem;
+    height: 2rem;
+    position: relative;
+  }
   .icon {
     display: inline-block;
     width: 2rem;
@@ -76,26 +81,37 @@
   }
   .loading {
     position: relative;
-    width: 1.5rem;
     --animate-seconds: 2s;
     --animate-function: cubic-bezier(.4,0,.6,1);
   }
   .loader {
-    position: absolute;
+    position: relative;
   }
 
   .add-animate-beacon::after {
-    content: '';
+    --square-size: 1.5em;
+    content: ' ';
     position: absolute;
-    font-size: 8px;
-    top: 1em;
-    left: 1em;
+    left: 1.1em;
+    top: 0.9em;
+    z-index: 1;
     border-radius: 999em;
-    height: 1em;
-    width: 1em;
+    font-size: 9px;
+    height: var(--square-size);
+    width: var(--square-size);
     animation: beacon var(--animate-seconds,2s) var(--animate-function, ease-in-out) infinite;
   }
   .animate-pulse {
     animation: pulse var(--animate-seconds,2s) var(--animate-function, ease-in-out) infinite;
+  }
+  @keyframes pulse {
+    50% {
+      opacity:0.4;
+    }
+  }
+  @keyframes beacon {
+    50% {
+      box-shadow: 0 0 0 1em hsla(var(--audio-player-hue, 0), 65%, 33%, 0.33);
+    }
   }
 </style>
