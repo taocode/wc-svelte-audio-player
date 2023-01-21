@@ -54,7 +54,6 @@
     background: var(--audio-player-volume-background,
     linear-gradient(90deg, hsl(120, 86%, 30%) 10%, hsl(90, 95%, 40%) 60%, hsl(30, 95%, 75%) 70%, hsl(30, 95%, 70%) 80%, hsl(0, 95%, 50%) 95%));
     outline: none;
-    /* Remove outline */
     opacity: 0.7;
     /* Set transparency (for mouse-over effects on hover) */
     -webkit-transition: .2s;
@@ -63,7 +62,8 @@
   }
 
   /* Mouse-over effects */
-  .slider:hover {
+  .slider:hover,
+  .slider:focus-within {
     opacity: 1;
     /* Fully shown on mouse-over */
   }

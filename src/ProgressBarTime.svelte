@@ -134,13 +134,6 @@
   right: 0;
   left: 0;
 }
-.progrange::-moz-focus-outer {
-  border: 0;
-}
-
-.progrange:focus {
-  outline: 0;
-}
 .progrange:focus::-webkit-slider-runnable-track {
   box-shadow: var(--track-shadow-size) var(--track-shadow-blur) var(--track-shadow-border) var(--track-shadow-focus-color);
 }
@@ -219,7 +212,7 @@
   color: #fad;
 }
 
-.prog-range::-ms-fill-lower {
+.progrange::-ms-fill-lower {
   box-shadow: var(--track-shadow-size) var(--track-shadow-blur) var(--track-shadow-border) var(--track-shadow-color);
   background: var(--ie-bottom-track-color);
   border: var(--track-border-width) solid var(--track-border-color);

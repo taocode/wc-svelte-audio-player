@@ -5,11 +5,11 @@ import './src/index.svelte'
 # Playlist Audio Player Web Component
 
 ```html preview-story
-<taocode-audio-player skiptime="5" showskip="show" showadvance="show" showcontrols="show"
+<taocode-audio-player skiptime="5" showskip="show"
  style="
  --ap-theme-h: 130;
- --ap-theme-s: 80%;
- --ap-theme-l: 25%;"
+ --ap-theme-s: 85%;
+ --ap-theme-l: 20%;"
 playlist='["https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3",
 "https://download.pariyatti.org/free/_moIbLs95/Dana_The_Practice_of_Giving_single.mp3",
 "https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3"]'>
@@ -152,17 +152,29 @@ The show attributes all accept any of these expressions that override their defa
 
 *Note that invalid values will fallback on their default.
 
+### `randomhue`
+
+Provide a random hue, from 0-360 for HSL color. Useful for those lit html stories that don't allow a `style` attribute.
+
+default: `false`
+
 ## Theming via CSS Vars
 
-Add the style attribute with your custom styles
+Add the style attribute with your favorite HSL overrides. Boom, color. 
+
+defaults:
+
+- `--ap-theme-h: 220;` 
+- `--ap-theme-s: 75%;` 
+- `--ap-theme-l: 25%;` 
+
 
 ```html
-<div style="
-  --audio-player-color: #333;
-  --audio-player-background: linear-gradient(0, hsl(248, 66%, 75%) 5%, hsl(246, 65%, 80%) 33%, hsl(255, 65%, 70%) 66%, hsl(250, 70%, 65%) 95%);
-  --audio-player-background-accordion: #ddd;
-  --audio-player-volume-background: linear-gradient(90deg, hsl(120, 86%, 30%) 10%, hsl(60, 95%, 40%) 50%, hsl(30, 95%, 70%) 80%, hsl(8, 86%, 50%) 99%);
-  --audio-player-border-radius: 0;
-  --audio-player-shadow: none;
-">...</div>
+<taocode-audio-player style="
+  --ap-theme-h: 120;
+  --ap-theme-s: 50%;
+  --ap-theme-l: 33%;
+"></taocode-audio-player>
 ```
+
+You can achieve a lot of different looks just by hiding different parts. Enjoy!

@@ -322,10 +322,8 @@
 	.container {
 		--audio-player-color: hsl( var(--ap-theme-h, 220), var(--ap-theme-s, 75%), var(--ap-theme-l, 25%) );
 		--audio-player-background-semi: hsla( var(--ap-theme-h, 220), var(--ap-theme-s, 75%), var(--ap-theme-l, 25%), 0.12 );
-		box-shadow: var(--audio-player-shadow, none);
 		background: var(--audio-player-background, transparent);
 		color: var(--audio-player-color);
-		border-radius: var(--audio-player-border-radius, 0);
 		width: 100%;
 	}
 
@@ -380,9 +378,15 @@
 			top: -1em;
 			left: 0em;
 			right: -1.5em;
-			background-color: #FFF8;
+			background-color: #FFF;
+			opacity: 0.7;
 			padding: 0 0.25ch;
 			box-shadow: 0 0 5px #0002;
+			transition: opacity 0.2s ease-out;
+		}
+		.show-volume:hover,
+		.show-volume:focus-within {
+			opacity: 0.9;
 		}
 
 		.icon {
