@@ -126,11 +126,11 @@
   background: none;
   /* margin: calc(var(--thumb-height) / 2) 0; */
   margin: 0;
-  /* width: var(--track-width); */
-  z-index: 11;
   position: absolute;
-  top: 0.1em;
-  bottom: 0;
+  z-index: 11;
+  width: 100%;
+  top: -0.1em;
+  bottom: auto;
   right: 0;
   left: 0;
 }
@@ -193,6 +193,7 @@
 }
 
 .progrange::-moz-range-thumb {
+  -moz-appearance: none;
   box-shadow: var(--thumb-shadow-size) var(--thumb-shadow-blur) var(--track-shadow-border) var(--thumb-shadow-color);
   background: var(--thumb-color);
   border: var(--thumb-border-width) solid var(--thumb-border-color);
@@ -201,6 +202,7 @@
   cursor: default;
   height: var(--thumb-height);
   width: var(--thumb-width);
+  transform: translateY(-0.5em);
 }
 
 .progrange::-ms-track {
@@ -209,7 +211,6 @@
   transition: all .2s ease;
   width: var(--track-width);
   border-radius: 100%;
-  color: #fad;
 }
 
 .progrange::-ms-fill-lower {
