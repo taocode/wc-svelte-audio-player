@@ -56,7 +56,7 @@
 																	: ({ src: c })))
 	setContext(CS.TRACKS,tracks)
 	
-	const currentIndex = writable(-1)
+	const currentIndex = writable(-2)
 	setContext(CS.CURRENT_INDEX,currentIndex)
 
 	const currentTime = writable(0)
@@ -96,7 +96,7 @@
 	const showSkipTime = writable(showOptions.includes(showskiptime))
 	setContext(CS.SHOW_SKIP_TIME,showSkipTime)
 
-	const volume = writable(0.08)
+	const volume = writable(0.8)
 	setContext(CS.VOLUME, volume)
 
 	const reverseDirection = writable(false)
@@ -147,8 +147,9 @@
 		const lastIndex = $tracks.length-1
 		if ( ! track || index < 0 || index > lastIndex ) {
 			// illegal value, reset to 0 or last track, try again with first or last
+			if (index < -1) return // -2 indicates 1st load, ignore
 			const newIndex = index < 0 ? lastIndex : 0
-			// console.log(`invalid autoLoad(${index}), reseting to ${newIndex}`,index,'/',$tracks.length,track)
+			console.log(`invalid autoLoad(${index}), reseting to ${newIndex}`,index,'/',$tracks.length,track)
 			currentIndex.set(newIndex)
 			autoLoad(newIndex) 
 			return
@@ -238,7 +239,8 @@
 	</div>
 	{:else}
 	<main class="audio-player" class:playlistAtTop style="
---color-error: hsl(0,75%,50%);">
+--color-error: hsl(0,75%,50%);
+--audio-player-hue: 120;">
 	<audio bind:this={audioPlayer} 
 		bind:currentTime={$currentTime} 
 		bind:duration={$trackDuration}
