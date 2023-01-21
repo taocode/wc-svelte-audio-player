@@ -9,7 +9,9 @@ import './src/index.svelte'
  showcontrols="hide" showplaylistbutton="hide"
  showheading="hide"
  style="
- --audio-player-primary-hue: 120;
+ --ap-theme-h: 120;
+ --ap-theme-s: 85%;
+ --ap-theme-l: 66%;
  --audio-player-background: transparent;
  --audio-player-color: #0d650d;
  --audio-player-background-semi: #0d650d22;
