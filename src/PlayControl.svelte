@@ -58,7 +58,6 @@
     display: inline-block;
     width: 2rem;
     height: 2rem;
-    color: var(--audio-player-color,#222);
   }
   button {
     display: flex;
@@ -82,7 +81,7 @@
   .loading {
     position: relative;
     --animate-seconds: 2s;
-    --animate-function: cubic-bezier(.4,0,.6,1);
+    --animate-function: ease-out;
   }
   .loader {
     position: relative;
@@ -93,25 +92,26 @@
     content: ' ';
     position: absolute;
     left: 1.1em;
-    top: 0.9em;
+    top: 1em;
     z-index: 1;
     border-radius: 999em;
     font-size: 9px;
     height: var(--square-size);
     width: var(--square-size);
+    opacity: 0.5;
     animation: beacon var(--animate-seconds,2s) var(--animate-function, ease-in-out) infinite;
   }
   .animate-pulse {
-    animation: pulse var(--animate-seconds,2s) var(--animate-function, ease-in-out) infinite;
+    animation: pulse calc(var(--animate-seconds,2s) * 2) var(--animate-function, ease-in-out) infinite;
   }
   @keyframes pulse {
     50% {
-      opacity:0.4;
+      opacity:0.25;
     }
   }
   @keyframes beacon {
     50% {
-      box-shadow: 0 0 0 1em hsla(var(--audio-player-hue, 0), 65%, 33%, 0.33);
+      box-shadow: 0 0 0 1em var(--audio-player-color,#222);
     }
   }
 </style>

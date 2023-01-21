@@ -239,8 +239,7 @@
 	</div>
 	{:else}
 	<main class="audio-player" class:playlistAtTop style="
---color-error: hsl(0,75%,50%);
---audio-player-hue: 120;">
+--color-error: hsl(0,75%,50%);">
 	<audio bind:this={audioPlayer} 
 		bind:currentTime={$currentTime} 
 		bind:duration={$trackDuration}
@@ -293,96 +292,92 @@
 	</main>
 	{/if}
 
-	<style>
-		.error-no-playlist {
-			background-color: pink;
-			padding: 0.5em;
-			text-align: center;
-			color: #800E;
-		}
+<style>
+	.error-no-playlist {
+		background-color: pink;
+		padding: 0.5em;
+		text-align: center;
+		color: #800E;
+	}
 
-		.error-no-playlist h2 {
-			margin-top: 0.1em;
-		}
+	.error-no-playlist h2 {
+		margin-top: 0.1em;
+	}
 
-		* {
-			box-sizing: border-box;
-		}
+	* {
+		box-sizing: border-box;
+	}
 
-		main {
-			display: flex;
-			margin: 0 auto;
-			min-width: 15em;
-			flex-direction: column;
-			align-items: center;
-			width: fit-content;
-			border-radius: var(--audio-player-border-radius, 0);
-			box-sizing: border-box;
-		}
+	main {
+		display: flex;
+		margin: 0 auto;
+		min-width: 15em;
+		flex-direction: column;
+		align-items: center;
+		width: fit-content;
+		border-radius: var(--audio-player-border-radius, 0);
+	}
+	.container {
+		--audio-player-color: hsl( var(--ap-theme-h, 220), var(--ap-theme-s, 75%), var(--ap-theme-l, 25%) );
+		box-shadow: var(--audio-player-shadow, none);
+		background: var(--audio-player-background, transparent);
+		color: var(--audio-player-color);
+		border-radius: var(--audio-player-border-radius, 0);
+		width: 100%;
+	}
 
-		.container {
-			box-shadow: var(--audio-player-shadow, none);
-			background: var(--audio-player-background, #EEE);
-			color: var(--audio-player-color, #333);
-			border-radius: var(--audio-player-border-radius, 0);
-			width: 100%;
-		}
+	.vol-prog-rep {
+		display: flex;
+		position: relative;
+		align-items: center;
+		margin-bottom: 0.5em;
+	}
 
-		#player-cont {
-			padding: 0.25rem 0.5rem;
-		}
+	.vol-prog-rep button {
+		border: none;
+		background: var(--audio-player-background,transparent);
+		padding: 0.5em 0.25em;
+		display: flex;
+		align-items: center;
+		cursor: pointer;
+	}
 
-		.vol-prog-rep {
-			display: flex;
-			position: relative;
-			align-items: center;
-		}
+	button:first-child {
+		padding-right: 0.5em;
+	}
 
-		.vol-prog-rep button {
-			border: none;
-			background: var(--audio-player-background,#EEE);
-			padding: 0.5em 0.25em;
-			display: flex;
-			align-items: center;
-			cursor: pointer;
-		}
+	button:last-child {
+		padding-left: 0.5em;
+		padding-right: 0;
+	}
 
-		button:first-child {
-			padding-right: 0.5em;
-		}
+	.vol-prog-rep .icon {
+		display: inline-block;
+		height: 1.5em;
+		width: 1.5em;
+	}
 
-		button:last-child {
-			padding-left: 0.5em;
-			padding-right: 0;
-		}
+	.show-volume button {
+		margin-right: 0.5em;
+	}
 
-		.vol-prog-rep .icon {
-			display: inline-block;
-			height: 1.5em;
-			width: 1.5em;
-		}
+	.playlistAtTop>:last-child {
+		order: -1;
+	}
 
-		.show-volume button {
-			margin-right: 0.5em;
-		}
-
-		.playlistAtTop>:last-child {
-			order: -1;
-		}
-
-		.show-volume {
-			display: flex;
-			position: absolute;
-			z-index: 10;
-			width: 100%;
-			top: -1em;
-			left: 0em;
-			right: -1.5em;
-			background-color: #FFF8;
-			padding: 0 0.25ch;
-			box-shadow: 0 0 5px #0002;
-		}
-		.icon {
-	    color: var(--audio-player-color,#222);
-		}
+	.show-volume {
+		display: flex;
+		position: absolute;
+		z-index: 10;
+		width: 100%;
+		top: -1em;
+		left: 0em;
+		right: -1.5em;
+		background-color: #FFF8;
+		padding: 0 0.25ch;
+		box-shadow: 0 0 5px #0002;
+	}
+	.icon {
+		color: var(--audio-player-color,#222);
+	}
 </style>

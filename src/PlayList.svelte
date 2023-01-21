@@ -68,9 +68,10 @@
     right: 0.5rem;
   }
   button {
-    padding: 5px 15px;
+    padding: 0.1em 0.5em;
+    display: block;
     width: 100%;
-    background: var(--audio-player-playlist-background,#dddc);
+    background: var(--audio-player-background,transparent);
     color: var(--audio-player-color,#222);
     text-align: left;
     cursor: pointer;
@@ -118,12 +119,12 @@
   }
   ul {
     list-style-type: none;
-    background: var(--audio-player-background,#eee);
-    color: var(--audio-player-color,#bad);
+    background: var(--audio-player-background,transparent);
+    color: var(--audio-player-color,#ddd);
     margin: 0;
     padding: 0;
     width: 100%;
-    overflow-y: auto;
+    overflow: hidden auto;
     max-height: var(--audio-player-playlist-max-h,6rem);
     position: absolute;
   }

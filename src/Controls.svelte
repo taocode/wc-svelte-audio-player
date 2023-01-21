@@ -111,7 +111,6 @@
     display: inline-block;
     width: 1.5rem;
     height: 1.5rem;
-    color: var(--audio-player-color,#222);
   }
   button {
     display: flex;

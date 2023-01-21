@@ -64,19 +64,19 @@
     background-attachment: fixed;
   }
   #bar-buffered {
+    --background-buffered: hsla( var(--ap-theme-h, 220), var(--ap-theme-s, 75%), var(--ap-theme-l, 35%), 0.3 );
     width: 0%;
     display: block;
-    background: var(--audio-player-background-semi, 
-    rgba(0, 0, 0, 0.1));
+    background: var(--background-buffered);
     /* background: red; */
     background-attachment: fixed;
   }
   .time-display {
     position: absolute;
     bottom: auto;
-    top: 1.25em;
+    top: 1.65em;
     opacity: 0.8;
-    font-size: 10pt;
+    font-size: 0.8rem;
     display: flex;
     align-items: center;
     pointer-events: none;
@@ -85,7 +85,7 @@
     /* background-color: #FFF9; */
   }
   #progress-time {
-    left: 0.1rem;
+    left: 0;
   }
   #track-duration {
     right: 0;
@@ -98,8 +98,8 @@
   --track-color-light: #46d;
   --track-color-dark: #dfe9fb;
   --thumb-radius: 100%;
-  --thumb-height: 1.25em;
-  --thumb-width: 1.25em;
+  --thumb-height: 1em;
+  --thumb-width: 1em;
   --thumb-shadow-size: 0;
   --thumb-shadow-blur: 0;
   --thumb-shadow-color: transparent;
@@ -128,7 +128,7 @@
   /* width: var(--track-width); */
   z-index: 11;
   position: absolute;
-  top: 0.25em;
+  top: 0.1em;
   bottom: 0;
   right: 0;
   left: 0;

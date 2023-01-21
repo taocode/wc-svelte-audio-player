@@ -9,12 +9,7 @@ import './src/index.svelte'
  showcontrols="hide" showplaylistbutton="hide"
  showheading="hide"
  style="
- --ap-theme-h: 120;
- --ap-theme-s: 85%;
- --ap-theme-l: 66%;
- --audio-player-background: transparent;
- --audio-player-color: #0d650d;
- --audio-player-background-semi: #0d650d22;
+ --ap-theme-h: 240;
  "
 playlist='[{"src":"https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3","title":"Lumbini"}]'
   ></taocode-audio-player>
