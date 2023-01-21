@@ -39,7 +39,7 @@
   .container {
     width: 100%;
     position: relative;
-    height: 1.75em;
+    height: 1.66em;
   }
   .progress-outer, #bar-progress, #bar-buffered {
     height: 0.2em;
@@ -71,8 +71,8 @@
   .time-display {
     position: absolute;
     bottom: auto;
-    top: 1.65em;
-    opacity: 0.8;
+    top: 1.5em;
+    opacity: 0.7;
     font-size: 0.8rem;
     display: flex;
     align-items: center;
@@ -80,6 +80,10 @@
     z-index: 12;
     text-shadow: 0 0 1px #FFF, 0 0 2px #FFF, 0 0 3px #FFF, 0 0 2px #FFF, 0 0 2px #FFF;
     /* background-color: #FFF9; */
+    transition: opacity 0.2s ease-out;
+  }
+  .container:hover .time-display {
+    opacity: 1;
   }
   #progress-time {
     left: 0;

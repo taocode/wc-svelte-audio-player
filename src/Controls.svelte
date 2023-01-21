@@ -105,6 +105,7 @@
     justify-content: space-between;
     position: relative;
     z-index: 10;
+    margin: 0.2em auto;
   }
   .icon {
     display: inline-block;
