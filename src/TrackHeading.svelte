@@ -17,7 +17,6 @@
   $: {
     error = $isError
     title = trackTitle($currentTrack)
-    // console.log('title-in:','title' in $currentTrack, {$currentTrack}, $currentTrack.title ,{hasTitle,heading,container})
     if (heading) {
       panPx = heading.scrollWidth - container.offsetWidth + (error ? 20 : 0)
       animate = panPx > 0
@@ -52,7 +51,6 @@
   div {
     text-align: center;
     overflow: hidden;
-    max-width: 20em;
     position: relative;
     height: 2em;
     padding: 0.2em 0;
@@ -67,11 +65,12 @@
   }
   h3 {
     white-space: nowrap;
+    display: inline-block;
     margin: 0;
-    position: absolute;
     left: 0;
   }
   h3.animate {
+    position: absolute;
     animation: marquee var(--marquee-time, 15s) linear 1s infinite;
   }
   h3.centered {
