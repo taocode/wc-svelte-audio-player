@@ -1,12 +1,12 @@
 ```js script
 import './src/index.svelte'
 ```
-<div style="background: #000;">
+<div style="background: transparent;">
 
 # Playlist Audio Player Web Component
 
 ```html preview-story
-<taocode-audio-player skiptime="5" showskip="show" mode="dark"
+<taocode-audio-player skiptime="5" showskip="show" expandplaylist="no"
  style="
  --ap-theme-h: 130;
  --ap-theme-s: 85%;

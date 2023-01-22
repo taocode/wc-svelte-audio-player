@@ -4,8 +4,8 @@
 	import { onMount, setContext } from 'svelte'
 	import { writable, derived } from 'svelte/store'
   import { fly } from 'svelte/transition'
-	// TODO: use jsmediatags to load ID3
-	// https://github.com/aadsm/jsmediatags
+
+	// TODO: load ID3 ?
 
 	import { contextStores as CS, advanceOptions, hideOptions, showOptions } from './lib.js'
   	
@@ -15,7 +15,6 @@
 	import PlayList from './PlayList.svelte'
   import VolumeSlider from './VolumeSlider.svelte'
   import VolumeIcon from './svg/volume.svg.svelte'
-  import XIcon from './svg/x.svg.svelte'
   import RepeatIcon from './svg/repeat.svg.svelte'
   import PlayControl from './PlayControl.svelte';
 
@@ -35,10 +34,28 @@
 	export let mode = 'light'
 	$: dark = mode === 'dark'
 
-	let playlistAtTop = playlistlocation === 'top'
+	$: playlistAtTop = playlistlocation === 'top'
 
 	// lots of setup
 	const tracks = writable([])
+	const loadAllTrackData = async () => {
+		$tracks.forEach( (t,i) => {
+			try {
+				const mAudio = new Audio()
+				mAudio.preload = "metadata"
+				mAudio.onloadedmetadata = () => {
+					t.loading = false
+					t.loaded = true
+					t.duration = mAudio.duration
+					updateTrackList()
+				}
+				mAudio.src = t.src
+				mAudio.load()
+			} catch (error) {
+				console.warn('loadAllTrackData',error)
+			}
+		})
+	}
 	let parsedTracks = []
 	try {
 		parsedTracks = JSON.parse(playlist)
@@ -72,6 +89,9 @@
 	const trackDuration = writable(0.0000001)
 	setContext(CS.TRACK_DURATION,trackDuration)
 	
+	const totalDuration = derived(tracks, ($t) => $t.reduce((p,t,i) => p + (t.duration ? t.duration : 0),0))
+	setContext(CS.TOTAL_DURATION,totalDuration)
+
 	const progress = derived([currentTime,trackDuration], ([$t,$d]) => $t / ($d || 0.000001))
 	progress.set = (val) => currentTime.set(val * $trackDuration) 
 	setContext(CS.PROGRESS,progress)
@@ -135,13 +155,13 @@
 		}
 		track.loading = true
 		isReady.set(false)
-		audioPlayer.onloadedmetadata = () => {
-			// console.log(`metadata loaded for ${$currentIndex}: ${track.title} `)
-			track.loaded = true
-			track.loading = false
-			track.duration = audioPlayer.duration
+		audioPlayer.addEventListener('loadedmetadata', (e) => {
+			const t = $tracks[index]
+			t.loaded = true
+			t.loading = false
+			t.duration = audioPlayer.duration
 			updateTrackList()
-		}
+		}, {once:true})
 		setAudioFrom(track)
 		audioPlayer.load()
 	}
@@ -170,6 +190,8 @@
 	
 	onMount(() => {
 		audioPlayer.preload = "metadata"
+
+		loadAllTrackData()
 
 		audioPlayer.addEventListener('canplay', () => {
 			// console.log('canplay',{$currentIndex,$playWhenReady})
@@ -272,12 +294,10 @@ ${randomHueStyle}`
 				</span>
 			</button>
 			<ProgressBarTime {dark} />
-			{#if showVolume}
+			{#if showVolume }
 			<div transition:fly={{ y: 20, duration: 300}} class="show-volume">
 				<button on:click={()=>showVolume = false} title={adjustVolumeTitle}>
-					<span class="icon">
-						<XIcon />
-					</span>
+					<span class="icon icon-x">✖</span>
 				</button>
 				<VolumeSlider />
 			</div>
@@ -401,5 +421,8 @@ main {
 
 	.icon {
 		color: var(--audio-player-color, #222);
+	}
+	.icon-x {
+		font-size: 1.33em;
 	}
 </style>

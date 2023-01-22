@@ -8,6 +8,7 @@
   const paused = getContext(CS.PAUSED)
   const playWhenReady = getContext(CS.PLAY_WHEN_READY)
   const background = getContext(CS.BACKGROUND)
+  const totalDuration = getContext(CS.TOTAL_DURATION)
 	
   export let expand = 'false'
   export let atTop = false
@@ -40,6 +41,9 @@
       on:click={() => expanded = !expanded && !always}>
       ☰ Playlist 
       <span class="track-count">{$tracks.length}</span>
+      {#if $totalDuration}
+      <span class="total-duration">{formatTime($totalDuration)}</span>
+      {/if}
       {#if expanded && !always}<span class="close">✖</span>{/if}
   </button>
   {/if}
@@ -68,7 +72,7 @@
   }
   .close {
     position: absolute;
-    right: 0.5rem;
+    left: 0.5rem;
   }
   button {
     padding: 0.1em 0.5em;
@@ -97,6 +101,7 @@
     outline: none;
     cursor: pointer;
     transition: 0.4s;
+    overflow: hidden;
   }
 
   /* Add a background color to the button if it is clicked on (add the .expanded class with JS), and when you move the mouse over it (hover) */
@@ -108,6 +113,7 @@
   button.always {
     cursor: default;
   }
+  .total-duration,
   .duration,
   .track-count {
     background: var(--audio-player-background-semi,#FFF4);
@@ -116,9 +122,14 @@
   .error .duration {
     background: var(--color-error,#d00c);
   }
+  .total-duration {
+    position: absolute;
+    right: 0;
+    text-align: right;
+  }
   .duration {
     float: right;
-    margin: -0.15em -0.75em 0 0.2em;
+    margin: -0.15em -0.5em 0 0.2em;
   }
   ul {
     list-style-type: none;
