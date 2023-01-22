@@ -101,7 +101,7 @@
 
   /* Add a background color to the button if it is clicked on (add the .expanded class with JS), and when you move the mouse over it (hover) */
   button.expanded {
-    background: var(--audio-player-background-semi,#0001);
+    background: var(--audio-player-background-semi,var(--background,#0001));
     /* background: var(--audio-player-playlist-expand-button-expanded-background,#0001);
     color: var(--audio-player-playlist-expand-button-expanded-color,#333); */
   }

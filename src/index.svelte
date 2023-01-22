@@ -33,7 +33,7 @@
 	export let showheading = 'show'
 	export let randomhue = 'false'
 	export let mode = 'light'
-	let dark = mode === 'dark'
+	$: dark = mode === 'dark'
 
 	let playlistAtTop = playlistlocation === 'top'
 
