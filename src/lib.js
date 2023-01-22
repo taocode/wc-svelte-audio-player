@@ -32,8 +32,9 @@ export const formatTime = (seconds) => {
 export const nameFromURL = (url) => {
   if (!url) return 'Loading...'
   const urlObj = new URL(url)
-  var filename = urlObj.pathname.split('/').pop().split('#')[0].split('?')[0]
-  return filename.split('.')[0].split(/_|-/).join(' ')
+  var filename = urlObj.pathname.split(/\/|%2F/).pop()
+    .split('#')[0].split('?')[0]
+  return filename.split('.')[0].split(/_|-|%20/).join(' ')
 }
 export const trackTitle = (track) => {
   return track.title || nameFromURL(track.src)
