@@ -89,8 +89,10 @@
 	const trackDuration = writable(0.0000001)
 	setContext(CS.TRACK_DURATION,trackDuration)
 	
-	const totalDuration = derived(tracks, ($t) => $t.reduce((p,t,i) => p + (t.duration ? t.duration : 0),0))
+	const totalDuration = derived(tracks, ($t) => 
+		$t.reduce((p,t,i) => p + (t.hasOwnProperty('duration') ? t.duration : 0),0))
 	setContext(CS.TOTAL_DURATION,totalDuration)
+	$: console.log('td',$tracks)
 
 	const progress = derived([currentTime,trackDuration], ([$t,$d]) => $t / ($d || 0.000001))
 	progress.set = (val) => currentTime.set(val * $trackDuration) 
@@ -155,13 +157,13 @@
 		}
 		track.loading = true
 		isReady.set(false)
-		audioPlayer.addEventListener('loadedmetadata', (e) => {
+		audioPlayer.onloadedmetadata = (e) => {
 			const t = $tracks[index]
 			t.loaded = true
 			t.loading = false
 			t.duration = audioPlayer.duration
 			updateTrackList()
-		}, {once:true})
+		}
 		setAudioFrom(track)
 		audioPlayer.load()
 	}
@@ -231,7 +233,7 @@
 			paused.set(true)
 			currentTime.set( 0 )
 			console.error(`Audio error track: ${$currentIndex} - ${$currentTrack.src}`,$currentTrack)
-			autoAdvance()
+			if ($currentIndex > 0) autoAdvance()
 		})
 		currentIndex.set(0)
 	})
@@ -293,7 +295,7 @@ ${randomHueStyle}`
 					<VolumeIcon volume={$volume} />
 				</span>
 			</button>
-			<ProgressBarTime {dark} />
+			<ProgressBarTime />
 			{#if showVolume }
 			<div transition:fly={{ y: 20, duration: 300}} class="show-volume">
 				<button on:click={()=>showVolume = false} title={adjustVolumeTitle}>
@@ -313,7 +315,7 @@ ${randomHueStyle}`
 		</div>
 
 		{#if ! hideOptions.includes( showcontrols )}
-		<Controls {showskip} />
+		<Controls {showskip} {dark} />
 		{/if}
 	</section>
 	{#if ! hideOptions.includes(showplaylist)}

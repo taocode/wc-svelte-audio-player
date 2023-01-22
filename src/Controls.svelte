@@ -48,9 +48,13 @@
   $: includeSkip = showOptions.includes(showskip) && $skipTime > 0 && $skipTime < $trackDuration
   $: includeNext = $tracks.length > 1
 
+  export let dark
+  $: style = (dark)
+    ? '--shadow-text: #000a;' 
+    : '--shadow-text: #FFFa;'
 </script>
 
-<div id="btn-cont" class:$isError>
+<div id="btn-cont" class:$isError {style}>
 
   <button id="prev" title="Previous Track" class:prevTrack on:click={previousAudio}>
     <span class="icon">
@@ -159,7 +163,7 @@
     bottom: 0.4rem;
     z-index: 1;
     letter-spacing: -0.05em;
-    text-shadow: 0 0 1px #FFF, 0 0 2px #FFF, 0 0 3px #FFF,0 0 1.2em #FFF, 0 0 2em #FFF;
+    text-shadow: 0 0 1px var(--shadow-text), 0 0 2px var(--shadow-text), 0 0 3px var(--shadow-text), 0 0 2px var(--shadow-text), 0 0 2px var(--shadow-text);
     transform: scaleX(0.8);
   }
   .skip-time::after {
