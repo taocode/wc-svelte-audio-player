@@ -1,11 +1,12 @@
 ```js script
 import './src/index.svelte'
 ```
+<div style="background: #000;">
 
 # Playlist Audio Player Web Component
 
 ```html preview-story
-<taocode-audio-player skiptime="5" showskip="show"
+<taocode-audio-player skiptime="5" showskip="show" mode="dark"
  style="
  --ap-theme-h: 130;
  --ap-theme-s: 85%;
@@ -15,6 +16,9 @@ playlist='["https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/s
 "https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3"]'>
 </taocode-audio-player>
 ```
+
+</div>
+
 ## Attributes
 
 ### `playlist`

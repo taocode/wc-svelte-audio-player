@@ -7,10 +7,12 @@
   const currentTime = getContext(CS.CURRENT_TIME)
   const paused = getContext(CS.PAUSED)
   const playWhenReady = getContext(CS.PLAY_WHEN_READY)
+  const background = getContext(CS.BACKGROUND)
 	
   export let expand = 'false'
   export let atTop = false
   export let showbutton = 'true'
+
 	let expanded = showOptions.includes(expand)
   let always = expand === 'always'
   let never = expand === 'never'
@@ -25,10 +27,11 @@
   }
   $: accordionTitle = (expanded ? 'Close' : 'Show') + ' Playlist'
   const playlistTitle = (track) => (track.error ? 'Cannot ' : '') + 'Play ' + trackTitle(track)
+  $: style = `--background-playlist: ${$background};`
 </script>
 
 {#if !never}
-<section class="playlist-container" class:always>
+<section class="playlist-container" class:always {style}>
   {#if ! hideOptions.includes(showbutton) && $tracks.length > 1}
   <button class="accordion"
     title={accordionTitle}
@@ -119,7 +122,7 @@
   }
   ul {
     list-style-type: none;
-    background: var(--audio-player-background,#FFFe);
+    background: var(--background-playlist,#FFFe);
     color: var(--audio-player-color,#ddd);
     margin: 0;
     padding: 0;
@@ -142,6 +145,7 @@
   }
   .always ul {
     position: static;
+    background: transparent;
   }
 
   li {
@@ -153,7 +157,7 @@
 
   li:active,
   li:hover {
-    background-color: var(--audio-player-track-active,#FFF6);
+    background-color: var(--audio-player-track-active,#FFF2);
   }
   
   button {

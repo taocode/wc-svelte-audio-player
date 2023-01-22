@@ -32,6 +32,9 @@
 	export let showcontrols = 'show'
 	export let showheading = 'show'
 	export let randomhue = 'false'
+	export let mode = 'light'
+	let dark = mode === 'dark'
+
 	let playlistAtTop = playlistlocation === 'top'
 
 	// lots of setup
@@ -102,6 +105,9 @@
 
 	const reverseDirection = writable(false)
 	setContext(CS.REVERSE_DIRECTION, reverseDirection)
+
+	const background = writable(dark ? '#000e' : '#FFFe')
+	setContext(CS.BACKGROUND,background)
 
 	// when track data changes onload or onerror,
 	// notify the store of the change
@@ -231,165 +237,169 @@
 	const showPlay = hideOptions.includes( showcontrols )
 	const rHue = 360*Math.random()
 	const randomHueStyle = showOptions.includes(randomhue)
-		? `--ap-theme-h: ${rHue};` : ''
+		? `--ap-theme-h: ${rHue}` : ''
+		+';'
+
+	let style = `--color-error: hsl(0,75%,50%);
+	--background: ${$background};
+${randomHueStyle}`
 </script>
 
-{#if $tracks < 1} <div class="error-no-playlist">
+{#if $tracks < 1}
+<div class="error-no-playlist">
 	<h2>No Playlist!</h2>
 	<p>You must provide a valid playlist attribute.</p>
 	<pre>
 		&lt;taocode-audio-player playlist='["url-to-audio","second-url"]'&gt;&lt;/taocode-audio-player&gt;
 		&lt;taocode-audio-player playlist='[["url-to-audio","title 1"],["second-url","title 2"]]'&gt;&lt;/taocode-audio-player&gt;
 	</pre>
-	</div>
-	{:else}
-	<main class="audio-player" class:playlistAtTop style="
---color-error: hsl(0,75%,50%);
-{randomHueStyle}">
-		<audio bind:this={audioPlayer} bind:currentTime={$currentTime} bind:duration={$trackDuration} bind:paused={$paused}
-			bind:volume={$volume} bind:buffered={$buffered}></audio>
-		<section id="player-cont" class="container">
-			{#if ! hideOptions.includes(showheading)}
-			<TrackHeading />
-			{/if}
-			<div class="vol-prog-rep" class:showPlay>
-				{#if showPlay}
-				<PlayControl />
-				{/if}
-				<button title={adjustVolumeTitle} on:click={()=>showVolume = !showVolume}>
-					<span class="icon">
-						<VolumeIcon volume={$volume} />
-					</span>
-				</button>
-				<ProgressBarTime />
-				{#if showVolume}
-				<div transition:fly={{ y: 20, duration: 300}} class="show-volume">
-					<button on:click={()=>showVolume = false} title={adjustVolumeTitle}>
-						<span class="icon">
-							<XIcon />
-						</span>
-					</button>
-					<VolumeSlider />
-				</div>
-				{/if}
-				{#if showAdvance}
-				<button title={`Advance is: ${advanceOptions[advanceOptionIndex]}.\nChange Advance to: ${advanceOptions[nextAdvanceOptionIndex]}?`} on:click={advanceNext}>
-					<span class="icon">
-						<RepeatIcon variant={$advanceStore} />
-					</span>
-				</button>
-				{/if}
-
-			</div>
-
-			{#if ! hideOptions.includes( showcontrols )}
-			<Controls {showskip} />
-			{/if}
-		</section>
-		{#if ! hideOptions.includes(showplaylist)}
-		<section class="container">
-			<PlayList expand={expandplaylist} showbutton={showplaylistbutton} atTop={playlistAtTop} />
-		</section>
+</div>
+{:else}
+<main class="audio-player" class:playlistAtTop {style}>
+	<audio bind:this={audioPlayer} bind:currentTime={$currentTime} bind:duration={$trackDuration} bind:paused={$paused}
+		bind:volume={$volume} bind:buffered={$buffered}></audio>
+	<section id="player-cont" class="container">
+		{#if ! hideOptions.includes(showheading)}
+		<TrackHeading />
 		{/if}
-	</main>
+		<div class="vol-prog-rep" class:showPlay>
+			{#if showPlay}
+			<PlayControl />
+			{/if}
+			<button title={adjustVolumeTitle} on:click={()=>showVolume = !showVolume}>
+				<span class="icon">
+					<VolumeIcon volume={$volume} />
+				</span>
+			</button>
+			<ProgressBarTime {dark} />
+			{#if showVolume}
+			<div transition:fly={{ y: 20, duration: 300}} class="show-volume">
+				<button on:click={()=>showVolume = false} title={adjustVolumeTitle}>
+					<span class="icon">
+						<XIcon />
+					</span>
+				</button>
+				<VolumeSlider />
+			</div>
+			{/if}
+			{#if showAdvance}
+			<button title={`Advance is: ${advanceOptions[advanceOptionIndex]}.\nChange Advance to: ${advanceOptions[nextAdvanceOptionIndex]}?`} on:click={advanceNext}>
+				<span class="icon">
+					<RepeatIcon variant={$advanceStore} />
+				</span>
+			</button>
+			{/if}
+
+		</div>
+
+		{#if ! hideOptions.includes( showcontrols )}
+		<Controls {showskip} />
+		{/if}
+	</section>
+	{#if ! hideOptions.includes(showplaylist)}
+	<section class="container">
+		<PlayList {dark} expand={expandplaylist} showbutton={showplaylistbutton} atTop={playlistAtTop} />
+	</section>
 	{/if}
+</main>
+{/if}
 
-	<style>
-		.error-no-playlist {
-			background-color: pink;
-			padding: 0.5em;
-			text-align: center;
-			color: #800E;
-		}
-
-		.error-no-playlist h2 {
-			margin-top: 0.1em;
-		}
-
-		* {
-			box-sizing: border-box;
-		}
-
-	main {
-		display: flex;
-		margin: 0 auto;
-		min-width: 15em;
-		flex-direction: column;
-		align-items: center;
-		width: fit-content;
-		border-radius: var(--audio-player-border-radius, 0);
+<style>
+	.error-no-playlist {
+		background-color: pink;
+		padding: 0.5em;
+		text-align: center;
+		color: #800E;
 	}
-	.container {
-		--audio-player-color: hsl( var(--ap-theme-h, 220), var(--ap-theme-s, 75%), var(--ap-theme-l, 25%) );
-		--audio-player-background-semi: hsla( var(--ap-theme-h, 220), var(--ap-theme-s, 75%), var(--ap-theme-l, 25%), 0.12 );
+
+	.error-no-playlist h2 {
+		margin-top: 0.1em;
+	}
+
+	* {
+		box-sizing: border-box;
+	}
+
+main {
+	display: flex;
+	margin: 0 auto;
+	min-width: 15em;
+	flex-direction: column;
+	align-items: center;
+	width: fit-content;
+	border-radius: var(--audio-player-border-radius, 0);
+}
+.container {
+	--audio-player-color: hsl( var(--ap-theme-h, 220), var(--ap-theme-s, 75%), var(--ap-theme-l, 25%) );
+	--audio-player-background-semi: hsla( var(--ap-theme-h, 220), var(--ap-theme-s, 75%), var(--ap-theme-l, 25%), 0.12 );
+	background: var(--audio-player-background, transparent);
+	color: var(--audio-player-color);
+	width: 100%;
+}
+
+.vol-prog-rep {
+	display: flex;
+	position: relative;
+	align-items: center;
+	height: 2.5em;
+}
+
+.vol-prog-rep.showPlay {
+	margin-bottom: 0.5em;
+}
+
+	.vol-prog-rep button {
+		border: none;
 		background: var(--audio-player-background, transparent);
-		color: var(--audio-player-color);
-		width: 100%;
-	}
-
-	.vol-prog-rep {
+		padding: 0.5em 0.25em;
 		display: flex;
-		position: relative;
 		align-items: center;
-		height: 2.5em;
+		cursor: pointer;
 	}
 
-	.vol-prog-rep.showPlay {
-		margin-bottom: 0.5em;
+	button:first-child {
+		padding-right: 0.5em;
 	}
 
-		.vol-prog-rep button {
-			border: none;
-			background: var(--audio-player-background, transparent);
-			padding: 0.5em 0.25em;
-			display: flex;
-			align-items: center;
-			cursor: pointer;
-		}
+	button:last-child {
+		padding-left: 0.5em;
+		padding-right: 0;
+	}
 
-		button:first-child {
-			padding-right: 0.5em;
-		}
+	.vol-prog-rep .icon {
+		display: inline-block;
+		height: 1.5em;
+		width: 1.5em;
+	}
 
-		button:last-child {
-			padding-left: 0.5em;
-			padding-right: 0;
-		}
+	.show-volume button {
+		margin-right: 0.5em;
+	}
 
-		.vol-prog-rep .icon {
-			display: inline-block;
-			height: 1.5em;
-			width: 1.5em;
-		}
+	.playlistAtTop>:last-child {
+		order: -1;
+	}
 
-		.show-volume button {
-			margin-right: 0.5em;
-		}
+	.show-volume {
+		display: flex;
+		position: absolute;
+		z-index: 10;
+		width: 100%;
+		top: -1em;
+		left: 0em;
+		right: -1.5em;
+		background: var(--background);
+		opacity: 0.7;
+		padding: 0 0.25ch;
+		box-shadow: 0 0 5px #0002;
+		transition: opacity 0.2s ease-out;
+	}
+	.show-volume:hover,
+	.show-volume:focus-within {
+		opacity: 0.9;
+	}
 
-		.playlistAtTop>:last-child {
-			order: -1;
-		}
-
-		.show-volume {
-			display: flex;
-			position: absolute;
-			z-index: 10;
-			width: 100%;
-			top: -1em;
-			left: 0em;
-			right: -1.5em;
-			background-color: #FFF;
-			opacity: 0.7;
-			padding: 0 0.25ch;
-			box-shadow: 0 0 5px #0002;
-			transition: opacity 0.2s ease-out;
-		}
-		.show-volume:hover,
-		.show-volume:focus-within {
-			opacity: 0.9;
-		}
-
-		.icon {
-			color: var(--audio-player-color, #222);
-		}
-	</style>
+	.icon {
+		color: var(--audio-player-color, #222);
+	}
+</style>

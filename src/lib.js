@@ -15,6 +15,7 @@ export const contextStores = {
   PROGRESS: 'progress',
   ERROR: 'error',
   REVERSE_DIRECTION: 'reverseDirection',
+  BACKGROUND: 'background',
 }
 export const formatTime = (seconds) => {
   if (isNaN(seconds)) return ''

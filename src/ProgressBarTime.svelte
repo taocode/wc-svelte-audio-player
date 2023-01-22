@@ -9,6 +9,8 @@
   const paused = getContext(CS.PAUSED)
   const buffered  = getContext(CS.BUFFERED)
   const isError = getContext(CS.ERROR)
+
+  export let dark
   
 	let totalTimeDisplay = 'Loading...'
 	let currTimeDisplay = "0:00:00"
@@ -22,9 +24,12 @@
     const lastBuff = $buffered.slice(-1).pop()
     bufferedPercent = (lastBuff ? lastBuff.end : 0) / $trackDuration
   }
+  $: style = (dark)
+    ? '--shadow-text: #000;' 
+    : '--shadow-text: #FFF;'
 </script>
 
-<div class="container">
+<div class="container" {style}>
   <span id="progress-time" class="time-display">{currTimeDisplay}</span>
   <div class="progress-outer">
     <span id="bar-progress" style="width: {$progress*100}%"></span>
@@ -78,8 +83,7 @@
     align-items: center;
     pointer-events: none;
     z-index: 12;
-    text-shadow: 0 0 1px #FFF, 0 0 2px #FFF, 0 0 3px #FFF, 0 0 2px #FFF, 0 0 2px #FFF;
-    /* background-color: #FFF9; */
+    text-shadow: 0 0 1px var(--shadow-text), 0 0 2px var(--shadow-text), 0 0 3px var(--shadow-text), 0 0 2px var(--shadow-text), 0 0 2px var(--shadow-text);
     transition: opacity 0.2s ease-out;
   }
   .container:hover .time-display {
