@@ -32,6 +32,7 @@
 	export let showheading = 'show'
 	export let randomhue = 'false'
 	export let mode = 'light'
+	export let maxtries = 3
 	$: dark = mode === 'dark'
 
 	$: playlistAtTop = playlistlocation === 'top'
@@ -92,7 +93,6 @@
 	const totalDuration = derived(tracks, ($t) => 
 		$t.reduce((p,t,i) => p + (t.hasOwnProperty('duration') ? t.duration : 0),0))
 	setContext(CS.TOTAL_DURATION,totalDuration)
-	$: console.log('td',$tracks)
 
 	const progress = derived([currentTime,trackDuration], ([$t,$d]) => $t / ($d || 0.000001))
 	progress.set = (val) => currentTime.set(val * $trackDuration) 
@@ -102,13 +102,24 @@
 	setContext(CS.BUFFERED,buffered)
 
 	const isReady = writable(false)
-	setContext(CS.READY,isReady)
+	setContext(CS.IS_READY,isReady)
 
 	const paused = writable(true)
 	setContext(CS.PAUSED,paused)
 
-	const isError = writable(false)
-	setContext(CS.ERROR,isError)
+	const hasError = writable(false)
+	setContext(CS.HAS_ERROR,hasError)
+
+	const retry = writable(false)
+	setContext(CS.RETRY,retry)
+
+	const retryTimeout = 500
+	let retryTimer
+	const retrying = writable(false)
+	setContext(CS.RETRYING,retrying)
+
+	const maxTries = writable(parseInt(maxtries))
+	setContext(CS.MAX_TRIES,maxTries)
 
 	const playWhenReady = writable(false)
 	setContext(CS.PLAY_WHEN_READY,playWhenReady)
@@ -156,6 +167,7 @@
 			return
 		}
 		track.loading = true
+		buffered.set([])
 		isReady.set(false)
 		audioPlayer.onloadedmetadata = (e) => {
 			const t = $tracks[index]
@@ -173,6 +185,7 @@
 	// auto-load track on every $currentIndex change
 	function autoLoad(index) {
 		const track = $currentTrack
+		hasError.set(false)
 		const lastIndex = $tracks.length-1
 		if ( ! track || index < 0 || index > lastIndex ) {
 			// illegal value, reset to 0 or last track, try again with first or last
@@ -198,7 +211,7 @@
 		audioPlayer.addEventListener('canplay', () => {
 			// console.log('canplay',{$currentIndex,$playWhenReady})
 			isReady.set(true)
-			isError.set(false)
+			hasError.set(false)
 			reverseDirection.set(false)
 		})
 		audioPlayer.addEventListener('canplaythrough', () => {
@@ -222,23 +235,33 @@
 			currentTime.set($trackDuration)
 			autoAdvance()
 		})
-		audioPlayer.addEventListener('error', () => {
+		audioPlayer.addEventListener('error', (e) => {
 			const t = $currentTrack
 			t.error = true
 			t.loading = false
+			buffered.set([])
+			t.tryCount = (t.hasOwnProperty('tryCount') ? t.tryCount : 0) + 1
 			// t.duration = 0
-			isError.set(true)
+			hasError.set(true)
 			updateTrackList()
 			// audioPlayer.pause()
 			paused.set(true)
 			currentTime.set( 0 )
-			console.error(`Audio error track: ${$currentIndex} - ${$currentTrack.src}`,$currentTrack)
+			console.error(`Audio error track: ${$currentIndex} - ${$currentTrack.src}`,$currentTrack,{e})
 			if ($currentIndex > 0) autoAdvance()
 		})
 		currentIndex.set(0)
 	})
 
 	$: autoLoad($currentIndex)
+	$: if ($retry) {
+		retry.set(false)
+		retrying.set(true)
+		retryTimer = setTimeout(()=>{
+			retrying.set(false)
+		},retryTimeout)
+		autoLoad($currentIndex)
+	}
 
 	let showVolume = false
 	let showAdvance = true
@@ -264,8 +287,12 @@
 		? `--ap-theme-h: ${rHue}` : ''
 		+';'
 
-	let style = `--color-error: hsl(0,75%,50%);
+	let style = `
 	--background: ${$background};
+	--color-warn: hsl(32, 100%, 45%);
+	--background-warn: hsla(32, 100%, 65%, 0.2);
+	--color-error: hsl(0,75%,50%);
+	--background-error: hsla(0, 100%, 65%, 0.2);
 ${randomHueStyle}`
 </script>
 

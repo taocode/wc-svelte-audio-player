@@ -6,15 +6,17 @@
   const currentTime = getContext(CS.CURRENT_TIME)
   const trackDuration = getContext(CS.TRACK_DURATION)
   const currentTrack = getContext(CS.CURRENT_TRACK)
-  const paused = getContext(CS.PAUSED)
   const buffered  = getContext(CS.BUFFERED)
-  const isError = getContext(CS.ERROR)
+  const error = getContext(CS.HAS_ERROR)
+  const maxTries = getContext(CS.MAX_TRIES)
   
 	let totalTimeDisplay = 'Loading...'
 	let currTimeDisplay = "0:00:00"
   let bufferedPercent = 0
+  let canretry = true
+  $: canretry =  $currentTrack.tryCount < $maxTries
 	
-  $: totalTimeDisplay = $isError ? 'Error' 
+  $: totalTimeDisplay = $error ? 'Error' 
       : isNaN($trackDuration) ? 'Loading...'
       : formatTime($trackDuration)
   $: currTimeDisplay = isNaN($currentTime) ? `0:00` : formatTime($currentTime)
@@ -24,7 +26,7 @@
   }
 </script>
 
-<div class="container">
+<div class="container" class:$error class:canretry>
   <span id="progress-time" class="time-display">{currTimeDisplay}</span>
   <div class="progress-outer">
     <span id="bar-progress" style="width: {$progress*100}%"></span>
@@ -80,6 +82,12 @@
     z-index: 12;
     transition: opacity 0.2s ease-out;
   }
+  .\$error .time-display {
+    color: var(--color-error,red);
+  }
+  .canretry .time-display {
+    color: var(--color-warn,darkorange);
+  }
   .container:focus-within .time-display,
   .container:hover .time-display {
     opacity: 1;
@@ -90,7 +98,6 @@
   #track-duration {
     right: 0;
   }
-
 .progrange {
   --track-color: transparent;
   --thumb-color: var(--audio-player-color,#607d8b);

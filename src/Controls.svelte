@@ -6,7 +6,7 @@
   const currentIndex = getContext(CS.CURRENT_INDEX)
   const currentTime = getContext(CS.CURRENT_TIME)
   const trackDuration = getContext(CS.TRACK_DURATION)
-  const isError = getContext(CS.ERROR)
+  const hasError = getContext(CS.HAS_ERROR)
   const skipTime = getContext(CS.SKIP_TIME)
   const showSkipTime = getContext(CS.SHOW_SKIP_TIME)
   const tracks = getContext(CS.TRACKS)
@@ -45,7 +45,7 @@
 
   $: prevTrack = $tracks.length > 1 && $currentTime < 5
   // $: console.log({prevTrack},$currentTime)
-  $: includeSkip = showOptions.includes(showskip) && $skipTime > 0 && $skipTime < $trackDuration
+  $: includeSkip = showOptions.includes(showskip) && !$hasError && $skipTime > 0 && $skipTime < $trackDuration
   $: includeNext = $tracks.length > 1
 
   export let dark
@@ -54,7 +54,7 @@
     : '--shadow-text: #FFFa;'
 </script>
 
-<div id="btn-cont" class:$isError {style}>
+<div id="btn-cont" class:$hasError {style}>
 
   <button id="prev" title="Previous Track" class:prevTrack on:click={previousAudio}>
     <span class="icon">
@@ -129,7 +129,7 @@
     height: 1.5rem;
     background-color: transparent;
   }
-  .\$isError {
+  .\$hasError {
     color: var(--color-error,red);
   }
   .button-placeholder {

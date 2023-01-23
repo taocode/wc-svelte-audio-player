@@ -1,5 +1,5 @@
 <script>
-  import { getContext, hasContext } from 'svelte'
+  import { getContext } from 'svelte'
   import { slide } from 'svelte/transition'
   import { formatTime, contextStores as CS, trackTitle, showOptions, hideOptions } from './lib.js'
   const tracks = getContext(CS.TRACKS)
@@ -9,6 +9,8 @@
   const playWhenReady = getContext(CS.PLAY_WHEN_READY)
   const background = getContext(CS.BACKGROUND)
   const totalDuration = getContext(CS.TOTAL_DURATION)
+  const maxTries = getContext(CS.MAX_TRIES)
+  const retry = getContext(CS.RETRY)
 	
   export let expand = 'false'
   export let atTop = false
@@ -19,6 +21,13 @@
   let never = expand === 'never'
   const chooseTrack = (i) => {
     playWhenReady.set(true)
+    const track = $tracks[i]
+    if (track.error && track.tryCount < $maxTries) {
+      currentIndex.set(i)
+      retry.set(true)
+      return
+    }
+    if (track.error) return
     // console.log('chooseTrack',i,{$playWhenReady})
     if (i === $currentIndex) {
       currentTime.set(0)
@@ -27,7 +36,8 @@
     else currentIndex.set(i)
   }
   $: accordionTitle = (expanded ? 'Close' : 'Show') + ' Playlist'
-  const playlistTitle = (track) => (track.error ? 'Cannot ' : '') + 'Play ' + trackTitle(track)
+  const playlistTitle = (track) => (track.tryCount < $maxTries ? 'Retry'
+                  : track.error ? 'Cannot Load' : 'Play') + ' ' + trackTitle(track)
   $: style = `--background-playlist: ${$background};`
 </script>
 
@@ -52,7 +62,7 @@
   <ul transition:slide class:atTop>
     {#each $tracks as track,i}
     <li data-track-id={i} class:current={i===$currentIndex} >
-      <button title={playlistTitle(track)} on:click={() => chooseTrack(i)} disabled={track.error} class:error={track.error}>
+      <button title={playlistTitle(track)} on:click={() => chooseTrack(i)} disabled={track.error && track.tryCount > $maxTries} class:error={track.error} class:canretry={track.tryCount < $maxTries}>
         {#if 'duration' in track || track.error}<span class="duration">{
           track.error ? '--:--' : formatTime(track.duration) }</span>{:else if track.error}{/if}
         {trackTitle(track)} 
@@ -75,7 +85,7 @@
     left: 0.5rem;
   }
   button {
-    padding: 0.1em 0.5em;
+    padding: 0.33em 0.5em;
     display: block;
     width: 100%;
     background: var(--audio-player-background,transparent);
@@ -89,6 +99,12 @@
   .error {
     color: var(--color-error,red);
     cursor: not-allowed;
+    background: var(--background-error,hsla(0, 90%, 50%, 0.2))
+  }
+  .canretry {
+    color: var(--color-warn,darkorange);
+    cursor: pointer;
+    background: var(--background-warn, hsla(33, 90%, 50%, 0.2));
   }
 
   /* Style the buttons that are used to open and close the accordion panel */
@@ -96,6 +112,7 @@
     background: var(--audio-player-background);
     color: var(--audio-player-color, #333);
     margin: 0;
+    padding: 0.25em 0.5em;
     text-align: center;
     border: none;
     outline: none;
@@ -120,7 +137,10 @@
     padding: 0.1em 0.5em;
   }
   .error .duration {
-    background: var(--color-error,#d00c);
+    background: var(--background-error,#d002);
+  }
+  .canretry .duration {
+    background: var(--background-warn,#f802)
   }
   .total-duration {
     position: absolute;

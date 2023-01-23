@@ -3,48 +3,67 @@
 
   import { contextStores as CS } from './lib' 
   const paused = getContext(CS.PAUSED)
-  const isReady = getContext(CS.READY)
-  const isError = getContext(CS.ERROR)
+  const isReady = getContext(CS.IS_READY)
+  const hasError = getContext(CS.HAS_ERROR)
   const playWhenReady = getContext(CS.PLAY_WHEN_READY)
+  const currentIndex = getContext(CS.CURRENT_INDEX)
+  const currentTrack = getContext(CS.CURRENT_TRACK)
+  const maxTries = getContext(CS.MAX_TRIES)
+  const retry = getContext(CS.RETRY)
+  const retrying = getContext(CS.RETRYING)
 
   import PlayIcon from './svg/play.svg.svelte'
   import PauseIcon from './svg/pause.svg.svelte'
   import LoaderIcon from './svg/loader.svg.svelte'
   import SlashIcon from './svg/slash.svg.svelte'
+  import RefreshIcon from './svg/refresh.svg.svelte'
 
   const playPauseAudio = () => {
 		try {
-      playWhenReady.set($paused)
+      playWhenReady.set(false)
       paused.set(!$paused)
 		}	catch(err) {
 			console.error('playPause',err)
 		}
 	}
+  export const refresh = () => {
+    retry.set(true)
+  }
+  $: remainingTries = $maxTries - ($currentTrack.hasOwnProperty("tryCount") ? $currentTrack.tryCount : 0)
+  $: canretry = $retry
+
 </script>
 
-<div class:$isError class="play-control">
-{#if $isError}
-    <span class="icon icon-error">
-      <SlashIcon />
+<div class:$hasError class="play-control">
+{#if $currentTrack.tryCount < $maxTries || $retrying}
+  <button on:click={refresh} title='Retry?'>
+    <span class="icon icon-retry" class:canretry class:$retrying>
+      <RefreshIcon />
     </span>
-  {:else}
-    {#if !$isReady}
-    <div class="loading">
-      <div class="icon loader add-animate-beacon animate-pulse">
-        <LoaderIcon />
-      </div>
+    <span class="remaining">{remainingTries}</span>
+  </button>
+{:else if $hasError}
+  <span class="icon icon-error">
+    <SlashIcon />
+  </span>
+{:else}
+  {#if !$isReady}
+  <div class="loading">
+    <div class="icon loader add-animate-beacon animate-pulse">
+      <LoaderIcon />
     </div>
-    {:else}
-    <button id="play" title={$paused ? 'Play' : 'Pause' } on:click={playPauseAudio}>
-      <span class="icon">
-        {#if $paused}
-        <PlayIcon />
-        {:else}
-        <PauseIcon />
-        {/if}
-      </span>
-    </button>
-    {/if}
+  </div>
+  {:else}
+  <button id="play" title={$paused ? 'Play' : 'Pause' } on:click={playPauseAudio}>
+    <span class="icon">
+      {#if $paused}
+      <PlayIcon />
+      {:else}
+      <PauseIcon />
+      {/if}
+    </span>
+  </button>
+  {/if}
 {/if}
 </div>
 
@@ -72,11 +91,25 @@
     height: 2rem;
     background-color: transparent;
   }
-  .\$isError {
+  .\$hasError,
+  .icon-error {
     color: var(--color-error,red);
   }
-  .\$isError .icon-error {
+  .\$hasError .icon-error {
     cursor: not-allowed;
+  }
+  .remaining,
+  .icon-retry {
+    color: var(--color-warn,hsl(45, 90%, 45%));
+  }
+  .\$retrying.icon-retry {
+    transition: transform 0.5s linear;
+    transform: rotate(1turn);
+  }
+
+  .remaining {
+    position: absolute;
+    inset: auto;
   }
   .loading {
     position: relative;

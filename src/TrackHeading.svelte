@@ -2,7 +2,8 @@
   import { getContext } from 'svelte'
   import { contextStores as CS, trackTitle } from './lib'
   const currentTrack = getContext(CS.CURRENT_TRACK)
-  const isError = getContext(CS.ERROR)
+  const hasError = getContext(CS.HAS_ERROR)
+  const maxTries = getContext(CS.MAX_TRIES)
 
   import AlertCircleIcon from './svg/alert-circle.svg.svelte'
 
@@ -14,8 +15,9 @@
   let aniTime = 15
   let panPx = 100
   let error = false
+  let canretry = true
   $: {
-    error = $isError
+    error = $hasError
     title = trackTitle($currentTrack)
     if (heading) {
       panPx = heading.scrollWidth - container.offsetWidth + (error ? 20 : 0)
@@ -29,10 +31,11 @@
         heading.style.animationName = null
       }
     }
+    canretry = $currentTrack.tryCount < $maxTries
   }
 </script>
 
-<div bind:this={container} class:error
+<div bind:this={container} class:error class:canretry
  style="
 --marquee-width: {panPx}px;
 --marquee-time: {aniTime}s;
@@ -57,6 +60,9 @@
   }
   .error {
     color: var(--color-error, red);
+  }
+  .canretry {
+    color: var(--color-warn, darkorange);
   }
   .error-icon {
     display: inline-block;
