@@ -16,7 +16,9 @@
   let panPx = 100
   let error = false
   let canretry = true
+  let winWidth
   $: {
+    winWidth
     error = $hasError
     title = trackTitle($currentTrack)
     if (heading) {
@@ -34,6 +36,8 @@
     canretry = $currentTrack.tryCount < $maxTries
   }
 </script>
+
+<svelte:window bind:innerWidth={winWidth}/>
 
 <div bind:this={container} class:error class:canretry
  style="

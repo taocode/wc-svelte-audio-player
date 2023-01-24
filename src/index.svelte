@@ -373,10 +373,9 @@ ${randomHueStyle}`
 main {
 	display: flex;
 	margin: 0 auto;
-	min-width: 15em;
+	min-width: 150px;
 	flex-direction: column;
 	align-items: center;
-	width: fit-content;
 	border-radius: var(--audio-player-border-radius, 0);
 }
 .container {

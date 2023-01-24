@@ -6,15 +6,17 @@ import './src/index.svelte'
 # Playlist Audio Player Web Component
 
 ```html preview-story
+<div style="max-width: 400px; margin: 0 auto;">
 <taocode-audio-player skiptime="15" showskip="show" showskiptime="show"
  style="
  --ap-theme-h: 130;
  --ap-theme-s: 85%;
  --ap-theme-l: 20%;"
-playlist='["https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3",
+playlist='[
 "https://download.pariyatti.org/free/_moIbLs95/Dana_The_Practice_of_Giving_single.mp3",
+"https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3",
 "https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3"]'>
-</taocode-audio-player>
+</taocode-audio-player></div>
 ```
 
 </div>
