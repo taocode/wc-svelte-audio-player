@@ -169,11 +169,12 @@
 		track.loading = true
 		buffered.set([])
 		isReady.set(false)
-		audioPlayer.onloadedmetadata = (e) => {
+		audioPlayer.onloadedmetadata = () => {
 			const t = $tracks[index]
 			t.loaded = true
 			t.loading = false
 			t.duration = audioPlayer.duration
+			t.error = false
 			updateTrackList()
 		}
 		setAudioFrom(track)
