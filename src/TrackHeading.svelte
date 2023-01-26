@@ -65,7 +65,7 @@
   .error {
     color: var(--color-error, red);
   }
-  .canretry {
+  .error.canretry {
     color: var(--color-warn, darkorange);
   }
   .error-icon {

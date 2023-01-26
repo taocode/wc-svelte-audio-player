@@ -7,7 +7,7 @@
   const trackDuration = getContext(CS.TRACK_DURATION)
   const currentTrack = getContext(CS.CURRENT_TRACK)
   const buffered  = getContext(CS.BUFFERED)
-  const error = getContext(CS.HAS_ERROR)
+  const hasError = getContext(CS.HAS_ERROR)
   const maxTries = getContext(CS.MAX_TRIES)
   
 	let totalTimeDisplay = 'Loading...'
@@ -15,13 +15,13 @@
   let canretry = true
   $: canretry =  $currentTrack.tryCount < $maxTries
 	
-  $: totalTimeDisplay = $error ? 'Error' 
+  $: totalTimeDisplay = $hasError ? 'Error' 
       : isNaN($trackDuration) ? 'Loading...'
       : formatTime($trackDuration)
   $: currTimeDisplay = isNaN($currentTime) ? `0:00` : formatTime($currentTime)
 </script>
 
-<div class="container" class:$error class:canretry>
+<div class="container" class:$hasError class:canretry>
   <span id="progress-time" class="time-display">{currTimeDisplay}</span>
   <div class="progress-outer">
     <span id="bar-progress" style="width: {$progress*100}%"></span>
@@ -84,10 +84,10 @@
     z-index: 12;
     transition: opacity 0.2s ease-out;
   }
-  .\$error .time-display {
+  .\$hasError .time-display {
     color: var(--color-error,red);
   }
-  .canretry .time-display {
+  .\$hasError.canretry .time-display {
     color: var(--color-warn,darkorange);
   }
   .container:focus-within .time-display,
