@@ -7,11 +7,14 @@ import './src/index.svelte'
 
 ```html preview-story
 <div style="max-width: 400px; margin: 0 auto;">
-<taocode-audio-player skiptime="15" showskip="show" showskiptime="show" showadvance="show"
+<taocode-audio-player skiptime="15" showskip="show" showskiptime="show" showadvance="show" expandplaylist="show"
  style="
  --ap-theme-h: 130;
  --ap-theme-s: 85%;
- --ap-theme-l: 20%;"
+ --ap-theme-l: 20%;
+ --ap-font-family: cursive;
+ --ap-font-family-heading: serif;
+ --ap-font-family-playlist: 'Impact', sans-serif;"
 playlist='[
 "https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3",
 "https://download.pariyatti.org/free/_moIbLs95/Dana_The_Practice_of_Giving_single.mp3",
@@ -186,6 +189,7 @@ The max-h option could be 'none' which may be helpful if you wanted to show all 
   --ap-theme-s: 50%;
   --ap-theme-l: 33%;
   --ap-playlist-max-h: none;
+  --ap-font: serif;
 "></taocode-audio-player>
 ```
 

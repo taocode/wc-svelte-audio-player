@@ -78,6 +78,7 @@
     display: inline-block;
     margin: 0;
     left: 0;
+    font-family: var(--ap-font-family-heading,var(--ap-font-family));
   }
   h3.animate {
     position: absolute;

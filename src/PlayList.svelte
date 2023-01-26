@@ -194,6 +194,7 @@
   button {
     border: none;
     background: none;
+    font-family: var(--ap-font-family-playlist,var(--ap-font-family));
   }
 
   li.current button {
