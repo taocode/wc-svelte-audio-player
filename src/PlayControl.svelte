@@ -35,17 +35,19 @@
 </script>
 
 <div class:$hasError class="play-control">
-{#if $currentTrack.tryCount < $maxTries || $retrying}
-  <button on:click={refresh} title='Retry?'>
-    <span class="icon icon-retry" class:canretry class:$retrying>
-      <RefreshIcon />
+{#if $hasError}
+  {#if $currentTrack.tryCount < $maxTries || $retrying}
+    <button on:click={refresh} title='Retry?'>
+      <span class="icon icon-retry" class:canretry class:$retrying>
+        <RefreshIcon />
+      </span>
+      <span class="remaining">{remainingTries}</span>
+    </button>
+  {:else}
+    <span class="icon icon-error">
+      <SlashIcon />
     </span>
-    <span class="remaining">{remainingTries}</span>
-  </button>
-{:else if $hasError}
-  <span class="icon icon-error">
-    <SlashIcon />
-  </span>
+  {/if}
 {:else}
   {#if !$isReady}
   <div class="loading">
