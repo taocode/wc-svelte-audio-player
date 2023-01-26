@@ -223,6 +223,7 @@
 		})
 		const autoAdvance = () => {
 			if ($advanceStore === 'repeat') {
+				playWhenReady.set(true)
 				currentTime.set(0)
 			} else if ($advanceStore === 'loop' 
 				|| ($advanceStore === 'auto' && $currentIndex < $tracks.length-1)

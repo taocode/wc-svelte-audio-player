@@ -7,14 +7,14 @@ import './src/index.svelte'
 
 ```html preview-story
 <div style="max-width: 400px; margin: 0 auto;">
-<taocode-audio-player skiptime="15" showskip="show" showskiptime="show"
+<taocode-audio-player skiptime="15" showskip="show" showskiptime="show" showadvance="show"
  style="
  --ap-theme-h: 130;
  --ap-theme-s: 85%;
  --ap-theme-l: 20%;"
 playlist='[
-"https://download.pariyatti.org/free/_moIbLs95/Dana_The_Practice_of_Giving_single.mp3",
 "https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3",
+"https://download.pariyatti.org/free/_moIbLs95/Dana_The_Practice_of_Giving_single.mp3",
 "https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3"]'>
 </taocode-audio-player></div>
 ```
@@ -35,7 +35,12 @@ You can use a relative URL if you include only 1 track in an array, options 2, 3
 
 #### Playlist Option 2: Array of JSON Objects
 
-`playlist='[{"src":"https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3","title":"Lumbini"},{"src":"https://www.jqueryscript.net/dummy/1.mp3","title":"Dummy 1"}]'`
+```json
+playlist='[
+  {"src":"url-to-audio-src","title":"Track 1"},
+  {"src":"url-to-audio2-src","title":"Track 2"}
+]'
+```
 
 This can be handiest from Hugo, use `jsonify objPlaylist` if you have matching keys `src` and `title` on each entry in that array/slice of objects.
 
@@ -80,10 +85,8 @@ I'm not really sure how handy this would be but hey, it can be done.
 
 ### Title of Tracks
 
-Next release: ID3 data will be considered the best source for track title.
-
 1. Title value provided via Playlist Option 3
-1. Filename with some standard clean-up, '_' -> ' ' and the extension is removed
+1. Filename what comes after the last '/' in the URL, with some standard clean-up: remove extension (.mp3,.mp4,.aac,...) and query string, #hash, convert `(_|%20|-)` -> ' '
 
 ### `advance`
 
