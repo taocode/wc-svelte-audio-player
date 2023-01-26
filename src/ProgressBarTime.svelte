@@ -12,7 +12,6 @@
   
 	let totalTimeDisplay = 'Loading...'
 	let currTimeDisplay = "0:00:00"
-  let bufferedPercent = 0
   let canretry = true
   $: canretry =  $currentTrack.tryCount < $maxTries
 	
@@ -20,10 +19,6 @@
       : isNaN($trackDuration) ? 'Loading...'
       : formatTime($trackDuration)
   $: currTimeDisplay = isNaN($currentTime) ? `0:00` : formatTime($currentTime)
-  $: {
-    const lastBuff = $buffered.slice(-1).pop()
-    bufferedPercent = (lastBuff ? lastBuff.end : 0) / $trackDuration
-  }
 </script>
 
 <div class="container" class:$error class:canretry>
@@ -31,7 +26,12 @@
   <div class="progress-outer">
     <span id="bar-progress" style="width: {$progress*100}%"></span>
     <input class="progrange" type="range" min={0} max={1} step={0.001} bind:value={$progress} />
-    <span id="bar-buffered" style="width: {bufferedPercent*100}%"></span>
+    {#each $buffered as {start,end}}
+    <span class="bar-buffered"
+    data-start={start} data-end={end} data-delta={end-start}
+    data-perc={100*(end-start)/$trackDuration} data-loc={100*start/$trackDuration}
+      style="width: {100 * ((end-start)/$trackDuration)}%; left: {100*(start/$trackDuration)}%;"></span>
+    {/each}
   </div>
   <span id="track-duration" class="time-display">{totalTimeDisplay}</span>
 </div>
@@ -43,7 +43,7 @@
     position: relative;
     height: 1.66em;
   }
-  .progress-outer, #bar-progress, #bar-buffered {
+  .progress-outer, #bar-progress, .bar-buffered {
     height: 0.2em;
     position: absolute;
     top: auto;
@@ -65,8 +65,10 @@
     rgba(0, 0, 0, 0.1));
     background-attachment: fixed;
   }
-  #bar-buffered {
+  .bar-buffered {
     width: 0%;
+    height: 0.5em;
+    margin-top: -0.133em;
     background: var(--audio-player-background-semi);
     background-attachment: fixed;
   }
