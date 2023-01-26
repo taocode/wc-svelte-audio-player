@@ -86,7 +86,7 @@ I'm not really sure how handy this would be but hey, it can be done.
 ### Title of Tracks
 
 1. Title value provided via Playlist Option 3
-1. Filename what comes after the last '/' in the URL, with some standard clean-up: remove extension (.mp3,.mp4,.aac,...) and query string, #hash, convert `(_|%20|-)` -> ' '
+1. Filename - what comes after the last '/' in the src URL, with some standard clean-up: remove extension (.mp3,.mp4,.aac,...) and query string, #hash, convert `(_|%20|-)` -> ' '
 
 ### `advance`
 
@@ -175,14 +175,17 @@ defaults:
 
 - `--ap-theme-h: 220;` 
 - `--ap-theme-s: 75%;` 
-- `--ap-theme-l: 25%;` 
+- `--ap-theme-l: 25%;`
+- `--ap-playlist-max-h: 6em;`
 
+The max-h option could be 'none' which may be helpful if you wanted to show all tracks with no scroller. 6em will usually show 3 tracks unless they've word-wrapped into 2+ lines.
 
 ```html
 <taocode-audio-player style="
   --ap-theme-h: 120;
   --ap-theme-s: 50%;
   --ap-theme-l: 33%;
+  --ap-playlist-max-h: none;
 "></taocode-audio-player>
 ```
 

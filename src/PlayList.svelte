@@ -159,7 +159,7 @@
     padding: 0;
     width: 100%;
     overflow: hidden auto;
-    max-height: var(--audio-player-playlist-max-h,6rem);
+    max-height: var(--ap-playlist-max-h,6rem);
     position: absolute;
   }
   ul::-webkit-scrollbar {
