@@ -317,7 +317,7 @@ ${randomHueStyle}`
 		{/if}
 		<div class="vol-prog-rep" class:showPlay>
 			{#if showPlay}
-			<PlayControl />
+			<PlayControl {dark} />
 			{/if}
 			<button title={adjustVolumeTitle} on:click={()=>showVolume = !showVolume}>
 				<span class="icon">

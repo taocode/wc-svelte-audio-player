@@ -6,15 +6,15 @@ import './src/index.svelte'
 # Playlist Audio Player Web Component
 
 ```html preview-story
-<div style="max-width: 400px; margin: 0 auto;">
-<taocode-audio-player skiptime="15" showskip="show" showskiptime="show" showadvance="show" expandplaylist="show"
+<div style="max-width: 300px; margin: 0 auto;">
+<taocode-audio-player skiptime="15" showskip="show" showskiptime="show" showadvance="show"
  style="
  --ap-theme-h: 130;
  --ap-theme-s: 85%;
  --ap-theme-l: 20%;
  --ap-font-family: cursive;
- --ap-font-family-heading: serif;
- --ap-font-family-playlist: 'Impact', sans-serif;"
+ --ap-font-family-heading: fantasy;
+ --ap-font-family-playlist: cursive;"
 playlist='[
 "https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3",
 "https://download.pariyatti.org/free/_moIbLs95/Dana_The_Practice_of_Giving_single.mp3",

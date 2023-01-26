@@ -72,7 +72,7 @@
   {/if}
 
   <div class="play-control">
-    <PlayControl />
+    <PlayControl {dark} />
   </div>
 
   {#if includeSkip}

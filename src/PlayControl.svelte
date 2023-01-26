@@ -31,7 +31,10 @@
   }
   $: remainingTries = $maxTries - ($currentTrack.hasOwnProperty("tryCount") ? $currentTrack.tryCount : 0)
   $: canretry = $retry
-
+  export let dark
+  $: style = (dark)
+    ? '--mask-1: #000a; --mask-2: #0000; --b-mode: darken;'
+    : '--mask-1: #FFFa; --mask-2: #FFF0; --b-mode: lighten;'
 </script>
 
 <div class:$hasError class="play-control">
@@ -50,8 +53,8 @@
   {/if}
 {:else}
   {#if !$isReady}
-  <div class="loading">
-    <div class="icon loader add-animate-beacon animate-pulse">
+  <div class="loading" {style}>
+    <div class="icon loader add-animate-mask">
       <LoaderIcon />
     </div>
   </div>
@@ -121,32 +124,18 @@
   .loader {
     position: relative;
   }
-
-  .add-animate-beacon::after {
-    --square-size: 1.5em;
-    content: ' ';
+  .add-animate-mask::after {
+    content: '';
     position: absolute;
-    left: 1.1em;
-    top: 1em;
-    z-index: 1;
-    border-radius: 999em;
-    font-size: 9px;
-    height: var(--square-size);
-    width: var(--square-size);
-    opacity: 0.5;
-    animation: beacon var(--animate-seconds,2s) var(--animate-function, ease-in-out) infinite;
+    inset: 0;
+    border-radius: 100%;
+    background: conic-gradient(from 0deg at 50% 50%, var(--mask-1), var(--mask-2));
+    mix-blend-mode: var(--b-mode);
+    animation: rotate calc(var(--animate-seconds,2s) / 2) linear infinite;
   }
-  .animate-pulse {
-    animation: pulse calc(var(--animate-seconds,2s) * 2) var(--animate-function, ease-in-out) infinite;
-  }
-  @keyframes pulse {
-    50% {
-      opacity:0.25;
-    }
-  }
-  @keyframes beacon {
-    50% {
-      box-shadow: 0 0 0 1em var(--audio-player-color,#222);
+  @keyframes rotate {
+    100% {
+      transform: rotate(1turn);
     }
   }
 </style>
