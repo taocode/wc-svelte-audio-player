@@ -374,7 +374,7 @@ ${randomHueStyle}`
 main {
 	display: flex;
 	margin: 0 auto;
-	min-width: 150px;
+	min-width: 135px;
 	flex-direction: column;
 	align-items: center;
 	border-radius: var(--audio-player-border-radius, 0);
