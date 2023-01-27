@@ -31,10 +31,6 @@
   }
   $: remainingTries = $maxTries - ($currentTrack.hasOwnProperty("tryCount") ? $currentTrack.tryCount : 0)
   $: canretry = $retry
-  export let dark
-  $: style = (dark)
-    ? '--mask-1: #000a; --mask-2: #0000; --b-mode: darken;'
-    : '--mask-1: #FFFa; --mask-2: #FFF0; --b-mode: lighten;'
 </script>
 
 <div class:$hasError class="play-control">
@@ -53,7 +49,7 @@
   {/if}
 {:else}
   {#if !$isReady}
-  <div class="loading" {style}>
+  <div class="loading">
     <div class="icon loader add-animate-mask">
       <LoaderIcon />
     </div>
@@ -115,27 +111,5 @@
   .remaining {
     position: absolute;
     inset: auto;
-  }
-  .loading {
-    position: relative;
-    --animate-seconds: 2s;
-    --animate-function: ease-out;
-  }
-  .loader {
-    position: relative;
-  }
-  .add-animate-mask::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 100%;
-    background: conic-gradient(from 0deg at 50% 50%, var(--mask-1), var(--mask-2));
-    mix-blend-mode: var(--b-mode);
-    animation: rotate calc(var(--animate-seconds,2s) / 2) linear infinite;
-  }
-  @keyframes rotate {
-    100% {
-      transform: rotate(1turn);
-    }
   }
 </style>
