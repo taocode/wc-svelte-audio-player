@@ -36,7 +36,7 @@
     else currentIndex.set(i)
   }
   $: accordionTitle = (expanded ? 'Close' : 'Show') + ' Playlist'
-  const playlistTitle = (track) => (track.tryCount < $maxTries ? 'Retry'
+  const playlistTitle = (track) => ((track.error && track.tryCount < $maxTries) ? 'Retry'
                   : track.error ? 'Cannot Load' : 'Play') + ' ' + trackTitle(track)
   $: style = `--background-playlist: ${$background};`
 </script>
