@@ -18,6 +18,7 @@ export const contextStores = {
   RETRYING: 'retrying',
   MAX_TRIES: 'maxTries',
   REVERSE_DIRECTION: 'reverseDirection',
+  DARK: 'dark',
   BACKGROUND: 'background',
   TOTAL_DURATION: 'totalDuration',
 }

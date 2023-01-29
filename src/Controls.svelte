@@ -12,6 +12,7 @@
   const tracks = getContext(CS.TRACKS)
   const playWhenReady = getContext(CS.PLAY_WHEN_READY)
   const reverseDirection = getContext(CS.REVERSE_DIRECTION)
+  const dark = getContext(CS.DARK)
 
   import SkipForwardIcon from './svg/skip-forward.svg.svelte'
   import SkipBackIcon from './svg/skip-back.svg.svelte'
@@ -48,8 +49,7 @@
   $: includeSkip = showOptions.includes(showskip) && !$hasError && $skipTime > 0 && $skipTime < $trackDuration
   $: includeNext = $tracks.length > 1
 
-  export let dark
-  $: style = (dark)
+  $: style = ($dark)
     ? '--shadow-text: #000a;' 
     : '--shadow-text: #FFFa;'
 </script>
@@ -117,6 +117,8 @@
     height: 1.5rem;
   }
   button {
+    border-radius: 100%;
+    transition: all 75ms ease-out;
     display: flex;
     position: relative;
     justify-content: center;
@@ -128,6 +130,15 @@
     margin: 0;
     height: 1.5rem;
     background-color: transparent;
+  }
+  button:hover,
+  button:focus {
+    background: var(--audio-player-background-semi);
+    box-shadow: 0 0 0px 5px var(--audio-player-background-semi);
+  }
+  button:focus-visible {
+    outline: var(--audio-player-color, -webkit-focus-ring-color) auto 1px;
+    outline-offset: 5px;
   }
   .\$hasError {
     color: var(--color-error,red);
@@ -165,6 +176,7 @@
     letter-spacing: -0.05em;
     text-shadow: 0 0 1px var(--shadow-text), 0 0 2px var(--shadow-text), 0 0 3px var(--shadow-text), 0 0 2px var(--shadow-text), 0 0 2px var(--shadow-text);
     transform: scaleX(0.8);
+    pointer-events: none;
   }
   .skip-time::after {
     content: 's';

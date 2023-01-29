@@ -56,7 +56,7 @@
   </div>
   {:else}
   <button id="play" title={$paused ? 'Play' : 'Pause' } on:click={playPauseAudio}>
-    <span class="icon">
+    <span class="icon icon-playpause">
       {#if $paused}
       <PlayIcon />
       {:else}
@@ -90,7 +90,18 @@
     cursor: pointer;
     margin: 0;
     height: 2rem;
+    border-radius: 100%;
+    transition: all 100ms ease-out;
     background-color: transparent;
+  }
+  button:hover,
+  button:focus {
+    background: var(--audio-player-background-semi);
+    box-shadow: 0 0 0px 6px var(--audio-player-background-semi);
+  }
+  button:focus-visible {
+    outline: var(--audio-player-color, -webkit-focus-ring-color) auto 1px;
+    outline-offset: 5px;
   }
   .\$hasError,
   .icon-error {
