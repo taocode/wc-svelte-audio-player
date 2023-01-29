@@ -42,16 +42,18 @@
 	const loadAllTrackData = async () => {
 		$tracks.forEach( (t,i) => {
 			try {
-				const mAudio = new Audio()
-				mAudio.preload = "metadata"
-				mAudio.onloadedmetadata = () => {
-					t.loading = false
-					t.loaded = true
-					t.duration = mAudio.duration
-					updateTrackList()
+				if (!t.duration) {
+					const mAudio = new Audio()
+					mAudio.preload = "metadata"
+					mAudio.onloadedmetadata = () => {
+						t.loading = false
+						t.loaded = true
+						t.duration = mAudio.duration
+						updateTrackList()
+					}
+					mAudio.src = t.src
+					mAudio.load()
 				}
-				mAudio.src = t.src
-				mAudio.load()
 			} catch (error) {
 				console.warn('loadAllTrackData',error)
 			}
@@ -74,7 +76,7 @@
 	}
 	tracks.set(parsedTracks.map(c => c.src ? c 
 															: Array.isArray(c) 
-																? ({ src: c[0], title: c[1] }) 
+																? ({ src: c[0], title: c[1], duration: (c.length > 2) ? parseFloat(c[2]) : false }) 
 																	: ({ src: c })))
 	setContext(CS.TRACKS,tracks)
 	
