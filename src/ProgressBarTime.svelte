@@ -1,6 +1,7 @@
 <script>
   import { getContext } from 'svelte';
   import { formatTime, contextStores as CS } from './lib'
+  import { fade } from 'svelte/transition'
 
   const progress = getContext(CS.PROGRESS)
   const currentTime = getContext(CS.CURRENT_TIME)
@@ -15,9 +16,11 @@
   let canretry = true
   $: canretry =  $currentTrack.tryCount < $maxTries
 	
-  $: totalTimeDisplay = $hasError ? 'Error' 
-      : isNaN($trackDuration) ? 'Loading...'
-      : formatTime($trackDuration > 0.001 ? $trackDuration : $currentTrack.duration)
+  $: duration = $trackDuration > 0.001 ? $trackDuration 
+          : $currentTrack.hasOwnProperty('duration') ? $currentTrack.duration : -1
+  $: totalTimeDisplay = $hasError ? 'Error' : 
+                          isNaN($trackDuration) 
+                                   ? 'Loading...' : formatTime(duration)
   $: currTimeDisplay = isNaN($currentTime) ? `0:00` : formatTime($currentTime)
 </script>
 
@@ -33,7 +36,9 @@
       style="width: {100 * ((end-start)/$trackDuration)}%; left: {100*(start/$trackDuration)}%;"></span>
     {/each}
   </div>
-  <span id="track-duration" class="time-display">{totalTimeDisplay}</span>
+  {#if duration > 0}
+  <span transition:fade id="track-duration" class="time-display">{totalTimeDisplay}</span>
+  {/if}
 </div>
 
 

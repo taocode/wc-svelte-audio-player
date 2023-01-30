@@ -62,7 +62,7 @@
     {#each $tracks as track,i}
     <li data-track-id={i} class:current={i===$currentIndex} >
       <button title={playlistTitle(track)} on:click={() => chooseTrack(i)} disabled={track.error && track.tryCount > $maxTries} class:error={track.error} class:canretry={track.tryCount < $maxTries}>
-        {#if 'duration' in track || track.error}<span class="duration" title={track.duration+' seconds'}>{
+        {#if 'duration' in track && track.duration > 0 || track.error}<span class="duration" title={track.duration+' seconds'}>{
           track.error ? '--:--' : formatTime(track.duration) }</span>{/if}
         {trackTitle(track)} 
       </button></li>

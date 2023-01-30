@@ -77,10 +77,12 @@
 			console.warn(`Playlist: "${playlist}" is malformed, see docs`,err.message)
 		}
 	}
-	tracks.set(parsedTracks.map(c => c.src ? c 
-															: Array.isArray(c) 
-																? ({ src: c[0], title: c.length > 1 ? c[1] : false, duration: (c.length > 2) ? parseFloat(c[2]) : false }) 
-																	: ({ src: c })))
+	tracks.set(
+		parsedTracks.map(c => c.src ? c 
+									: Array.isArray(c) 
+										? ({ src: c[0], title: c.length > 1 ? c[1] : false, duration: (c.length > 2) ? parseFloat(c[2]) : false }) 
+											: ({ src: c }))
+	)
 	setContext(CS.TRACKS,tracks)
 	
 	const currentIndex = writable(-2)
@@ -250,7 +252,7 @@
 			t.loading = false
 			buffered.set([])
 			t.tryCount = (t.hasOwnProperty('tryCount') ? t.tryCount : 0) + 1
-			// t.duration = 0
+			t.duration = -1
 			hasError.set(true)
 			updateTrackList()
 			// audioPlayer.pause()
