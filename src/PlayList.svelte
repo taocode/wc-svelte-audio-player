@@ -1,6 +1,6 @@
 <script>
   import { getContext } from 'svelte'
-  import { slide } from 'svelte/transition'
+  import { slide, fade } from 'svelte/transition'
   import { formatTime, contextStores as CS, trackTitle, showOptions, hideOptions } from './lib.js'
   const tracks = getContext(CS.TRACKS)
   const currentIndex = getContext(CS.CURRENT_INDEX)
@@ -11,6 +11,7 @@
   const totalDuration = getContext(CS.TOTAL_DURATION)
   const maxTries = getContext(CS.MAX_TRIES)
   const retry = getContext(CS.RETRY)
+  import XIcon from './svg/x.svg.svelte'
 	
   export let expand = 'false'
   export let atTop = false
@@ -54,7 +55,7 @@
       {#if $totalDuration}
       <span class="total-duration">{formatTime($totalDuration)}</span>
       {/if}
-      {#if expanded && !always}<span class="close">✖</span>{/if}
+      {#if expanded && !always}<span transition:fade class="icon close"><XIcon /></span>{/if}
   </button>
   {/if}
 
@@ -83,6 +84,7 @@
   .close {
     position: absolute;
     left: 0.5rem;
+    max-width: 1.25em;
   }
   button {
     padding: 0.33em 0.5em;

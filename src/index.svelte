@@ -16,7 +16,8 @@
   import VolumeSlider from './VolumeSlider.svelte'
   import VolumeIcon from './svg/volume.svg.svelte'
   import RepeatIcon from './svg/repeat.svg.svelte'
-  import PlayControl from './PlayControl.svelte';
+  import PlayControl from './PlayControl.svelte'
+	import XIcon from './svg/x.svg.svelte'
 
 	export let playlist
 	export let skiptime = 10
@@ -331,7 +332,7 @@ ${randomHueStyle}`
 			{#if showVolume }
 			<div transition:fly={{ y: 20, duration: 300}} class="show-volume">
 				<button class="close-volume" on:click={()=>showVolume = false} title={adjustVolumeTitle}>
-					<span class="icon icon-x">✖</span>
+					<span class="icon icon-x"><XIcon /></span>
 				</button>
 				<VolumeSlider />
 			</div>
@@ -381,12 +382,11 @@ main {
 	min-width: 135px;
 	flex-direction: column;
 	align-items: center;
-	border-radius: var(--audio-player-border-radius, 0);
 }
 .container {
 	--audio-player-color: hsl( var(--ap-theme-h, 220), var(--ap-theme-s, 75%), var(--ap-theme-l, 25%) );
 	--audio-player-background-semi: hsla( var(--ap-theme-h, 220), var(--ap-theme-s, 75%), var(--ap-theme-l, 25%), 0.12 );
-	background: var(--audio-player-background, transparent);
+	background: var(--ap-background, transparent);
 	color: var(--audio-player-color);
 	width: 100%;
 }
