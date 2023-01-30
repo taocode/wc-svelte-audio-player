@@ -294,8 +294,8 @@
 		? `--ap-theme-h: ${rHue}` : ''
 		+';'
 
-	let style = `
-	--background: ${$background};
+	$: style = `
+	--background-volume: ${$background};
 	--color-warn: hsl(32, 100%, 45%);
 	--background-warn: hsla(32, 100%, 65%, 0.2);
 	--color-error: hsl(0,75%,50%);
@@ -453,7 +453,7 @@ button:focus-visible {
 		top: -1em;
 		left: 0em;
 		right: -1.5em;
-		background: var(--background);
+		background: var(--background-volume);
 		opacity: 0.7;
 		padding: 0 0.25ch;
 		box-shadow: 0 0 5px #0002;
