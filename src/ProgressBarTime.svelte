@@ -17,7 +17,7 @@
 	
   $: totalTimeDisplay = $hasError ? 'Error' 
       : isNaN($trackDuration) ? 'Loading...'
-      : formatTime($trackDuration)
+      : formatTime($trackDuration > 0.001 ? $trackDuration : $currentTrack.duration)
   $: currTimeDisplay = isNaN($currentTime) ? `0:00` : formatTime($currentTime)
 </script>
 

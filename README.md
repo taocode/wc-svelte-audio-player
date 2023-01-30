@@ -8,6 +8,7 @@ import './src/index.svelte'
 ```html preview-story
 <div style="max-width: 300px; margin: 0 auto;">
 <taocode-audio-player skiptime="15" showskip="show" showskiptime="show" showadvance="show"
+preload="none"
  style="
  --ap-theme-h: 130;
  --ap-theme-s: 85%;
@@ -17,7 +18,7 @@ import './src/index.svelte'
  --ap-font-family-heading: fantasy;
  --ap-font-family-playlist: system-ui;"
 playlist='[
-"https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3",
+["https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3","Great Compassion",150],
 ["https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3","Lumbini",5],
 {"src":"https://download.pariyatti.org/free/_moIbLs95/Dana_The_Practice_of_Giving_single.mp3", "duration": 9375.6},
 {"src":"https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3"}]'>
@@ -120,7 +121,7 @@ playlist='[
 
 Providing the duration of each track is highly recommended. It is only a placeholder value until the file is actually loaded.
 
-If you do not supply the duration of the track the player will fetch the audio files on initialization and load the metadata. The  duration of each track is updated with the actual value from the file upon successful load. Providing the initial duration can save `n` requests and 100s of kilobytes of bandwidth depending upon how many tracks .
+If you do not supply the duration of the track the player will fetch the audio files on initialization and load the metadata. The  duration of each track is updated with the actual value from the file upon successful load. Providing the initial duration can save `n` requests and 100s of kilobytes of bandwidth where `n` is the number of tracks.
 
 ### `advance`
 

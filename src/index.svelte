@@ -34,8 +34,11 @@
 	export let randomhue = 'false'
 	export let mode = 'light'
 	export let maxtries = 3
+	export let preload = 'metadata'
 
 	$: playlistAtTop = playlistlocation === 'top'
+	$: preloadNone = preload === 'none'
+	let mounted = false
 
 	// lots of setup
 	const tracks = writable([])
@@ -44,7 +47,7 @@
 			try {
 				if (!t.duration) {
 					const mAudio = new Audio()
-					mAudio.preload = "metadata"
+					mAudio.preload = preload
 					mAudio.onloadedmetadata = () => {
 						t.loading = false
 						t.loaded = true
@@ -76,7 +79,7 @@
 	}
 	tracks.set(parsedTracks.map(c => c.src ? c 
 															: Array.isArray(c) 
-																? ({ src: c[0], title: c[1], duration: (c.length > 2) ? parseFloat(c[2]) : false }) 
+																? ({ src: c[0], title: c.length > 1 ? c[1] : false, duration: (c.length > 2) ? parseFloat(c[2]) : false }) 
 																	: ({ src: c })))
 	setContext(CS.TRACKS,tracks)
 	
@@ -181,23 +184,24 @@
 			updateTrackList()
 		}
 		setAudioFrom(track)
-		audioPlayer.load()
+		if ($playWhenReady) audioPlayer.load()
+		else isReady.set(true)
 	}
 	const loadCurrentTrack = () => {
 		loadTrack($currentIndex,$currentTrack)
 	}
 	// auto-load track on every $currentIndex change
 	function autoLoad(index) {
-		const track = $currentTrack
+		if (!mounted) return // indicates 1st load, ignore
+		const track = $tracks[index]
 		hasError.set(false)
 		const lastIndex = $tracks.length-1
 		if ( ! track || index < 0 || index > lastIndex ) {
 			// illegal value, reset to 0 or last track, try again with first or last
-			if (index < -1) return // -2 indicates 1st load, ignore
 			const newIndex = index < 0 ? lastIndex : 0
 			console.log(`invalid autoLoad(${index}), reseting to ${newIndex}`,index,'/',$tracks.length,track)
 			currentIndex.set(newIndex)
-			autoLoad(newIndex) 
+			autoLoad(newIndex)
 			return
 		}
 		if ( ! track.loading) {
@@ -208,9 +212,9 @@
 	}
 	
 	onMount(() => {
-		audioPlayer.preload = "metadata"
+		audioPlayer.preload = preload
 
-		loadAllTrackData()
+		if (! preloadNone) loadAllTrackData()
 
 		audioPlayer.addEventListener('canplay', () => {
 			// console.log('canplay',{$currentIndex,$playWhenReady})
@@ -256,6 +260,7 @@
 			if ($currentIndex > 0) autoAdvance()
 		})
 		currentIndex.set(0)
+		mounted = true
 	})
 
 	$: autoLoad($currentIndex)
