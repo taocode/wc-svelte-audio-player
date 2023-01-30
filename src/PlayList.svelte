@@ -123,14 +123,14 @@
     transition: 0.3s;
     overflow: hidden;
   }
-  button.accordion:hover,
-  button.accordion:focus {
+  button:hover,
+  button:focus {
     background: var(--audio-player-background-semi);
     box-shadow: 0 0 0px 1px var(--audio-player-background-semi), 0 0 0px 1px var(--audio-player-background-semi);
   }
-  button.accordion:focus-visible {
+  button:focus-visible {
     outline: var(--audio-player-color, -webkit-focus-ring-color) auto 1px;
-    outline-offset: 1px;
+    outline-offset: -1px;
   }
 
   /* Add a background color to the button if it is clicked on (add the .expanded class with JS), and when you move the mouse over it (hover) */
