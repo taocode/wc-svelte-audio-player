@@ -187,7 +187,10 @@
 		}
 		setAudioFrom(track)
 		if ($playWhenReady) audioPlayer.load()
-		else isReady.set(true)
+		else {
+			track.loading = false
+			isReady.set(true)
+		}
 	}
 	const loadCurrentTrack = () => {
 		loadTrack($currentIndex,$currentTrack)
