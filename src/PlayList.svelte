@@ -11,6 +11,7 @@
   const maxTries = getContext(CS.MAX_TRIES)
   const retry = getContext(CS.RETRY)
   import XIcon from './svg/x.svg.svelte'
+  import MenuIcon from './svg/menu.svg.svelte'
 	
   export let expand = 'false'
   export let atTop = false
@@ -48,7 +49,7 @@
       class:expanded class:always
       disabled={always}
       on:click={() => expanded = !expanded && !always}>
-      ☰ Playlist 
+      <span class="icon"><MenuIcon /></span> Playlist 
       <span class="track-count">{$tracks.length}</span>
       {#if $totalDuration}
       <span class="total-duration">{formatTime($totalDuration)}</span>
@@ -95,6 +96,12 @@
     background: none;
     font-family: var(--ap-font-family-playlist);
   }
+  .icon {
+    display: inline-block;
+    height: 1em;
+    width: 1.25em;
+    padding: 0;
+  }
 
   .atTop {
     bottom: 1.75em;
@@ -125,6 +132,10 @@
     cursor: pointer;
     transition: 0.3s;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
   }
   button:hover,
   button:focus {
@@ -170,9 +181,8 @@
   }
   .total-duration {
     position: absolute;
-    right: 2px;
-    top: 2px;
-    text-align: right;
+    right: 0.25em;
+    top: 0.25em;
   }
   .duration {
     float: right;
