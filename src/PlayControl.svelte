@@ -90,6 +90,7 @@
     cursor: pointer;
     margin: 0;
     height: 2rem;
+    width: 2rem;
     border-radius: 100%;
     transition: all 100ms ease-out;
     background-color: transparent;

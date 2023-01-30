@@ -12,17 +12,39 @@ import './src/index.svelte'
  --ap-theme-h: 130;
  --ap-theme-s: 85%;
  --ap-theme-l: 20%;
- --ap-font-family: cursive;
  --ap-font-family-heading: fantasy;
- --ap-font-family-playlist: cursive;"
+ --ap-font-family-playlist: system-ui;"
 playlist='[
-"https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3",
-"https://download.pariyatti.org/free/_moIbLs95/Dana_The_Practice_of_Giving_single.mp3",
-"https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3"]'>
+"https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3",
+["https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Lumbini.mp3","Lumbini",5],
+{"src":"https://download.pariyatti.org/free/_moIbLs95/Dana_The_Practice_of_Giving_single.mp3", "duration": 9375.6},
+{"src":"https://download.pariyatti.org/free/_moIbLs95/along_the_path_audio/streaming/Great_Compassion.mp3"}]'>
 </taocode-audio-player></div>
 ```
 
 </div>
+
+## Features
+
+Introduces `<taocode-audio-player>` Web Component, a playlist audio player featuring a simple, clean and flexible design with useful customization options:
+
+- Custom Color via CSS variables in style attribute
+- Dark mode reactive attribute
+- Custom Font for Heading and Playlist
+- Auto advance, loop entire list, repeat 1 track or none
+  - User can control this when Advance Control is shown
+- Show/Hide:
+  - Heading (title above player)
+  - Controls Row (previous, skip back, play/pause, skip forward, next)
+    - skip back and forward can be hidden
+    - skip time is hidden by default
+  - Advance Control
+  - Playlist and Playlist Expand Control
+- Playlist can appear at the top or bottom
+
+### Built With Svelte and WebComponents.dev
+
+Svelte makes this a trivial task without adding overhead. 
 
 ## Attributes
 
@@ -40,12 +62,13 @@ You can use a relative URL if you include only 1 track in an array, options 2, 3
 
 ```json
 playlist='[
-  {"src":"url-to-audio-src","title":"Track 1"},
-  {"src":"url-to-audio2-src","title":"Track 2"}
+  {"src":"url-to-audio","title":"Track 1","duration":"60"},
+  {"src":"url-to-audio2","title":"Track 2"},
+  {"src":"url-to-audio3"}
 ]'
 ```
 
-This can be handiest from Hugo, use `jsonify objPlaylist` if you have matching keys `src` and `title` on each entry in that array/slice of objects.
+This option can be handiest from Hugo, use `jsonify objPlaylist` if you have matching keys `src` and optional `title` and `duration` on each entry in that slice (array) of objects.
 
 #### Playlist Option 3: Array of URLs
 
@@ -64,32 +87,38 @@ playlist='[
 
 #### Playlist Option 4: Array of Arrays
 
-JSON formatted `[url,title]` entries.
+JSON formatted `[src,title?,duration?]` entries.
 
 ```json
 playlist='[
-  ["https://.../file.mp3","Title 1"],
+  ["https://.../file.mp3","Title 1","60"],
   ["https://.../file2.mp3","Title 2"],
-  ["https://.../file3.mp3","Title 3"]
+  ["https://.../file3.mp3"]
 ]'
 ```
 
-You can also mix & match Options 2, 3 & 4 like:
+You can also mix & match Playlist Options* like:
 
 ```json
 playlist='[
   "https://.../file.mp3",
-  ["https://.../file2.mp3","Title 2"],
+  ["https://.../file2.mp3","Title 2","60"],
   [{"src":"https://.../file3.mp3","title":"Title 3"}]
 ]'
 ```
 
-I'm not really sure how handy this would be but hey, it can be done.
+*This option has dubious value beyond testing.
 
 ### Title of Tracks
 
 1. Title value provided via Playlist Option 3
 1. Filename - what comes after the last '/' in the src URL, with some standard clean-up: remove extension (.mp3,.mp4,.aac,...) and query string, #hash, convert `(_|%20|-)` -> ' '
+
+### Duration of Tracks
+
+Providing the duration of each track is highly recommended. It is only a placeholder value until the file is actually loaded.
+
+If you do not supply the duration of the track the player will fetch the audio files on initialization and load the metadata. The  duration of each track is updated with the actual value from the file upon successful load. Providing the initial duration can save `n` requests and 100s of kilobytes of bandwidth depending upon how many tracks .
 
 ### `advance`
 
@@ -108,6 +137,22 @@ default: `auto`
     "./path/to/track1",
     "./path/to/track2"
   ]'></taocode-audio-player>
+```
+
+### `mode`
+
+Mode attribute is reactive, when you change it from your script, it will update the player. This is mostly necessary for the popover playlist as the background is otherwise transparent.
+
+2 options `light` | `dark`
+
+default: `light`
+
+In your theme switcher do something like:
+
+```js
+Array.from(document.querySelectorAll('taocode-audio-player')).forEach((el) => {
+  el.mode = darkMode ? 'dark' : 'light'
+})
 ```
 
 ### `showadvance`
@@ -166,7 +211,7 @@ The show attributes all accept any of these expressions that override their defa
 
 ### `randomhue`
 
-Provide a random hue, from 0-360 for HSL color. Useful for those lit html stories that don't allow a `style` attribute.
+Provide a random hue, from 0-360 for HSL color. Useful for those lit html stories that ignore/strip the `style` attribute.
 
 default: `false`
 
@@ -189,7 +234,8 @@ The max-h option could be 'none' which may be helpful if you wanted to show all 
   --ap-theme-s: 50%;
   --ap-theme-l: 33%;
   --ap-playlist-max-h: none;
-  --ap-font: serif;
+  --ap-font-family-heading: fantasy, cursive;
+  --ap-font-family-playlist: system-ui;
 "></taocode-audio-player>
 ```
 

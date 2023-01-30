@@ -88,21 +88,24 @@
     padding: 0.33em 0.5em;
     display: block;
     width: 100%;
-    background: var(--audio-player-background,transparent);
     color: var(--audio-player-color,#222);
     text-align: left;
     cursor: pointer;
+    border: none;
+    background: none;
+    font-family: var(--ap-font-family-playlist);
   }
+
   .atTop {
     bottom: 1.75em;
   }
   .error {
-    color: var(--color-error,red);
+    color: var(--color-error,#ea0000);
     cursor: not-allowed;
     background: var(--background-error,hsla(0, 90%, 50%, 0.2))
   }
   .canretry {
-    color: var(--color-warn,darkorange);
+    color: var(--color-warn,#ea8000);
     cursor: pointer;
     background: var(--background-warn, hsla(33, 90%, 50%, 0.2));
   }
@@ -117,8 +120,17 @@
     border: none;
     outline: none;
     cursor: pointer;
-    transition: 0.4s;
+    transition: 0.3s;
     overflow: hidden;
+  }
+  button.accordion:hover,
+  button.accordion:focus {
+    background: var(--audio-player-background-semi);
+    box-shadow: 0 0 0px 1px var(--audio-player-background-semi), 0 0 0px 1px var(--audio-player-background-semi);
+  }
+  button.accordion:focus-visible {
+    outline: var(--audio-player-color, -webkit-focus-ring-color) auto 1px;
+    outline-offset: 1px;
   }
 
   /* Add a background color to the button if it is clicked on (add the .expanded class with JS), and when you move the mouse over it (hover) */
@@ -191,12 +203,6 @@
     background-color: var(--audio-player-track-active,#FFF2);
   }
   
-  button {
-    border: none;
-    background: none;
-    font-family: var(--ap-font-family-playlist,var(--ap-font-family));
-  }
-
   li.current button {
     font-weight: bold;
   }

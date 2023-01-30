@@ -69,6 +69,10 @@
     opacity: 1;
     /* Fully shown on mouse-over */
   }
+  .slider:focus-visible {
+    outline: var(--audio-player-color, -webkit-focus-ring-color) auto 1px;
+    outline-offset: 3px;
+  }
 
   /* The thumb slider handle */
   .slider::-webkit-slider-thumb {

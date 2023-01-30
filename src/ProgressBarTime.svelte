@@ -59,16 +59,14 @@
   }
   
   #bar-progress {
-    width: 0%;
+    width: 0;
     display: block;
-    background: var(--audio-player-color, 
-    rgba(0, 0, 0, 0.1));
-    background-attachment: fixed;
+    background: var(--audio-player-color, rgba(0, 0, 0, 0.1));
+    background-attachment: absolute;
   }
   .bar-buffered {
-    width: 0%;
-    height: 0.5em;
-    margin-top: -0.133em;
+    width: 0;
+    height: 0.2em;
     background: var(--audio-player-background-semi);
     background-attachment: fixed;
   }
@@ -85,10 +83,10 @@
     transition: opacity 0.2s ease-out;
   }
   .\$hasError .time-display {
-    color: var(--color-error,red);
+    color: var(--color-error,#ea0000);
   }
   .\$hasError.canretry .time-display {
-    color: var(--color-warn,darkorange);
+    color: var(--color-warn,#ea8000);
   }
   .container:focus-within .time-display,
   .container:hover .time-display {
@@ -141,6 +139,16 @@
   bottom: auto;
   right: 0;
   left: 0;
+  border-radius: 5px;
+}
+.progrange:hover,
+.progrange:focus {
+	background: var(--audio-player-background-semi);
+	box-shadow: 0 0 0px 5px var(--audio-player-background-semi);
+}
+.progrange:focus-visible {
+  outline: var(--audio-player-color, -webkit-focus-ring-color) auto 1px;
+  outline-offset: 5px;
 }
 .progrange:focus::-webkit-slider-runnable-track {
   box-shadow: var(--track-shadow-size) var(--track-shadow-blur) var(--track-shadow-border) var(--track-shadow-focus-color);

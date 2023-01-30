@@ -33,7 +33,6 @@
 	export let randomhue = 'false'
 	export let mode = 'light'
 	export let maxtries = 3
-	$: dark = mode === 'dark'
 
 	$: playlistAtTop = playlistlocation === 'top'
 
@@ -71,7 +70,7 @@
 			if (checkURL.host && /^https?:/.test(checkURL.protocol)) parsedTracks.push(playlist)
 			else console.warn(`Playlist URL: "${playlist}" is malformed, it must be a full URL that starts with https:// or http:// and is otherwise properly shaped`)
 		} catch (err) {
-			console.warn(`Playlist URL: "${playlist}" is malformed, see docs`,err.message)
+			console.warn(`Playlist: "${playlist}" is malformed, see docs`,err.message)
 		}
 	}
 	tracks.set(parsedTracks.map(c => c.src ? c 
@@ -141,8 +140,11 @@
 	const reverseDirection = writable(false)
 	setContext(CS.REVERSE_DIRECTION, reverseDirection)
 
-	const background = writable(dark ? '#000e' : '#FFFe')
+	const dark = writable(mode === 'dark')
+	setContext(CS.DARK, dark)
+	const background = derived(dark, ($dark) => $dark ? '#000e' : '#FFFe')
 	setContext(CS.BACKGROUND,background)
+	$: dark.set(mode === 'dark')
 
 	// when track data changes onload or onerror,
 	// notify the store of the change
@@ -326,15 +328,15 @@ ${randomHueStyle}`
 					<VolumeIcon volume={$volume} />
 				</span>
 			</button>
-			<ProgressBarTime />
 			{#if showVolume }
 			<div transition:fly={{ y: 20, duration: 300}} class="show-volume">
-				<button on:click={()=>showVolume = false} title={adjustVolumeTitle}>
+				<button class="close-volume" on:click={()=>showVolume = false} title={adjustVolumeTitle}>
 					<span class="icon icon-x">✖</span>
 				</button>
 				<VolumeSlider />
 			</div>
 			{/if}
+			<ProgressBarTime />
 			{#if showAdvance}
 			<button title={`Advance is: ${advanceOptions[advanceOptionIndex]}.\nChange Advance to: ${advanceOptions[nextAdvanceOptionIndex]}?`} on:click={advanceNext}>
 				<span class="icon">
@@ -346,12 +348,12 @@ ${randomHueStyle}`
 		</div>
 
 		{#if ! hideOptions.includes( showcontrols )}
-		<Controls {showskip} {dark} />
+		<Controls {showskip} />
 		{/if}
 	</section>
 	{#if ! hideOptions.includes(showplaylist)}
 	<section class="container">
-		<PlayList {dark} expand={expandplaylist} showbutton={showplaylistbutton} atTop={playlistAtTop} />
+		<PlayList expand={expandplaylist} showbutton={showplaylistbutton} atTop={playlistAtTop} />
 	</section>
 	{/if}
 </main>
@@ -394,38 +396,47 @@ main {
 	position: relative;
 	align-items: center;
 	height: 2.5em;
+	gap: 0.5em;
 }
 
 .vol-prog-rep.showPlay {
 	margin-bottom: 0.5em;
 }
 
-	.vol-prog-rep button {
-		border: none;
-		background: var(--audio-player-background, transparent);
-		padding: 0.5em 0.25em;
-		display: flex;
-		align-items: center;
-		cursor: pointer;
-	}
+.vol-prog-rep button {
+	border: none;
+	background: var(--audio-player-background, transparent);
+	padding: 0;
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	border-radius: 100%;
+	transition: all 75ms ease-out;
+	height: 1.5em;
+	width: 1.75em;
+}
 
-	button:first-child {
-		padding-right: 0.5em;
-	}
-
-	button:last-child {
-		padding-left: 0.5em;
-		padding-right: 0;
-	}
-
+button:hover,
+button:focus {
+	background: var(--audio-player-background-semi);
+	box-shadow: 0 0 0px 6px var(--audio-player-background-semi);
+}
+button:focus-visible {
+	outline: var(--audio-player-color, -webkit-focus-ring-color) auto 1px;
+	outline-offset: 5px;
+}
+.close-volume:hover,
+.close-volume:focus {
+	box-shadow: 0 0 0px 2px var(--audio-player-background-semi);
+}
+.close-volume:focus-visible {
+	outline-offset: 1px;
+	box-shadow: 0 0 0 2px var(--audio-player-background-semi);	
+}
+	
 	.vol-prog-rep .icon {
-		display: inline-block;
-		height: 1.5em;
-		width: 1.5em;
-	}
-
-	.show-volume button {
-		margin-right: 0.5em;
+		height: 100%;
+		width: 100%;
 	}
 
 	.playlistAtTop>:last-child {
@@ -434,7 +445,9 @@ main {
 
 	.show-volume {
 		display: flex;
+		align-items: center;
 		position: absolute;
+		gap: 1em;
 		z-index: 10;
 		width: 100%;
 		top: -1em;
@@ -454,7 +467,5 @@ main {
 	.icon {
 		color: var(--audio-player-color, #222);
 	}
-	.icon-x {
-		font-size: 1.33em;
-	}
+
 </style>
