@@ -143,7 +143,7 @@ default: `auto`
 
 ### `mode`
 
-Mode attribute is reactive, when you change it from your script, it will update the player. This is mostly necessary for the popover playlist as the background is otherwise transparent.
+Mode attribute is reactive, when you change it from your script's theme switcher hook, it will update the player. This is mostly necessary for the popover playlist as the background is otherwise transparent and may be unreadable without a light or dark opaque background.
 
 2 options `light` | `dark`
 
@@ -219,13 +219,16 @@ default: `false`
 
 ## Theming via CSS Vars
 
-Add the style attribute with your favorite HSL overrides. Boom, color. 
+Add the style attribute with your favorite HSL overrides.
 
 defaults:
 
 - `--ap-theme-h: 220;` 
-- `--ap-theme-s: 75%;` 
+- `--ap-theme-h-dark: var(--ap-theme-h);` 
+- `--ap-theme-s: 75%;`
+- `--ap-theme-s-dark: 65%;` 
 - `--ap-theme-l: 25%;`
+- `--ap-theme-s-dark: 45%;` 
 - `--ap-playlist-max-h: 6em;`
 
 The max-h option could be 'none' which may be helpful if you wanted to show all tracks with no scroller. 6em will usually show 3 tracks unless they've word-wrapped into 2+ lines.
@@ -235,9 +238,11 @@ The max-h option could be 'none' which may be helpful if you wanted to show all 
   --ap-theme-h: 120;
   --ap-theme-s: 50%;
   --ap-theme-l: 33%;
+  --ap-theme-l-dark: 50%;
   --ap-playlist-max-h: none;
   --ap-font-family-heading: fantasy, cursive;
   --ap-font-family-playlist: system-ui;
+  --ap-playlist-max-h: none;
 "></taocode-audio-player>
 ```
 
