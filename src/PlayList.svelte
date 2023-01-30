@@ -7,7 +7,6 @@
   const currentTime = getContext(CS.CURRENT_TIME)
   const paused = getContext(CS.PAUSED)
   const playWhenReady = getContext(CS.PLAY_WHEN_READY)
-  const background = getContext(CS.BACKGROUND)
   const totalDuration = getContext(CS.TOTAL_DURATION)
   const maxTries = getContext(CS.MAX_TRIES)
   const retry = getContext(CS.RETRY)
@@ -39,11 +38,10 @@
   $: accordionTitle = (expanded ? 'Close' : 'Show') + ' Playlist'
   const playlistTitle = (track) => ((track.error && track.tryCount < $maxTries) ? 'Retry'
                   : track.error ? 'Cannot Load' : 'Play') + ' ' + trackTitle(track)
-  $: style = `--background-playlist: ${$background};`
 </script>
 
 {#if !never}
-<section class="playlist-container" class:always {style}>
+<section class="playlist-container" class:always>
   {#if ! hideOptions.includes(showbutton) && $tracks.length > 1}
   <button class="accordion"
     title={accordionTitle}
@@ -167,7 +165,7 @@
   }
   ul {
     list-style-type: none;
-    background: var(--background-playlist,#FFFe);
+    background: var(--background-bwa,#FFFe);
     color: var(--audio-player-color,#ddd);
     margin: 0;
     padding: 0;

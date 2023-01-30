@@ -169,6 +169,7 @@
     scale: -1 1;
   }
   .skip-time {
+    color: var(--audio-player-color);
     position: absolute;
     font-size: 0.5rem;
     bottom: 0.4rem;

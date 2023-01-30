@@ -3,11 +3,9 @@
   import { contextStores as CS} from "./lib"
   export let step = 0.01
   const volume = getContext(CS.VOLUME)
-  const background = getContext(CS.BACKGROUND)
-  $: style = `--background: ${$background};`
 </script>
 
-<div class="slidecontainer" {style}>
+<div class="slidecontainer">
   <label for="volume-slider">0</label>
 
   <input id="volume-slider"

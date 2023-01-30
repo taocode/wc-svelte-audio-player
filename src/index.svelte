@@ -143,8 +143,6 @@
 
 	const dark = writable(mode === 'dark')
 	setContext(CS.DARK, dark)
-	const background = derived(dark, ($dark) => $dark ? '#000e' : '#FFFe')
-	setContext(CS.BACKGROUND,background)
 	$: dark.set(mode === 'dark')
 
 	// when track data changes onload or onerror,
@@ -291,18 +289,28 @@
 	const showPlay = hideOptions.includes( showcontrols )
 	const rHue = 360*Math.random()
 	const randomHueStyle = showOptions.includes(randomhue)
-		? `--ap-theme-h: ${rHue}` : ''
-		+';'
-
+		? `--ap-theme-h: ${rHue};` : ';'
+	$: dSufx = ($dark ? '-dark' : '')
+	$: ldH = `--theme-h: var(--ap-theme-h${dSufx},var(--ap-theme-h,220));`
+	$: ldS = `--theme-s: var(--ap-theme-s${dSufx},var(--ap-theme-s,${$dark?'65%':'75%'}));`
+	$: ldL = `--theme-l: var(--ap-theme-l${dSufx},var(--ap-theme-l,${$dark?'50%':'25%'}));`
+	$: backgroundBWa = $dark ? '#000e' : '#FFFe'
 	$: style = `
-	--background-volume: ${$background};
+	--background-bwa: ${backgroundBWa};
 	--color-warn: hsl(32, 100%, 45%);
 	--background-warn: hsla(32, 100%, 65%, 0.2);
 	--color-error: hsl(0,75%,50%);
 	--background-error: hsla(0, 100%, 65%, 0.2);
-${randomHueStyle}`
+	${randomHueStyle}
+	${ldH}
+	${ldS}
+	${ldL}
+	--audio-player-color: hsl( var(--theme-h), var(--theme-s), var(--theme-l) );
+	--audio-player-background-semi: hsla( var(--theme-h), var(--theme-s), var(--theme-l), 0.12 );
+`
 </script>
 
+<div {style}>
 {#if $tracks < 1}
 <div class="error-no-playlist">
 	<h2>No Playlist!</h2>
@@ -313,7 +321,7 @@ ${randomHueStyle}`
 	</pre>
 </div>
 {:else}
-<main class="audio-player" class:playlistAtTop {style}>
+<main class="audio-player" class:playlistAtTop>
 	<audio bind:this={audioPlayer} bind:currentTime={$currentTime} bind:duration={$trackDuration} bind:paused={$paused}
 		bind:volume={$volume} bind:buffered={$buffered}></audio>
 	<section id="player-cont" class="container">
@@ -359,6 +367,7 @@ ${randomHueStyle}`
 	{/if}
 </main>
 {/if}
+</div>
 
 <style>
 	.error-no-playlist {
@@ -384,8 +393,6 @@ main {
 	align-items: center;
 }
 .container {
-	--audio-player-color: hsl( var(--ap-theme-h, 220), var(--ap-theme-s, 75%), var(--ap-theme-l, 25%) );
-	--audio-player-background-semi: hsla( var(--ap-theme-h, 220), var(--ap-theme-s, 75%), var(--ap-theme-l, 25%), 0.12 );
 	background: var(--ap-background, transparent);
 	color: var(--audio-player-color);
 	width: 100%;
@@ -453,7 +460,7 @@ button:focus-visible {
 		top: -1em;
 		left: 0em;
 		right: -1.5em;
-		background: var(--background-volume);
+		background: var(--background-bwa);
 		opacity: 0.7;
 		padding: 0 0.25ch;
 		box-shadow: 0 0 5px #0002;

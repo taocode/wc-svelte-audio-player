@@ -11,7 +11,9 @@ import './src/index.svelte'
  style="
  --ap-theme-h: 130;
  --ap-theme-s: 85%;
+ --ap-theme-s-dark: 55%;
  --ap-theme-l: 20%;
+ --ap-theme-l-dark: 45%;
  --ap-font-family-heading: fantasy;
  --ap-font-family-playlist: system-ui;"
 playlist='[
