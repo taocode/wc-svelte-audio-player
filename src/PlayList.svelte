@@ -110,6 +110,9 @@
     background: var(--background-warn, hsla(33, 90%, 50%, 0.2));
   }
 
+  button  {
+    transition: background 0.3s ease;
+  }
   /* Style the buttons that are used to open and close the accordion panel */
   button.accordion {
     background: var(--audio-player-background);
@@ -147,6 +150,17 @@
   .track-count {
     background: var(--audio-player-background-semi,#FFF4);
     padding: 0.1em 0.5em;
+    transition: background 0.3s ease;
+  }
+  button:hover .track-count,
+  button:focus .track-count,
+  button:hover .total-duration,
+  button:focus .total-duration,
+  button:hover .duration,
+  button:focus .duration,
+  .expanded .track-count,
+  .expanded .total-duration {
+    background: var(--background-bwa);
   }
   .error .duration {
     background: var(--background-error,#d002);
@@ -156,12 +170,13 @@
   }
   .total-duration {
     position: absolute;
-    right: 0;
+    right: 2px;
+    top: 2px;
     text-align: right;
   }
   .duration {
     float: right;
-    margin: -0.15em -0.5em 0 0.2em;
+    margin: -0.15em -0.25em 0 0.2em;
   }
   ul {
     list-style-type: none;
