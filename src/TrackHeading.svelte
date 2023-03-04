@@ -7,9 +7,9 @@
 
   import AlertCircleIcon from './svg/alert-circle.svg.svelte'
 
-  let container = { offsetWidth: 100 }
-  let title = "Loading..."
+  let container = false
   let heading = false
+  let title = "Loading..."
   let animate = false
   let centered = true
   let aniTime = 15
@@ -21,17 +21,18 @@
     winWidth
     error = $hasError
     title = trackTitle($currentTrack)
-    if (heading) {
-      panPx = heading.scrollWidth - container.offsetWidth + (error ? 20 : 0)
+    if (container && heading) {
+      panPx = heading.offsetWidth - container.offsetWidth + (error ? 20 : 0)
       animate = panPx > 0
       centered = !animate
-      aniTime = panPx / 25
+      aniTime = panPx / 50
       if (aniTime < 5) aniTime += 5
       if (heading.style) {
         heading.style.animationName = 'none'
         heading.offsetWidth // trigger reflow
         heading.style.animationName = null
       }
+      console.log(`ww: ${winWidth}, h.sW: ${heading.scrollWidth}, h.oW: ${heading.offsetWidth}, h.ww: ${heading.width}`)
     }
     canretry = $currentTrack.tryCount < $maxTries
   }
@@ -41,8 +42,10 @@
 
 <div bind:this={container} class:error class:canretry
  style="
---marquee-width: {panPx}px;
 --marquee-time: {aniTime}s;
+--title: '{title}';
+--w-heading: {heading?.offsetWidth || 0}px;
+--w-pad: 5ch;
 ">
   <h3 bind:this={heading} class:animate class:centered>
     {#if error}
@@ -82,23 +85,21 @@
   }
   h3.animate {
     position: absolute;
-    animation: marquee var(--marquee-time, 15s) linear 1s infinite;
+    animation: marquee var(--marquee-time, 15s) linear infinite;
+  }
+  h3.animate::after {
+    content: var(--title);
+    margin-left: var(--w-pad);
   }
   h3.centered {
     right: 0;
   }
   @keyframes marquee {
-    5% {
-      left: 0
-    }
-    46% {
-      left: calc(-1 * var(--marquee-width, 100%));
-    }
-    54% {
-      left: calc(-1 * var(--marquee-width, 100%));
-    }
-    95% {
+    10% {
       left: 0;
+    }
+    100% {
+      left: calc(-1 * (var(--w-heading) / 2 + var(--w-pad) / 2));
     }
   }
 </style>
